@@ -1,0 +1,1 @@
+Lib files such as sfml-system.lib go here.
