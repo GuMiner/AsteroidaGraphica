@@ -131,6 +131,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="Version.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="vmath.hpp" />
   </ItemGroup>
   <ItemGroup>

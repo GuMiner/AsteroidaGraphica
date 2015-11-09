@@ -12,22 +12,23 @@ bool ShaderManager::CreateShader(GLenum shaderType, const char *shaderSource, GL
 {
     GLint compileStatus;
 
-    glCreateShader(shaderType);
-    glShaderSource(*shaderId, 1, &shaderSource, NULL);
-    glCompileShader(*shaderId);
-    glGetShaderiv(*shaderId, GL_COMPILE_STATUS, &compileStatus);
+    GLuint shader = glCreateShader(shaderType);
+    glShaderSource(shader, 1, &shaderSource, NULL);
+    glCompileShader(shader);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
     if (!compileStatus)
     {
         char buffer[1024];
         GLint len;
         std::stringstream logStream;
         
-        glGetShaderInfoLog(*shaderId, 1024, &len, buffer);
+        glGetShaderInfoLog(shader, 1024, &len, buffer);
         logStream << "Error: " << glewGetErrorString(glGetError()) << " " << buffer;
         AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
         return false;
     }
 
+    *shaderId = shader;
     return true;
 }
 
@@ -82,8 +83,9 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
         char buffer[1024];
         GLint len;
         glGetProgramInfoLog(program, 1024, &len, buffer);
-        logStream << "Error: " << glewGetErrorString(glGetError()) << " " << buffer;
+        logStream << glewGetErrorString(glGetError()) << " " << buffer;
         AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
+        return false;
     }
 
     // These are auto-deleted when the program is deleted

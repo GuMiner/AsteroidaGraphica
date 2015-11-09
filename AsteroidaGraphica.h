@@ -14,6 +14,12 @@ class AsteroidaGraphica
     vmath::mat4 perspectiveMatrix;
     GLuint flatShaderProgram;
 
+    vmath::mat4 lookAtMatrix;
+    GLuint vao;
+    GLuint pointBuffer;
+    GLsizei vertexCount;
+    GLint mv_location, proj_location;
+
     ShaderManager shaderManager;
     Physica physicsManager;
     sf::Thread physicaThread;

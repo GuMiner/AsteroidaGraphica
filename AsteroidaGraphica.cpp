@@ -4,6 +4,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include "AsteroidaGraphica.h"
+#include "Vertex.h"
 
 #pragma comment(lib, "opengl32")
 
@@ -77,9 +78,45 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     {
         return Version::Status::BAD_SHADERS;
     }
+    mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
+    proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
 
     AsteroidaGraphica::Log->Log("Shader creation done...");
 
+    // TEST CODE TEST CODE
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // Setup of vertex transfer (note we're using the "vertex" object in CodeGell)
+    glGenBuffers(1, &pointBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
+
+    // Setup of how the GPU will understand our data we send to it.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, x));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, r));
+    glEnableVertexAttribArray(1);
+
+    // Send some random data to the GPU
+    // This was a reload operation, changes were performed that must be flushed to the GPU.
+    colorVertex *pVertices = new colorVertex[9];
+    pVertices[0].Set(0, 0, 0, 1, 1, 1);
+    pVertices[1].Set(0, 5, 0, 0, 1, 0);
+    pVertices[2].Set(5, 0, 0, 1, 0, 0);
+
+    pVertices[3].Set(0, 5, 0, 0, 1, 0);
+    pVertices[4].Set(0, 0, 5, 0, 0, 1);
+    pVertices[5].Set(0, 0, 0, 1, 1, 1);
+    
+    pVertices[6].Set(5, 0, 0, 1, 0, 0);
+    pVertices[7].Set(0, 0, 5, 0, 0, 1);
+    pVertices[8].Set(0, 0, 0, 1, 1, 1);
+
+    vertexCount = 9;
+    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorVertex), pVertices, GL_STATIC_DRAW);
+    delete[] pVertices;
+    
     return Version::Status::OK;
 }
 
@@ -95,9 +132,10 @@ Version::Status AsteroidaGraphica::Run()
         return firstTimeSetup;
     }
    
-
     UpdatePerspective(window.getSize().x, window.getSize().y);
     AsteroidaGraphica::Log->Log("Graphics Initialized!");
+    
+    sf::Clock clock;
     bool alive = true;
     while (alive)
     {
@@ -115,8 +153,27 @@ Version::Status AsteroidaGraphica::Run()
             }
         }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // TEST CODE TEST CODE
 
+        // Use our boring shader and clear the display
+        glUseProgram(flatShaderProgram);
+
+        const GLfloat color[] = { 0, 0, 0, 1 };
+        const GLfloat one = 1.0f;
+        glClearBufferfv(GL_COLOR, 0, color);
+        glClearBufferfv(GL_DEPTH, 0, &one);
+
+        // Look down from an angle
+        lookAtMatrix = vmath::lookat(vmath::vec3(10, 10, 10), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
+        vmath::mat4 result = perspectiveMatrix * lookAtMatrix;
+        glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
+
+        // No translation
+        vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 180.0f);
+        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+        
+        // Render!
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         window.display();
     }
 
@@ -126,6 +183,10 @@ Version::Status AsteroidaGraphica::Run()
 
 void AsteroidaGraphica::Deinitialize()
 {
+    // Application shutdown.
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &pointBuffer);
+
     AsteroidaGraphica::Log->Log("Physica Thread Stopping...");
     physicsManager.Stop();
     physicaThread.wait();
