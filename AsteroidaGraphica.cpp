@@ -18,25 +18,33 @@
 std::unique_ptr<Logger> AsteroidaGraphica::Log;
 
 AsteroidaGraphica::AsteroidaGraphica()
+    : physicsManager(), physicaThread(&Physica::Run, &physicsManager)
 {
 }
 
 Version::Status AsteroidaGraphica::Initialize()
 {
     glewExperimental = TRUE;
+    physicaThread.launch();
+    AsteroidaGraphica::Log->Log("Physica Thread Started!");
+
     return Version::Status::OK;
 }
 
 Version::Status AsteroidaGraphica::Run()
 {
-    sf::Window window(sf::VideoMode(1366, 768), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+    // 24 depth bits, 8 stencil bits, 4x AA, major version 3.
+    AsteroidaGraphica::Log->Log("Graphics Initializing...");
+    sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 4, 3, 0, 0);
+    sf::Window window(sf::VideoMode(1366, 768), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
     GLenum err = glewInit();
     if (err != GLEW_OK)
     {
         AsteroidaGraphica::Log->Log(Logger::ERR, "GLEW startup failure", err);
         return Version::Status::BAD_GLEW;
     }
-
+    
+    AsteroidaGraphica::Log->Log("Graphics Initialized!");
     bool alive = true;
     while (alive)
     {
@@ -63,8 +71,12 @@ Version::Status AsteroidaGraphica::Run()
     return Version::Status::OK;
 }
 
-AsteroidaGraphica::~AsteroidaGraphica()
+void AsteroidaGraphica::Deinitialize()
 {
+    AsteroidaGraphica::Log->Log("Physica Thread Stopping...");
+    physicsManager.Stop();
+    physicaThread.wait();
+    AsteroidaGraphica::Log->Log("Physica Thread Stopped.");
 }
 
 // Runs the main application.
@@ -83,10 +95,11 @@ int main(int argc, char* argv[])
     if (runStatus == Version::Status::OK)
     {
         runStatus = asterioidaGraphica->Run();
+        asterioidaGraphica->Deinitialize();
     }
     else
     {
-        AsteroidaGraphica::Log->Log(Logger::ERR, "Could not initialize the logger!");
+        AsteroidaGraphica::Log->Log(Logger::ERR, "Could not initialize the main program!");
     }
 
     // Wait before closing for display purposes.

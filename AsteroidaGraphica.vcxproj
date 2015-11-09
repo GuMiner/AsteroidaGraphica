@@ -127,10 +127,12 @@
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
     <ClInclude Include="Logger.hpp" />
+    <ClInclude Include="Physica.h" />
     <ClInclude Include="Version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
+    <ClCompile Include="Physica.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>
   <ItemGroup>
