@@ -133,6 +133,9 @@
     <ClCompile Include="AsteroidaGraphica.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -10,7 +10,7 @@
 class Logger : sf::NonCopyable
 {
 public:
-    enum LogType { DEBUG, INFO, WARN, ERROR };
+    enum LogType { DEBUG, INFO, WARN, ERR };
 
 private:
     std::ofstream logFile;
@@ -36,7 +36,7 @@ private:
             return "info: ";
         case LogType::WARN:
             return "WARNING: ";
-        case LogType::ERROR:
+        case LogType::ERR:
             return "ERROR: ";
         }
 
@@ -66,6 +66,13 @@ public:
     {
         LogTime();
         logFile << GetLogType(logType) << message << std::endl;
+    }
+
+    // Logs a message out the logger with an error code for diagnosis
+    void Log(LogType logType, const char* message, int errorCode)
+    {
+        LogTime();
+        logFile << GetLogType(logType) << message << ": " << errorCode << std::endl;
     }
 
     // Destructs the logger

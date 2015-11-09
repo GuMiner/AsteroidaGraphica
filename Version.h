@@ -13,7 +13,7 @@ public:
 
     static std::string NAME;
     const static int MAJOR_VERSION = 1;
-    const static int MINOR_VERSION = 10;
+    const static int MINOR_VERSION = 17;
 
-    enum Status { OK = 0, BAD_SETUP = 1};
+    enum Status { OK = 0, BAD_SETUP = 1, BAD_GLEW = 2 };
 };

@@ -5,6 +5,7 @@
 *.lib
 *.dll
 include/
+*.exp
 
 # User-specific files
 *.suo

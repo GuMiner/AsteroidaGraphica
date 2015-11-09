@@ -12,4 +12,5 @@
 ## Referenced Libraries
 ---------------------
 *Full attribution details to be included when this project is made publicly available*
-* SFML
+* SFML 2.3.2
+* GLEW 1.13.0
