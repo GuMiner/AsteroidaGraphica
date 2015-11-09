@@ -12,5 +12,6 @@
 ## Referenced Libraries
 ---------------------
 *Full attribution details to be included when this project is made publicly available*
-* SFML 2.3.2
-* GLEW 1.13.0
+* SFML 2.3.2, general functionality. *TODO license*
+* GLEW 1.13.0, newer OpenGL functionality. *TODO license*
+* *vmath.h* from the OpenGL SuperBible, 6th Ed; basic mathematics. *The samples are in the public domain as per the website & lack of forking restrictions; however, there's no specified license on GitHub*.

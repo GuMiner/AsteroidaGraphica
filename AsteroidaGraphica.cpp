@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
@@ -22,11 +24,61 @@ AsteroidaGraphica::AsteroidaGraphica()
 {
 }
 
+void AsteroidaGraphica::LogGraphicsSettings()
+{
+    std::stringstream graphicsSettings;
+    graphicsSettings << "OpenGL vendor: " << glGetString(GL_VENDOR) << ", version " << glGetString(GL_VERSION) << ", renderer " << glGetString(GL_RENDERER);
+    AsteroidaGraphica::Log->Log(graphicsSettings.str().c_str());
+}
+
+// Ensures our viewport always matches our window size with the proper perspective matrix.
+void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int height)
+{
+    float aspectRatio = (float)width / (float)height;
+    perspectiveMatrix = vmath::perspective(Version::FOV_Y, aspectRatio, Version::NEAR_PLANE, Version::FAR_PLANE);
+    glViewport(0, 0, width, height);
+}
+
 Version::Status AsteroidaGraphica::Initialize()
 {
     glewExperimental = TRUE;
     physicaThread.launch();
     AsteroidaGraphica::Log->Log("Physica Thread Started!");
+
+    return Version::Status::OK;
+}
+
+// Loads first time graphics settings.
+Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
+{
+    // GLEW
+    GLenum err = glewInit();
+    if (err != GLEW_OK)
+    {
+        AsteroidaGraphica::Log->Log(Logger::ERR, "GLEW startup failure", err);
+        return Version::Status::BAD_GLEW;
+    }
+
+    LogGraphicsSettings();
+
+    // Basic OpenGL runtime settings
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+    // Shaders
+    AsteroidaGraphica::Log->Log("Shader creation...");
+    if (!shaderManager.CreateShaderProgram("render", &flatShaderProgram))
+    {
+        return Version::Status::BAD_SHADERS;
+    }
+
+    AsteroidaGraphica::Log->Log("Shader creation done...");
 
     return Version::Status::OK;
 }
@@ -37,17 +89,19 @@ Version::Status AsteroidaGraphica::Run()
     AsteroidaGraphica::Log->Log("Graphics Initializing...");
     sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 4, 3, 0, 0);
     sf::Window window(sf::VideoMode(1366, 768), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
-    GLenum err = glewInit();
-    if (err != GLEW_OK)
+    Version::Status firstTimeSetup = LoadFirstTimeGraphics();
+    if (firstTimeSetup != Version::Status::OK)
     {
-        AsteroidaGraphica::Log->Log(Logger::ERR, "GLEW startup failure", err);
-        return Version::Status::BAD_GLEW;
+        return firstTimeSetup;
     }
-    
+   
+
+    UpdatePerspective(window.getSize().x, window.getSize().y);
     AsteroidaGraphica::Log->Log("Graphics Initialized!");
     bool alive = true;
     while (alive)
     {
+        // Handle all events.
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -57,8 +111,7 @@ Version::Status AsteroidaGraphica::Run()
             }
             else if (event.type == sf::Event::Resized)
             {
-                // Ensure our viewport always matches the screen size.
-                glViewport(0, 0, event.size.width, event.size.height);
+                UpdatePerspective(event.size.width, event.size.height);
             }
         }
 

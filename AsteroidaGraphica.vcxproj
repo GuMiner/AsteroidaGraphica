@@ -128,11 +128,15 @@
     <ClInclude Include="AsteroidaGraphica.h" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="Physica.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="Version.h" />
+    <ClInclude Include="vmath.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
     <ClCompile Include="Physica.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>
   <ItemGroup>
