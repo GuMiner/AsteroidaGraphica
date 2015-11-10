@@ -17,7 +17,7 @@ public:
     // Name and version details
     static std::string NAME;
     const static int MAJOR_VERSION = 1;
-    const static int MINOR_VERSION = 45;
+    const static int MINOR_VERSION = 65;
 
     // Allowable return codes
     enum Status { OK = 0, BAD_SETUP = 1, BAD_GLEW = 2, BAD_SHADERS = 3 };
@@ -26,4 +26,7 @@ public:
     static float FOV_Y;
     static float NEAR_PLANE;
     static float FAR_PLANE;
+
+    // To support 144 Hz monitors.
+    const static int MAX_FRAMERATE = 150;
 };

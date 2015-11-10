@@ -63,6 +63,13 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     LogGraphicsSettings();
 
     // Basic OpenGL runtime settings
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_MULTISAMPLE);
+
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
@@ -122,9 +129,9 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
 Version::Status AsteroidaGraphica::Run()
 {
-    // 24 depth bits, 8 stencil bits, 4x AA, major version 3.
+    // 24 depth bits, 8 stencil bits, 8x AA, major version 3.
     AsteroidaGraphica::Log->Log("Graphics Initializing...");
-    sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 4, 3, 0, 0);
+    sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 3, 0, 0);
     sf::Window window(sf::VideoMode(1366, 768), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
     Version::Status firstTimeSetup = LoadFirstTimeGraphics();
     if (firstTimeSetup != Version::Status::OK)
@@ -136,9 +143,12 @@ Version::Status AsteroidaGraphica::Run()
     AsteroidaGraphica::Log->Log("Graphics Initialized!");
     
     sf::Clock clock;
+    sf::Time clockStartTime;
     bool alive = true;
     while (alive)
     {
+        clockStartTime = clock.getElapsedTime();
+
         // Handle all events.
         sf::Event event;
         while (window.pollEvent(event))
@@ -164,17 +174,29 @@ Version::Status AsteroidaGraphica::Run()
         glClearBufferfv(GL_DEPTH, 0, &one);
 
         // Look down from an angle
-        lookAtMatrix = vmath::lookat(vmath::vec3(10, 10, 10), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
+        lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
         vmath::mat4 result = perspectiveMatrix * lookAtMatrix;
         glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
         // No translation
-        vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 180.0f);
+        vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 45.0f);
         glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
         
         // Render!
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        
+        // Render-static
+        mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         window.display();
+
+        sf::Int64 sleepDelay = (1000000 / Version::MAX_FRAMERATE) - clock.getElapsedTime().asMicroseconds() - clockStartTime.asMicroseconds();
+        if (sleepDelay > 0)
+        {
+            std::chrono::microseconds sleepTime(sleepDelay);
+            std::this_thread::sleep_for(sleepTime);
+        }
     }
 
 
