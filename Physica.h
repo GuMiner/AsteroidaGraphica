@@ -14,7 +14,7 @@ class Physica
 public:
     // Ship positioning
     vmath::vec3 shipPosition;
-    vmath::quaternion shipOrientation;
+    vmath::mat4 shipOrientation;
 
     Physica();
     void Run();

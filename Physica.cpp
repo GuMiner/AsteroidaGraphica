@@ -4,11 +4,11 @@
 
 
 Physica::Physica()
-    : shipOrientation(vmath::radians(0), vmath::vec3(-0.577, -0.577, -0.577))
 {
     isAlive = true;
 
     shipPosition = vmath::vec3(8, 8, 8);
+    shipOrientation = vmath::rotate(1.0f, vmath::vec3(-0.577f, -0.577f, -0.577f));
 
     shipVelocity = vmath::vec3(0, 0, 0);
     shipForce = vmath::vec3(0, 0, 0);

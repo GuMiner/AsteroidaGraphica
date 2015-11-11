@@ -17,7 +17,7 @@ public:
     // Name and version details
     static std::string NAME;
     const static int MAJOR_VERSION = 1;
-    const static int MINOR_VERSION = 88;
+    const static int MINOR_VERSION = 100;
 
     // Allowable return codes
     enum Status { OK = 0, BAD_SETUP = 1, BAD_GLEW = 2, BAD_SHADERS = 3 };
