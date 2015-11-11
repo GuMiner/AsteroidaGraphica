@@ -145,6 +145,7 @@ Version::Status AsteroidaGraphica::Run()
     sf::Clock clock;
     sf::Time clockStartTime;
     bool alive = true;
+    bool paused = false;
     while (alive)
     {
         clockStartTime = clock.getElapsedTime();
@@ -157,39 +158,65 @@ Version::Status AsteroidaGraphica::Run()
             {
                 alive = false;
             }
+            else if (event.type == sf::Event::LostFocus)
+            {
+                paused = true;
+                physicsManager.Pause();
+            }
+            else if (event.type == sf::Event::GainedFocus)
+            {
+                paused = false;
+                physicsManager.Resume();
+            }
             else if (event.type == sf::Event::Resized)
             {
                 UpdatePerspective(event.size.width, event.size.height);
             }
         }
 
-        // TEST CODE TEST CODE
+        // Render, only if non-paused.
+        if (!paused)
+        {
+            // TEST CODE TEST CODE
 
-        // Use our boring shader and clear the display
-        glUseProgram(flatShaderProgram);
+            // Use our boring shader and clear the display
+            glUseProgram(flatShaderProgram);
 
-        const GLfloat color[] = { 0, 0, 0, 1 };
-        const GLfloat one = 1.0f;
-        glClearBufferfv(GL_COLOR, 0, color);
-        glClearBufferfv(GL_DEPTH, 0, &one);
+            const GLfloat color[] = { 0, 0, 0, 1 };
+            const GLfloat one = 1.0f;
+            glClearBufferfv(GL_COLOR, 0, color);
+            glClearBufferfv(GL_DEPTH, 0, &one);
 
-        // Look down from an angle
-        lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
-        vmath::mat4 result = perspectiveMatrix * lookAtMatrix;
-        glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
+            // Look down from an angle
+            //lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
+            vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation.asMatrix(); //lookAtMatrix;
+            glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
-        // No translation
-        vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 45.0f);
-        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-        
-        // Render!
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-        
-        // Render-static
-        mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
-        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-        window.display();
+            // No translation
+            vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 90.0f);
+            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+
+            // Render!
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+            // Render-static
+            mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+            mv_matrix = vmath::translate(18.0f, 18.0f, 0.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+            mv_matrix = vmath::translate(-18.0f, -18.0f, 0.0f) * vmath::rotate(((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 90.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+            mv_matrix = vmath::translate(18.0f, -18.0f, 0.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+            window.display();
+        }
 
         sf::Int64 sleepDelay = (1000000 / Version::MAX_FRAMERATE) - clock.getElapsedTime().asMicroseconds() - clockStartTime.asMicroseconds();
         if (sleepDelay > 0)
