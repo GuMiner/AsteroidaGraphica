@@ -22,32 +22,32 @@
 //
 ////////////////////////////////////////////////////////////
 
+// MODIFIED: This file has been modified (2015) in several ways to be used with AsteroidaGraphica
+//  Modifications are released under the same license as the original license. 
+
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <cmath>
+#include "Text.hpp"
 
-
-namespace sf
+namespace sfmlMod
 {
 ////////////////////////////////////////////////////////////
 Text::Text() :
-m_string            (),
+//m_string            (),
 m_font              (NULL),
 m_characterSize     (30),
 m_style             (Regular),
-m_color             (255, 255, 255),
-m_vertices          (Triangles),
+//m_color             (255, 255, 255),
+//m_vertices          (Triangles),
 m_bounds            (),
 m_geometryNeedUpdate(false)
 {
 
 }
 
-
+/*
 ////////////////////////////////////////////////////////////
 Text::Text(const String& string, const Font& font, unsigned int characterSize) :
 m_string            (string),
@@ -71,7 +71,7 @@ void Text::setString(const String& string)
         m_string = string;
         m_geometryNeedUpdate = true;
     }
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ void Text::setCharacterSize(unsigned int size)
 
 
 ////////////////////////////////////////////////////////////
-void Text::setStyle(Uint32 style)
+void Text::setStyle(unsigned int style)
 {
     if (m_style != style)
     {
@@ -105,7 +105,7 @@ void Text::setStyle(Uint32 style)
         m_geometryNeedUpdate = true;
     }
 }
-
+/*
 
 ////////////////////////////////////////////////////////////
 void Text::setColor(const Color& color)
@@ -129,7 +129,7 @@ void Text::setColor(const Color& color)
 const String& Text::getString() const
 {
     return m_string;
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////
@@ -147,20 +147,21 @@ unsigned int Text::getCharacterSize() const
 
 
 ////////////////////////////////////////////////////////////
-Uint32 Text::getStyle() const
+unsigned int Text::getStyle() const
 {
     return m_style;
 }
 
 
 ////////////////////////////////////////////////////////////
-const Color& Text::getColor() const
+/*const Color& Text::getColor() const
 {
     return m_color;
-}
+}*/
 
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+/*
 Vector2f Text::findCharacterPos(std::size_t index) const
 {
     // Make sure that we have a valid font
@@ -178,10 +179,10 @@ Vector2f Text::findCharacterPos(std::size_t index) const
 
     // Compute the position
     Vector2f position;
-    Uint32 prevChar = 0;
+    unsigned int prevChar = 0;
     for (std::size_t i = 0; i < index; ++i)
     {
-        Uint32 curChar = m_string[i];
+        unsigned int curChar = m_string[i];
 
         // Apply the kerning offset
         position.x += static_cast<float>(m_font->getKerning(prevChar, curChar, m_characterSize));
@@ -203,7 +204,7 @@ Vector2f Text::findCharacterPos(std::size_t index) const
     position = getTransform().transformPoint(position);
 
     return position;
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////
@@ -216,14 +217,14 @@ FloatRect Text::getLocalBounds() const
 
 
 ////////////////////////////////////////////////////////////
-FloatRect Text::getGlobalBounds() const
+/*FloatRect Text::getGlobalBounds() const
 {
     return getTransform().transformRect(getLocalBounds());
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////
-void Text::draw(RenderTarget& target, RenderStates states) const
+/*void Text::draw(RenderTarget& target, RenderStates states) const
 {
     if (m_font)
     {
@@ -231,15 +232,15 @@ void Text::draw(RenderTarget& target, RenderStates states) const
 
         states.transform *= getTransform();
         states.texture = &m_font->getTexture(m_characterSize);
-        target.draw(m_vertices, states);
+        // TODO TODO remove draw as needed target.draw(m_vertices, states);
     }
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////
 void Text::ensureGeometryUpdate() const
 {
-    // Do nothing, if geometry has not changed
+   /* // Do nothing, if geometry has not changed
     if (!m_geometryNeedUpdate)
         return;
 
@@ -283,10 +284,10 @@ void Text::ensureGeometryUpdate() const
     float minY = static_cast<float>(m_characterSize);
     float maxX = 0.f;
     float maxY = 0.f;
-    Uint32 prevChar = 0;
+    unsigned int prevChar = 0;
     for (std::size_t i = 0; i < m_string.getSize(); ++i)
     {
-        Uint32 curChar = m_string[i];
+        unsigned int curChar = m_string[i];
 
         // Apply the kerning offset
         x += static_cast<float>(m_font->getKerning(prevChar, curChar, m_characterSize));
@@ -405,7 +406,7 @@ void Text::ensureGeometryUpdate() const
     m_bounds.left = minX;
     m_bounds.top = minY;
     m_bounds.width = maxX - minX;
-    m_bounds.height = maxY - minY;
+    m_bounds.height = maxY - minY;*/
 }
 
 } // namespace sf

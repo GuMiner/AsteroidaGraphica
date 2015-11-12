@@ -53,6 +53,12 @@
     <ClInclude Include="Text.hpp">
       <Filter>Header Files\SFML-based</Filter>
     </ClInclude>
+    <ClInclude Include="InputStream.hpp">
+      <Filter>Header Files\SFML-based</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.hpp">
+      <Filter>Header Files\SFML-based</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -66,6 +72,12 @@
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files\SFML-based</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\SFML-based</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

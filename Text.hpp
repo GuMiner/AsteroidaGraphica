@@ -32,21 +32,20 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/String.hpp>
 #include <string>
 #include <vector>
+#include "Font.hpp"
 
-
-namespace sf
+namespace sfmlMod
 {
 ////////////////////////////////////////////////////////////
 /// \brief Graphical text that can be drawn to a render target
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Text : public Drawable, public Transformable
+class Text// : public Drawable, public Transformable
 {
 public:
 
@@ -86,7 +85,7 @@ public:
     /// \param characterSize  Base size of characters, in pixels
     ///
     ////////////////////////////////////////////////////////////
-    Text(const String& string, const Font& font, unsigned int characterSize = 30);
+   // Text(const String& string, const Font& font, unsigned int characterSize = 30);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the text's string
@@ -107,7 +106,7 @@ public:
     /// \see getString
     ///
     ////////////////////////////////////////////////////////////
-    void setString(const String& string);
+   // void setString(const String& string);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the text's font
@@ -157,7 +156,7 @@ public:
     /// \see getStyle
     ///
     ////////////////////////////////////////////////////////////
-    void setStyle(Uint32 style);
+    void setStyle(unsigned int style);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the global color of the text
@@ -169,7 +168,7 @@ public:
     /// \see getColor
     ///
     ////////////////////////////////////////////////////////////
-    void setColor(const Color& color);
+  //  void setColor(const Color& color);
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the text's string
@@ -188,7 +187,7 @@ public:
     /// \see setString
     ///
     ////////////////////////////////////////////////////////////
-    const String& getString() const;
+  //  const String& getString() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the text's font
@@ -222,7 +221,7 @@ public:
     /// \see setStyle
     ///
     ////////////////////////////////////////////////////////////
-    Uint32 getStyle() const;
+    unsigned int  getStyle() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the global color of the text
@@ -232,7 +231,7 @@ public:
     /// \see setColor
     ///
     ////////////////////////////////////////////////////////////
-    const Color& getColor() const;
+  //  const Color& getColor() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the position of the \a index-th character
@@ -249,7 +248,7 @@ public:
     /// \return Position of the character
     ///
     ////////////////////////////////////////////////////////////
-    Vector2f findCharacterPos(std::size_t index) const;
+   // Vector2f findCharacterPos(std::size_t index) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the local bounding rectangle of the entity
@@ -288,7 +287,7 @@ private:
     /// \param states Current render states
     ///
     ////////////////////////////////////////////////////////////
-    virtual void draw(RenderTarget& target, RenderStates states) const;
+  //  virtual void draw(RenderTarget& target, RenderStates states) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Make sure the text's geometry is updated
@@ -302,12 +301,12 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    String              m_string;             ///< String to display
+ //   String              m_string;             ///< String to display
     const Font*         m_font;               ///< Font used to display the string
     unsigned int        m_characterSize;      ///< Base size of characters, in pixels
-    Uint32              m_style;              ///< Text style (see Style enum)
-    Color               m_color;              ///< Text color
-    mutable VertexArray m_vertices;           ///< Vertex array containing the text's geometry
+    unsigned int              m_style;              ///< Text style (see Style enum)
+ //   Color               m_color;              ///< Text color
+ //   mutable VertexArray m_vertices;           ///< Vertex array containing the text's geometry
     mutable FloatRect   m_bounds;             ///< Bounding rectangle of the text (in local coordinates)
     mutable bool        m_geometryNeedUpdate; ///< Does the geometry need to be recomputed?
 };

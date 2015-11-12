@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Graphics/Glyph.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -38,9 +37,10 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "Glyph.hpp"
 
 
-namespace sf
+namespace sfmlMod
 {
 class InputStream;
 
@@ -48,7 +48,7 @@ class InputStream;
 /// \brief Class for loading and manipulating character fonts
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Font
+class Font
 {
 public:
 
@@ -174,7 +174,7 @@ public:
     /// \return The glyph corresponding to \a codePoint and \a characterSize
     ///
     ////////////////////////////////////////////////////////////
-    const Glyph& getGlyph(Uint32 codePoint, unsigned int characterSize, bool bold) const;
+    const Glyph& getGlyph(unsigned int codePoint, unsigned int characterSize, bool bold) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the kerning offset of two glyphs
@@ -192,7 +192,7 @@ public:
     /// \return Kerning value for \a first and \a second, in pixels
     ///
     ////////////////////////////////////////////////////////////
-    float getKerning(Uint32 first, Uint32 second, unsigned int characterSize) const;
+    float getKerning(unsigned int first, unsigned int second, unsigned int characterSize) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the line spacing
@@ -248,7 +248,7 @@ public:
     /// \return Texture containing the glyphs of the requested size
     ///
     ////////////////////////////////////////////////////////////
-    const Texture& getTexture(unsigned int characterSize) const;
+    // const Texture& getTexture(unsigned int characterSize) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Overload of assignment operator
@@ -278,7 +278,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Types
     ////////////////////////////////////////////////////////////
-    typedef std::map<Uint32, Glyph> GlyphTable; ///< Table mapping a codepoint to its glyph
+    typedef std::map<unsigned int, Glyph> GlyphTable; ///< Table mapping a codepoint to its glyph
 
     ////////////////////////////////////////////////////////////
     /// \brief Structure defining a page of glyphs
@@ -289,7 +289,7 @@ private:
         Page();
 
         GlyphTable       glyphs;  ///< Table mapping code points to their corresponding glyph
-        Texture          texture; ///< Texture containing the pixels of the glyphs
+        // Texture          texture; ///< Texture containing the pixels of the glyphs
         unsigned int     nextRow; ///< Y position of the next new row in the texture
         std::vector<Row> rows;    ///< List containing the position of all the existing rows
     };
@@ -310,7 +310,7 @@ private:
     /// \return The glyph corresponding to \a codePoint and \a characterSize
     ///
     ////////////////////////////////////////////////////////////
-    Glyph loadGlyph(Uint32 codePoint, unsigned int characterSize, bool bold) const;
+    Glyph loadGlyph(unsigned int codePoint, unsigned int characterSize, bool bold) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Find a suitable rectangle within the texture for a glyph
@@ -348,7 +348,7 @@ private:
     int*                       m_refCount;    ///< Reference counter used by implicit sharing
     Info                       m_info;        ///< Information about the font
     mutable PageTable          m_pages;       ///< Table containing the glyphs pages by character size
-    mutable std::vector<Uint8> m_pixelBuffer; ///< Pixel buffer holding a glyph's pixels before being written to the texture
+    mutable std::vector<unsigned char> m_pixelBuffer; ///< Pixel buffer holding a glyph's pixels before being written to the texture
     #ifdef SFML_SYSTEM_ANDROID
     void*                      m_stream; ///< Asset file streamer (if loaded from file)
     #endif

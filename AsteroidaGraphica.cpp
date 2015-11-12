@@ -7,6 +7,7 @@
 #include "Vertex.h"
 
 #pragma comment(lib, "opengl32")
+#pragma comment(lib, "lib/freetype/freetype")
 
 #ifndef _DEBUG
 #pragma comment(lib, "lib/glew32.lib")
