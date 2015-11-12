@@ -126,10 +126,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
+    <ClInclude Include="Font.hpp" />
+    <ClInclude Include="Glyph.hpp" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="StringUtils.hpp" />
+    <ClInclude Include="Text.hpp" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="vmath.hpp" />

@@ -188,8 +188,10 @@ Version::Status AsteroidaGraphica::Run()
             glClearBufferfv(GL_DEPTH, 0, &one);
 
             // Rotate the camera to be in the proper location based on the ship.
-            physicsManager.shipOrientation *= vmath::rotate(0.0001f, vmath::vec3(0, 0, 1));
-            vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation;
+            // physicsManager.shipOrientation *= vmath::rotate(0.0001f, vmath::vec3(0, 0, 1));
+            // vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation;
+            lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
+            vmath::mat4 result = perspectiveMatrix * lookAtMatrix;
             glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
             // No translation
