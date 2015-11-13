@@ -110,49 +110,6 @@ public:
     bool loadFromFile(const std::string& filename);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Load the font from a file in memory
-    ///
-    /// The supported font formats are: TrueType, Type 1, CFF,
-    /// OpenType, SFNT, X11 PCF, Windows FNT, BDF, PFR and Type 42.
-    ///
-    /// \warning SFML cannot preload all the font data in this
-    /// function, so the buffer pointed by \a data has to remain
-    /// valid until the sf::Font object loads a new font or
-    /// is destroyed.
-    ///
-    /// \param data        Pointer to the file data in memory
-    /// \param sizeInBytes Size of the data to load, in bytes
-    ///
-    /// \return True if loading succeeded, false if it failed
-    ///
-    /// \see loadFromFile, loadFromStream
-    ///
-    ////////////////////////////////////////////////////////////
-    bool loadFromMemory(const void* data, std::size_t sizeInBytes);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Load the font from a custom stream
-    ///
-    /// The supported font formats are: TrueType, Type 1, CFF,
-    /// OpenType, SFNT, X11 PCF, Windows FNT, BDF, PFR and Type 42.
-    /// Warning: SFML cannot preload all the font data in this
-    /// function, so the contents of \a stream have to remain
-    /// valid as long as the font is used.
-    ///
-    /// \warning SFML cannot preload all the font data in this
-    /// function, so the stream has to remain accessible until
-    /// the sf::Font object loads a new font or is destroyed.
-    ///
-    /// \param stream Source stream to read from
-    ///
-    /// \return True if loading succeeded, false if it failed
-    ///
-    /// \see loadFromFile, loadFromMemory
-    ///
-    ////////////////////////////////////////////////////////////
-    bool loadFromStream(InputStream& stream);
-
-    ////////////////////////////////////////////////////////////
     /// \brief Get the font information
     ///
     /// \return A structure that holds the font information
@@ -349,9 +306,6 @@ private:
     Info                       m_info;        ///< Information about the font
     mutable PageTable          m_pages;       ///< Table containing the glyphs pages by character size
     mutable std::vector<unsigned char> m_pixelBuffer; ///< Pixel buffer holding a glyph's pixels before being written to the texture
-    #ifdef SFML_SYSTEM_ANDROID
-    void*                      m_stream; ///< Asset file streamer (if loaded from file)
-    #endif
 };
 
 } // namespace sf

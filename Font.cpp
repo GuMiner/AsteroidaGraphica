@@ -35,6 +35,8 @@
 #include FT_BITMAP_H
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
+#include "AsteroidaGraphica.h"
 #include "Font.hpp"
 #include "InputStream.hpp"
 
@@ -101,6 +103,8 @@ Font::~Font()
 ////////////////////////////////////////////////////////////
 bool Font::loadFromFile(const std::string& filename)
 {
+    std::stringstream errorStream;
+
     // Cleanup the previous resources
     cleanup();
     m_refCount = new int(1);
@@ -111,7 +115,8 @@ bool Font::loadFromFile(const std::string& filename)
     FT_Library library;
     if (FT_Init_FreeType(&library) != 0)
     {
-      //  err() << "Failed to load font \"" << filename << "\" (failed to initialize FreeType)" << std::endl;
+        errorStream << "Failed to load font \"" << filename << "\" (failed to initialize FreeType)";
+        AsteroidaGraphica::Log->Log(errorStream.str().c_str());
         return false;
     }
     m_library = library;
@@ -120,14 +125,16 @@ bool Font::loadFromFile(const std::string& filename)
     FT_Face face;
     if (FT_New_Face(static_cast<FT_Library>(m_library), filename.c_str(), 0, &face) != 0)
     {
-       // err() << "Failed to load font \"" << filename << "\" (failed to create the font face)" << std::endl;
+        errorStream << "Failed to load font \"" << filename << "\" (failed to create the font face)";
+        AsteroidaGraphica::Log->Log(errorStream.str().c_str());
         return false;
     }
 
     // Select the unicode character map
     if (FT_Select_Charmap(face, FT_ENCODING_UNICODE) != 0)
     {
-      //  err() << "Failed to load font \"" << filename << "\" (failed to set the Unicode character set)" << std::endl;
+        errorStream << "Failed to load font \"" << filename << "\" (failed to set the Unicode character set)";
+        AsteroidaGraphica::Log->Log(errorStream.str().c_str());
         FT_Done_Face(face);
         return false;
     }
@@ -140,117 +147,6 @@ bool Font::loadFromFile(const std::string& filename)
 
     return true;
 }
-
-
-////////////////////////////////////////////////////////////
-bool Font::loadFromMemory(const void* data, std::size_t sizeInBytes)
-{
-    // Cleanup the previous resources
-    cleanup();
-    m_refCount = new int(1);
-
-    // Initialize FreeType
-    // Note: we initialize FreeType for every font instance in order to avoid having a single
-    // global manager that would create a lot of issues regarding creation and destruction order.
-    FT_Library library;
-    if (FT_Init_FreeType(&library) != 0)
-    {
-      //  err() << "Failed to load font from memory (failed to initialize FreeType)" << std::endl;
-        return false;
-    }
-    m_library = library;
-
-    // Load the new font face from the specified file
-    FT_Face face;
-    if (FT_New_Memory_Face(static_cast<FT_Library>(m_library), reinterpret_cast<const FT_Byte*>(data), static_cast<FT_Long>(sizeInBytes), 0, &face) != 0)
-    {
-    //    err() << "Failed to load font from memory (failed to create the font face)" << std::endl;
-        return false;
-    }
-
-    // Select the Unicode character map
-    if (FT_Select_Charmap(face, FT_ENCODING_UNICODE) != 0)
-    {
-    //    err() << "Failed to load font from memory (failed to set the Unicode character set)" << std::endl;
-        FT_Done_Face(face);
-        return false;
-    }
-
-    // Store the loaded font in our ugly void* :)
-    m_face = face;
-
-    // Store the font information
-    m_info.family = face->family_name ? face->family_name : std::string();
-
-    return true;
-}
-
-
-////////////////////////////////////////////////////////////
-bool Font::loadFromStream(InputStream& stream)
-{
-    // Cleanup the previous resources
-    cleanup();
-    m_refCount = new int(1);
-
-    // Initialize FreeType
-    // Note: we initialize FreeType for every font instance in order to avoid having a single
-    // global manager that would create a lot of issues regarding creation and destruction order.
-    FT_Library library;
-    if (FT_Init_FreeType(&library) != 0)
-    {
-        // err() << "Failed to load font from stream (failed to initialize FreeType)" << std::endl;
-        return false;
-    }
-    m_library = library;
-
-    // Make sure that the stream's reading position is at the beginning
-    stream.seek(0);
-
-    // Prepare a wrapper for our stream, that we'll pass to FreeType callbacks
-    FT_StreamRec* rec = new FT_StreamRec;
-    std::memset(rec, 0, sizeof(*rec));
-    rec->base               = NULL;
-    rec->size               = static_cast<unsigned long>(stream.getSize());
-    rec->pos                = 0;
-    rec->descriptor.pointer = &stream;
-    rec->read               = &read;
-    rec->close              = &close;
-
-    // Setup the FreeType callbacks that will read our stream
-    FT_Open_Args args;
-    args.flags  = FT_OPEN_STREAM;
-    args.stream = rec;
-    args.driver = 0;
-
-    // Load the new font face from the specified stream
-    FT_Face face;
-    if (FT_Open_Face(static_cast<FT_Library>(m_library), &args, 0, &face) != 0)
-    {
-        // err() << "Failed to load font from stream (failed to create the font face)" << std::endl;
-        delete rec;
-        return false;
-    }
-
-    // Select the Unicode character map
-    if (FT_Select_Charmap(face, FT_ENCODING_UNICODE) != 0)
-    {
-        // err() << "Failed to load font from stream (failed to set the Unicode character set)" << std::endl;
-        FT_Done_Face(face);
-        delete rec;
-        return false;
-    }
-
-    // Store the loaded font in our ugly void* :)
-    m_face = face;
-    m_streamRec = rec;
-
-    // Store the font information
-    m_info.family = face->family_name ? face->family_name : std::string();
-
-    return true;
-}
-
 
 ////////////////////////////////////////////////////////////
 const Font::Info& Font::getInfo() const

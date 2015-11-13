@@ -17,10 +17,10 @@ public:
     // Name and version details
     static std::string NAME;
     const static int MAJOR_VERSION = 1;
-    const static int MINOR_VERSION = 115;
+    const static int MINOR_VERSION = 116;
 
     // Allowable return codes
-    enum Status { OK = 0, BAD_SETUP = 1, BAD_GLEW = 2, BAD_SHADERS = 3 };
+    enum Status { OK = 0, BAD_SETUP = 1, BAD_GLEW = 2, BAD_SHADERS = 3, BAD_FONT = 4 };
     
     // Graphics viewport settings
     static float FOV_Y;

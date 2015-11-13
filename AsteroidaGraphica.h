@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <thread>
+#include "Font.hpp"
 #include "Logger.hpp"
 #include "Physica.h"
 #include "ShaderManager.h"
@@ -14,6 +15,10 @@ class AsteroidaGraphica
     vmath::mat4 perspectiveMatrix;
     GLuint flatShaderProgram;
 
+    // TEST FONT
+    sfmlMod::Font displayFont;
+
+    // TEST OBJECTS
     vmath::mat4 lookAtMatrix;
     GLuint vao;
     GLuint pointBuffer;
