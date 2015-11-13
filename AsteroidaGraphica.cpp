@@ -4,11 +4,9 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include "AsteroidaGraphica.h"
-#include "Font.hpp"
 #include "Vertex.h"
 
 #pragma comment(lib, "opengl32")
-#pragma comment(lib, "lib/freetype/freetype")
 
 #ifndef _DEBUG
 #pragma comment(lib, "lib/glew32.lib")
@@ -93,10 +91,10 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     AsteroidaGraphica::Log->Log("Shader creation done...");
 
     // FONT TEST CODE
-    if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
+    /*if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
     {
         return Version::Status::BAD_FONT;
-    }
+    }*/
 
     // TEST CODE TEST CODE
     glGenVertexArrays(1, &vao);

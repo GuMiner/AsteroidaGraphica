@@ -126,25 +126,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
-    <ClInclude Include="Font.hpp" />
-    <ClInclude Include="Glyph.hpp" />
-    <ClInclude Include="InputStream.hpp" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="Physica.h" />
-    <ClInclude Include="Rect.hpp" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="StringUtils.hpp" />
-    <ClInclude Include="Text.hpp" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="vmath.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
-    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>
   <ItemGroup>

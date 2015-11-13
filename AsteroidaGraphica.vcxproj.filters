@@ -12,12 +12,6 @@
     <Filter Include="Content">
       <UniqueIdentifier>{2eb62597-21e2-44b9-b632-1036516007ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\SFML-based">
-      <UniqueIdentifier>{cc8b1cd3-1878-4b51-8f2c-976ee521d37d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SFML-based">
-      <UniqueIdentifier>{6379e771-cc3b-427b-9cd7-0bad3fc65ba3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h">
@@ -44,21 +38,6 @@
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Font.hpp">
-      <Filter>Header Files\SFML-based</Filter>
-    </ClInclude>
-    <ClInclude Include="Glyph.hpp">
-      <Filter>Header Files\SFML-based</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.hpp">
-      <Filter>Header Files\SFML-based</Filter>
-    </ClInclude>
-    <ClInclude Include="InputStream.hpp">
-      <Filter>Header Files\SFML-based</Filter>
-    </ClInclude>
-    <ClInclude Include="Rect.hpp">
-      <Filter>Header Files\SFML-based</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -72,12 +51,6 @@
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source Files\SFML-based</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Source Files\SFML-based</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
