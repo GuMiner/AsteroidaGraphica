@@ -17,13 +17,16 @@ class AsteroidaGraphica
 
     vmath::mat4 perspectiveMatrix;
     GLuint flatShaderProgram;
+    GLint mv_location, proj_location;
+
+    GLuint textureShaderProgram;
+    GLint mvTexLocation, projTexLocation;
     
     // TEST OBJECTS
     vmath::mat4 lookAtMatrix;
     GLuint vao;
     GLuint pointBuffer;
     GLsizei vertexCount;
-    GLint mv_location, proj_location;
 
     ImageManager imageManager;
     ShaderManager shaderManager;

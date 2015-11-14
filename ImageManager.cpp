@@ -20,7 +20,7 @@ GLuint ImageManager::AddImage(const char* filename)
     int width = 0;
     int height = 0;
     int channels = 0;
-    unsigned char* imageData = nullptr;// stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
+    unsigned char* imageData = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
     if (imageData && width && height)
     {
         // Create a new texture for the image.
@@ -29,8 +29,8 @@ GLuint ImageManager::AddImage(const char* filename)
 
         // Load in the image data to this texture.
         glBindTexture(GL_TEXTURE_2D, newTextureId);
-        glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, width, height);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, imageData);
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_BYTE, imageData);
 
         imageTextures[newTextureId] = ImageTexture(newTextureId, imageData, width, height);
         return newTextureId;
@@ -38,7 +38,7 @@ GLuint ImageManager::AddImage(const char* filename)
     else
     {
         std::stringstream errStream;
-        errStream << "Failed to load image:" << "";// stbi_failure_reason();
+        errStream << "Failed to load image:" << stbi_failure_reason();
         AsteroidaGraphica::Log->Log(Logger::ERR,  errStream.str().c_str());
     }
 
@@ -51,6 +51,6 @@ ImageManager::~ImageManager()
     for (std::map<GLuint, ImageTexture>::iterator iterator = imageTextures.begin(); iterator != imageTextures.end(); iterator++)
     {
         glDeleteTextures(1, &iterator->first);
-        //stbi_image_free(iterator->second.imageData);
+        stbi_image_free(iterator->second.imageData);
     }
 }

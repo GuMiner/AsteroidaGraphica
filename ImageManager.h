@@ -2,7 +2,7 @@
 
 #include <map>
 #include <GL/glew.h>
-//#include <stb/stb_image.h>
+#include <stb/stb_image.h>
 #include "ImageTexture.h"
 
 // Holds *all* of the texture images and communicates using 'stb_image'. 

@@ -70,7 +70,7 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_MULTISAMPLE);
 
-    glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE); // TODO make this configurable to turn on and off.
     glFrontFace(GL_CW);
 
     glEnable(GL_DEPTH_TEST);
@@ -85,10 +85,18 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     {
         return Version::Status::BAD_SHADERS;
     }
+
+    if (!shaderManager.CreateShaderProgram("texRender", &textureShaderProgram))
+    {
+        return Version::Status::BAD_SHADERS;
+    }
+
     mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
     proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
+    mvTexLocation = glGetUniformLocation(textureShaderProgram, "mv_matrix");
+    projTexLocation = glGetUniformLocation(textureShaderProgram, "proj_matrix");
 
-    AsteroidaGraphica::Log->Log("Shader creation done...");
+    AsteroidaGraphica::Log->Log("Shader creation done!");
 
     AsteroidaGraphica::Log->Log("Image loading...");
     GLuint compassTexture = imageManager.AddImage("images/DirectionDial.png");
@@ -97,7 +105,9 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return Version::Status::BAD_IMAGES;
     }
 
-    shipHud.Initialize(compassTexture);
+    AsteroidaGraphica::Log->Log("Image loading done!");
+
+    shipHud.Initialize(compassTexture, mvTexLocation, projTexLocation);
 
     // FONT TEST CODE
     /*if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
@@ -112,13 +122,6 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     // Setup of vertex transfer (note we're using the "vertex" object in CodeGell)
     glGenBuffers(1, &pointBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
-
-    // Setup of how the GPU will understand our data we send to it.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, x));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, r));
-    glEnableVertexAttribArray(1);
 
     // Send some random data to the GPU
     // This was a reload operation, changes were performed that must be flushed to the GPU.
@@ -136,7 +139,8 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     pVertices[8].Set(0, 0, 0, 1, 1, 1);
 
     vertexCount = 9;
-    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorVertex), pVertices, GL_STATIC_DRAW);
+    colorVertex::TransferToOpenGl(pVertices, vertexCount);
+    
     delete[] pVertices;
     
     return Version::Status::OK;
@@ -192,7 +196,8 @@ Version::Status AsteroidaGraphica::Run()
         // Render, only if non-paused.
         if (!paused)
         {
-            // TEST CODE TEST CODE
+            glUseProgram(textureShaderProgram);
+            shipHud.RenderHud(perspectiveMatrix, clock);
 
             // Use our boring shader and clear the display
             glUseProgram(flatShaderProgram);

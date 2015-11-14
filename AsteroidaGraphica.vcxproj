@@ -145,6 +145,7 @@
     <ClCompile Include="ShipHud.cpp" />
     <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="Version.cpp" />
+    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
