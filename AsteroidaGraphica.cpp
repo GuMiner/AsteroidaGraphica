@@ -88,10 +88,16 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return Version::Status::BAD_SHADERS;
     }
 
+    if (!shaderManager.CreateShaderProgram("flatTexRender", &flatTextureShaderProgram))
+    {
+        return Version::Status::BAD_SHADERS;
+    }
+
     mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
     proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
     mvTexLocation = glGetUniformLocation(textureShaderProgram, "mv_matrix");
     projTexLocation = glGetUniformLocation(textureShaderProgram, "proj_matrix");
+    projFlatTexLocation = glGetUniformLocation(flatTextureShaderProgram, "proj_matrix");
 
     AsteroidaGraphica::Log->Log("Shader creation done!");
 
@@ -139,7 +145,7 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     
     delete[] pVertices;
 
-    shipHud.Initialize(compassTexture, mvTexLocation, projTexLocation);
+    shipHud.Initialize(compassTexture, projFlatTexLocation);
     
     return Version::Status::OK;
 }
@@ -199,10 +205,7 @@ Version::Status AsteroidaGraphica::Run()
             const GLfloat one = 1.0f;
             glClearBufferfv(GL_COLOR, 0, color);
             glClearBufferfv(GL_DEPTH, 0, &one);
-
-            glUseProgram(textureShaderProgram);
-            shipHud.RenderHud(perspectiveMatrix, clock);
-
+            
             /*
             // Use our boring shader and clear the display
             glUseProgram(flatShaderProgram);
@@ -253,6 +256,10 @@ Version::Status AsteroidaGraphica::Run()
             glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
             
+
+            // Draws our HUD dials
+            glUseProgram(flatTextureShaderProgram);
+            shipHud.RenderHud(perspectiveMatrix, clock);
 
             window.display();
         }

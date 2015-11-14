@@ -6,7 +6,7 @@
 class ShipHud
 {
     GLuint compassTexture;
-    GLint mvLocation, projLocation;
+    GLint projLocation;
 
     // Vertex buffer for displaying 
     GLuint vao;
@@ -15,7 +15,7 @@ class ShipHud
 
 public:
     ShipHud();
-    void Initialize(GLuint compassTexture, GLint mvLocation, GLint projLocation);
+    void Initialize(GLuint compassTexture, GLint projLocation);
     void RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock);
 
     ~ShipHud();
