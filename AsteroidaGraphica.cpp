@@ -32,12 +32,24 @@ void AsteroidaGraphica::LogGraphicsSettings()
     AsteroidaGraphica::Log->Log(graphicsSettings.str().c_str());
 }
 
-// Ensures our viewport always matches our window size with the proper perspective matrix.
+// Ensures our viewport letterboxes when it doesn't match the 16:9 aspect ratio.
 void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int height)
 {
-    float aspectRatio = (float)width / (float)height;
-    perspectiveMatrix = vmath::perspective(Version::FOV_Y, aspectRatio, Version::NEAR_PLANE, Version::FAR_PLANE);
-    glViewport(0, 0, width, height);
+    // Letterboxing is done at the top and bottom.
+    float necessaryWidth = (float)height * Version::ASPECT;
+    if (necessaryWidth > width)
+    {
+        // Letterbox the top and the bottom of the screen so that the aspect ratio is met
+        float effectiveHeight = (float)width / Version::ASPECT;
+        float heightDelta = ((float)height - effectiveHeight) / 2.0f;
+        glViewport(0, (int)heightDelta, (GLsizei)width, (GLsizei)effectiveHeight);
+    }
+    else
+    {
+        // Letterbox the left and the right so that the aspect ratio is met.
+        float widthDelta = ((float)width - necessaryWidth) / 2.0f;
+        glViewport((int)widthDelta, 0, (GLsizei)necessaryWidth, (GLsizei)height);
+    }
 }
 
 Version::Status AsteroidaGraphica::Initialize()
@@ -76,6 +88,9 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    // Perspective display
+    perspectiveMatrix = vmath::perspective(Version::FOV_Y, Version::ASPECT, Version::NEAR_PLANE, Version::FAR_PLANE);
+
     // Shaders
     AsteroidaGraphica::Log->Log("Shader creation...");
     if (!shaderManager.CreateShaderProgram("render", &flatShaderProgram))
@@ -101,6 +116,7 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Shader creation done!");
 
+    // Images
     AsteroidaGraphica::Log->Log("Image loading...");
     GLuint compassTexture = imageManager.AddImage("images/DirectionDial.png");
     if (compassTexture == 0)
@@ -155,13 +171,13 @@ Version::Status AsteroidaGraphica::Run()
     // 24 depth bits, 8 stencil bits, 8x AA, major version 3.
     AsteroidaGraphica::Log->Log("Graphics Initializing...");
     sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 3, 0, 0);
-    sf::Window window(sf::VideoMode(1366, 768), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
+    sf::Window window(sf::VideoMode(1280, 720), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
     Version::Status firstTimeSetup = LoadFirstTimeGraphics();
     if (firstTimeSetup != Version::Status::OK)
     {
         return firstTimeSetup;
     }
-   
+
     UpdatePerspective(window.getSize().x, window.getSize().y);
     AsteroidaGraphica::Log->Log("Graphics Initialized!");
     

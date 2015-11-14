@@ -1,0 +1,46 @@
+Debug Code
+
+// This file contains code that is useful for debugging, but shouldn't be compiled into the main program.
+// Essentially, this just saves typing it in repeatedly.
+
+/////////////////////// Moving around entities that are statically-positioned ///////////////////////
+
+#include <SFML\Window.hpp>
+
+float depth = -4;
+float xMax = 1;
+float xMin = 0;
+float yMax = 1;
+float yMin = 0;
+
+float speed = 0.01f;
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+{
+    depth -= speed;
+}
+else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+{
+    depth += speed;
+}
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+{
+    xMin -= speed;
+    xMax -= speed;
+}
+else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+{
+    xMin += speed;
+    xMax += speed;
+}
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+{
+    yMin += speed;
+    yMax += speed;
+}
+else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+{
+    yMin -= speed;
+    yMax -= speed;
+}

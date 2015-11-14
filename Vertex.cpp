@@ -37,6 +37,7 @@ void colorTextureVertex::Set(float x, float y, float z, float r, float g, float 
     this->v = v;
 }
 
+
 // Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
 void colorTextureVertex::TransferToOpenGl(colorTextureVertex* vertices, GLsizei vertexCount)
 {

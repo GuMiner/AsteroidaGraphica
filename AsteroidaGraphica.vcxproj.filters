@@ -79,4 +79,9 @@
       <Filter>Content</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="DebugCode.txt">
+      <Filter>Content</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
