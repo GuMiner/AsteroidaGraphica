@@ -126,9 +126,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
+    <ClInclude Include="ImageManager.h" />
+    <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShipHud.h" />
     <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="Vertex.h" />
@@ -136,8 +139,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="ShipHud.cpp" />
+    <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>
   <ItemGroup>

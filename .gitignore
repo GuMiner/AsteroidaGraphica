@@ -7,6 +7,7 @@
 include/
 *.exp
 *.def
+images/
 
 # User-specific files
 *.suo

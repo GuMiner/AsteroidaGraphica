@@ -2,15 +2,19 @@
 
 #include <memory>
 #include <thread>
+#include "ImageManager.h"
 #include "Logger.hpp"
 #include "Physica.h"
 #include "ShaderManager.h"
+#include "ShipHud.h"
 #include "Version.h"
 #include "vmath.hpp"
 
 // Handles startup and the base graphics rendering loop.
 class AsteroidaGraphica
 {
+    ShipHud shipHud;
+
     vmath::mat4 perspectiveMatrix;
     GLuint flatShaderProgram;
     
@@ -21,6 +25,7 @@ class AsteroidaGraphica
     GLsizei vertexCount;
     GLint mv_location, proj_location;
 
+    ImageManager imageManager;
     ShaderManager shaderManager;
     Physica physicsManager;
     sf::Thread physicaThread;

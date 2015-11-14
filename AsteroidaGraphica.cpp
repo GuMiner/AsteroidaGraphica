@@ -90,6 +90,15 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Shader creation done...");
 
+    AsteroidaGraphica::Log->Log("Image loading...");
+    GLuint compassTexture = imageManager.AddImage("images/DirectionDial.png");
+    if (compassTexture == 0)
+    {
+        return Version::Status::BAD_IMAGES;
+    }
+
+    shipHud.Initialize(compassTexture);
+
     // FONT TEST CODE
     /*if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
     {

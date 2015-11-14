@@ -38,6 +38,15 @@
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShipHud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -50,6 +59,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_implementations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShipHud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
