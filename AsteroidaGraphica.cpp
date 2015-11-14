@@ -70,14 +70,11 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_MULTISAMPLE);
 
-    glDisable(GL_CULL_FACE); // TODO make this configurable to turn on and off.
+    glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
     // Shaders
     AsteroidaGraphica::Log->Log("Shader creation...");
@@ -107,7 +104,6 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Image loading done!");
 
-    shipHud.Initialize(compassTexture, mvTexLocation, projTexLocation);
 
     // FONT TEST CODE
     /*if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
@@ -142,6 +138,8 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     colorVertex::TransferToOpenGl(pVertices, vertexCount);
     
     delete[] pVertices;
+
+    shipHud.Initialize(compassTexture, mvTexLocation, projTexLocation);
     
     return Version::Status::OK;
 }
@@ -196,9 +194,16 @@ Version::Status AsteroidaGraphica::Run()
         // Render, only if non-paused.
         if (!paused)
         {
+            // Clear the screen, firstoff
+            const GLfloat color[] = { 0, 0, 0, 1 };
+            const GLfloat one = 1.0f;
+            glClearBufferfv(GL_COLOR, 0, color);
+            glClearBufferfv(GL_DEPTH, 0, &one);
+
             glUseProgram(textureShaderProgram);
             shipHud.RenderHud(perspectiveMatrix, clock);
 
+            /*
             // Use our boring shader and clear the display
             glUseProgram(flatShaderProgram);
 
@@ -220,9 +225,19 @@ Version::Status AsteroidaGraphica::Run()
 
             // Render!
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+            */
+
+            glUseProgram(flatShaderProgram);
+            glBindVertexArray(vao);
+            glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
+
+            vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation;
+            lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
+            result = perspectiveMatrix * lookAtMatrix;
+            glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
             // Render-static
-            mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            vmath::mat4 mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
             glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
@@ -237,6 +252,8 @@ Version::Status AsteroidaGraphica::Run()
             mv_matrix = vmath::translate(18.0f, -18.0f, 0.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
             glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+            
+
             window.display();
         }
 

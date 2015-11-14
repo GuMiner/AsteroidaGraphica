@@ -22,15 +22,20 @@ GLuint ImageManager::AddImage(const char* filename)
     int channels = 0;
     unsigned char* imageData = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
     if (imageData && width && height)
-    {
+    {      
         // Create a new texture for the image.
         GLuint newTextureId;
         glGenTextures(1, &newTextureId);
-
-        // Load in the image data to this texture.
+        
+        // Bind the texture and send in image data
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, newTextureId);
         glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_BYTE, imageData);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
+        // Wrap around if we have excessive UVs
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         imageTextures[newTextureId] = ImageTexture(newTextureId, imageData, width, height);
         return newTextureId;

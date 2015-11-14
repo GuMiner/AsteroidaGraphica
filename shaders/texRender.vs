@@ -13,10 +13,11 @@ out VS_OUT
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 
+// Perform our position and projection transformations, and pass-through the color / texture data
 void main(void)
 {
-    // Perform our position and projection transformations, and pass-through the color.
-    gl_Position = proj_matrix * mv_matrix * vec4(position, 1);
     vs_out.color = vec4(color.x, color.y, color.z, 1);
     vs_out.texPos = texPos;
+    
+    gl_Position = proj_matrix * mv_matrix * vec4(position, 1);
 }
