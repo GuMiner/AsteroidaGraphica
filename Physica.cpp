@@ -36,11 +36,11 @@ void Physica::SideThrust(bool left)
     vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
     if (left)
     {
-        shipPosition += speed*sidewaysVector;
+        shipPosition -= speed*sidewaysVector;
     }
     else
     {
-        shipPosition -= speed*sidewaysVector;
+        shipPosition += speed*sidewaysVector;
     }
 }
 
@@ -49,11 +49,11 @@ void Physica::VerticalThrust(bool up)
     float speed = 0.07f;
     if (up)
     {
-        shipPosition += shipOrientation.upVector() * speed;
+        shipPosition -= shipOrientation.upVector() * speed;
     }
     else
     {
-        shipPosition -= shipOrientation.upVector() * speed;
+        shipPosition += shipOrientation.upVector() * speed;
     }
 }
 

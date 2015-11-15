@@ -229,13 +229,24 @@ Version::Status AsteroidaGraphica::Run()
 
             // *physicsManager.shipOrientation;
             lookAtMatrix = vmath::lookat(physicsManager.shipPosition, vmath::vec3(0, 0, 0), vmath::vec3(0, 1, 0));
-            vmath::mat4 quatMatrix = vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation.asMatrix();
+            vmath::mat4 quatMatrix = physicsManager.shipOrientation.asMatrix() * vmath::translate(-physicsManager.shipPosition);
             vmath::mat4 result = perspectiveMatrix * quatMatrix; // lookAtMatrix;
             glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
-            vmath::mat4 mv_matrix = vmath::mat4::identity();
-            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+            // Let's add a 5x5x5 grid of these things to help with debugging.
+            float separation = 7;
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    for (int k = 0; k < 5; k++)
+                    {
+                        vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(i*separation, j*separation, k*separation));
+                        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+                        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+                    }
+                }
+            }
 
             // Draws our HUD dials
             glUseProgram(textureShaderProgram);
