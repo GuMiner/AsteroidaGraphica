@@ -66,6 +66,11 @@ void Physica::RotateVertical(bool up)
 
 }
 
+void Physica::BarrelRoll(bool clockwise)
+{
+
+}
+
 void Physica::Run()
 {
     sf::Clock clock;
@@ -102,6 +107,26 @@ void Physica::Run()
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
             {
                 VerticalThrust(false);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            {
+                RotateHorizontal(true);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            {
+                RotateHorizontal(false);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            {
+                RotateVertical(true);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            {
+                RotateVertical(false);
             }
 
             // TODO manage asteroid and game physics.

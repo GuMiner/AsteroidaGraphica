@@ -547,6 +547,15 @@ namespace vmath
             return Tvec3<T>(resultingVector.x, resultingVector.y, resultingVector.z);
         }
 
+        // Returns the Yaw-then-Pitch-then-Roll XYZ Euler Angles from the quaternion, in radians.
+        inline Tvec3<T> asEulerAngles() const
+        {
+            return Tvec3<T>(
+                atan2f(2 * (w*x + y*z), 1 - 2 * (x*x + y*y)),
+                asinf(2 * (w*y - z*x)),
+                atan2f(2 * (w*z + x*y), 1 - 2 * (y*y + z*z)));
+        }
+
         inline matNM<T, 4, 4> asMatrix() const
         {
             matNM<T, 4, 4> m;
@@ -1131,12 +1140,6 @@ namespace vmath
         }
 
         return result;
-    }
-
-    template <typename T>
-    static inline void quaternionToMatrix(const Tquaternion<T>& q, matNM<T, 4, 4>& m)
-    {
-        m = q.asMatrix();
     }
 
     template <typename T>

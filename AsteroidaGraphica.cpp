@@ -161,7 +161,7 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     
     delete[] pVertices;
 
-    shipHud.Initialize(compassTexture, projFlatTexLocation);
+    shipHud.Initialize(compassTexture, projTexLocation, mvTexLocation);
     
     return Version::Status::OK;
 }
@@ -238,7 +238,8 @@ Version::Status AsteroidaGraphica::Run()
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
             // Draws our HUD dials
-            glUseProgram(flatTextureShaderProgram);
+            glUseProgram(textureShaderProgram);
+            shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
             shipHud.RenderHud(perspectiveMatrix, clock);
 
             window.display();
