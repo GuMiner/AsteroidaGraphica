@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <thread>
+#include "FontManager.h"
 #include "ImageManager.h"
 #include "Logger.hpp"
 #include "Physica.h"
@@ -33,6 +34,7 @@ class AsteroidaGraphica
 
     ImageManager imageManager;
     ShaderManager shaderManager;
+    FontManager fontManager;
     Physica physicsManager;
     sf::Thread physicaThread;
 

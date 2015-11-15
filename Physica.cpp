@@ -9,7 +9,7 @@ Physica::Physica()
     isAlive = true;
 
     shipPosition = vmath::vec3(0, 0, 8);
-    shipOrientation = vmath::quaternion(0, 0, -1, 0);
+    shipOrientation = vmath::quaternion(0, 0, 0, 1);
     
     shipVelocity = vmath::vec3(0, 0, 0);
     shipForce = vmath::vec3(0, 0, 0);

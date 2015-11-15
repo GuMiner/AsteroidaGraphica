@@ -126,12 +126,14 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Image loading done!");
 
-
-    // FONT TEST CODE
-    /*if (!displayFont.loadFromFile("fonts/DejaVuSans.ttf"))
+    // Fonts
+    AsteroidaGraphica::Log->Log("Font loading...");
+    if (!fontManager.LoadFont("fonts/DejaVuSans.ttf"))
     {
         return Version::Status::BAD_FONT;
-    }*/
+    }
+
+    AsteroidaGraphica::Log->Log("Font loading done!");
 
     // TEST CODE TEST CODE
     glGenVertexArrays(1, &vao);
