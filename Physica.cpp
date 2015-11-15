@@ -1,4 +1,5 @@
 #include <SFML\System.hpp>
+#include <SFML\Window.hpp>
 #include <thread>
 #include "Physica.h"
 
@@ -7,12 +8,62 @@ Physica::Physica()
 {
     isAlive = true;
 
-    shipPosition = vmath::vec3(8, 8, 8);
-    shipOrientation = vmath::rotate(1.0f, vmath::vec3(-0.577f, -0.577f, -0.577f));
-
+    shipPosition = vmath::vec3(0, 0, 8);
+    shipOrientation = vmath::quaternion(0, 0, -1, 0);
+    
     shipVelocity = vmath::vec3(0, 0, 0);
     shipForce = vmath::vec3(0, 0, 0);
     shipMass = 1000; // 1 ton (kg)
+}
+
+void Physica::Thrust(bool forwards)
+{
+    // TODO tie into a physics algorithm to integrate the accel and all that fancy stuff
+    float speed = 0.07f;
+    if (forwards)
+    {
+        shipPosition += shipOrientation.forwardVector() * speed;
+    }
+    else
+    {
+        shipPosition -= shipOrientation.forwardVector() * speed;
+    }
+}
+
+void Physica::SideThrust(bool left)
+{
+    float speed = 0.07f;
+    vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
+    if (left)
+    {
+        shipPosition += speed*sidewaysVector;
+    }
+    else
+    {
+        shipPosition -= speed*sidewaysVector;
+    }
+}
+
+void Physica::VerticalThrust(bool up)
+{
+    float speed = 0.07f;
+    if (up)
+    {
+        shipPosition += shipOrientation.upVector() * speed;
+    }
+    else
+    {
+        shipPosition -= shipOrientation.upVector() * speed;
+    }
+}
+
+void Physica::RotateHorizontal(bool left)
+{
+}
+
+void Physica::RotateVertical(bool up)
+{
+
 }
 
 void Physica::Run()
@@ -22,6 +73,37 @@ void Physica::Run()
     {
         if (!isPaused)
         {
+            // Manage ship physics
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            {
+                Thrust(true);
+            }
+            
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+            {
+                Thrust(false);
+            }
+            
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+            {
+                SideThrust(true);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            {
+                SideThrust(false);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            {
+                VerticalThrust(true);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+            {
+                VerticalThrust(false);
+            }
+
             // TODO manage asteroid and game physics.
         }
 

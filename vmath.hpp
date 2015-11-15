@@ -2,10 +2,10 @@
 #define _USE_MATH_DEFINES  1 // Include constants defined in math.h
 #include <math.h>
 
-// From the OpenGL Superbible, 6th Ed.
+// From the OpenGL Superbible, 6th Ed, 'free to use in your application' as per the website.
+// Modified so that quaternions can actually be used and removing dead code.
 namespace vmath
 {
-
     template <typename T, const int w, const int h> class matNM;
     template <typename T, const int len> class vecN;
     template <typename T> class Tquaternion;
@@ -488,145 +488,63 @@ namespace vmath
     public:
         inline Tquaternion()
         {
+        }
 
+        // Assignment operator
+        inline Tquaternion& operator=(const Tquaternion& that)
+        {
+            x = that.x;
+            y = that.y;
+            z = that.z;
+            w = that.w;
+            return *this;
         }
 
         inline Tquaternion(const Tquaternion& q)
-            : r(q.r),
-            v(q.v)
         {
-
+            x = that.x;
+            y = that.y;
+            z = that.z;
+            w = that.w;
         }
-
-        inline Tquaternion(T _r)
-            : r(_r),
-            v(T(0))
-        {
-
-        }
-
-        inline Tquaternion(T _r, const Tvec3<T>& _v)
-            : r(_r),
-            v(_v)
-        {
-
-        }
-
-        inline Tquaternion(const Tvec4<T>& _v)
-            : r(_v[0]),
-            v(_v[1], _v[2], _v[3])
-        {
-        }
-
+        
         inline Tquaternion(T _x, T _y, T _z, T _w)
-            : r(_x),
-            v(_y, _z, _w)
         {
-
+            x = _x;
+            y = _y;
+            z = _z;
+            w = _w;
         }
-
-        inline T& operator[](int n)
-        {
-            return a[n];
-        }
-
-        inline const T& operator[](int n) const
-        {
-            return a[n];
-        }
-
-        inline Tquaternion operator+(const Tquaternion& q) const
-        {
-            return quaternion(r + q.r, v + q.v);
-        }
-
-        inline Tquaternion& operator+=(const Tquaternion& q)
-        {
-            r += q.r;
-            v += q.v;
-
-            return *this;
-        }
-
-        inline Tquaternion operator-(const Tquaternion& q) const
-        {
-            return quaternion(r - q.r, v - q.v);
-        }
-
-        inline Tquaternion& operator-=(const Tquaternion& q)
-        {
-            r -= q.r;
-            v -= q.v;
-
-            return *this;
-        }
-
-        inline Tquaternion operator-() const
-        {
-            return Tquaternion(-r, -v);
-        }
-
-        inline Tquaternion operator*(const T s) const
-        {
-            return Tquaternion(a[0] * s, a[1] * s, a[2] * s, a[3] * s);
-        }
-
-        inline Tquaternion& operator*=(const T s)
-        {
-            r *= s;
-            v *= s;
-
-            return *this;
-        }
-
+        
         inline Tquaternion operator*(const Tquaternion& q) const
         {
-            const T x1 = a[0];
-            const T y1 = a[1];
-            const T z1 = a[2];
-            const T w1 = a[3];
-            const T x2 = q.a[0];
-            const T y2 = q.a[1];
-            const T z2 = q.a[2];
-            const T w2 = q.a[3];
+            const T x2 = q.x;
+            const T y2 = q.y;
+            const T z2 = q.z;
+            const T w2 = q.w;
 
-            return Tquaternion(w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2);
+            return Tquaternion(
+                w * x2 + x * w2 + y * z2 - z * y2,
+                w * y2 + y * w2 + z * x2 - x * z2,
+                w * z2 + z * w2 + x * y2 - y * x2,
+                w * w2 - x * x2 - y * y2 - z * z2);
         }
 
-        inline Tquaternion operator/(const T s) const
+        inline Tquaternion conjugate() const
         {
-            return Tquaternion(a[0] / s, a[1] / s, a[2] / s, a[3] / s);
+            return Tquaternion(-x, -y, -z, w);
         }
 
-        inline Tquaternion& operator/=(const T s)
+        inline Tvec3<T> upVector() const
         {
-            r /= s;
-            v /= s;
-
-            return *this;
+            Tquaternion resultingVector = *this * (Tquaternion(DEFAULT_UP_VECTOR[0], DEFAULT_UP_VECTOR[1], DEFAULT_UP_VECTOR[2], 0) * this->conjugate());
+            return Tvec3<T>(resultingVector.x, resultingVector.y, resultingVector.z);
         }
 
-        inline operator Tvec4<T>&()
+        inline Tvec3<T> forwardVector() const
         {
-            return *(Tvec4<T>*)&a[0];
-        }
-
-        inline operator const Tvec4<T>&() const
-        {
-            return *(const Tvec4<T>*)&a[0];
-        }
-
-        inline bool operator==(const Tquaternion& q) const
-        {
-            return (r == q.r) && (v == q.v);
-        }
-
-        inline bool operator!=(const Tquaternion& q) const
-        {
-            return (r != q.r) || (v != q.v);
+            Tquaternion resultingVector = *this * (Tquaternion(DEFAULT_FORWARD_VECTOR[0], DEFAULT_FORWARD_VECTOR[1], DEFAULT_FORWARD_VECTOR[2], 0) * this->conjugate());
+            return Tvec3<T>(resultingVector.x, resultingVector.y, resultingVector.z);
         }
 
         inline matNM<T, 4, 4> asMatrix() const
@@ -667,30 +585,11 @@ namespace vmath
             return m;
         }
 
-        /*
-        inline T length() const
-        {
-        return vmath::length( Tvec4<T>(r, v) );
-        }
-        */
-
     private:
-        union
-        {
-            struct
-            {
-                T           r;
-                Tvec3<T>    v;
-            };
-            struct
-            {
-                T           x;
-                T           y;
-                T           z;
-                T           w;
-            };
-            T               a[4];
-        };
+        T           x;
+        T           y;
+        T           z;
+        T           w;
     };
 
     typedef Tquaternion<float> quaternion;
@@ -991,7 +890,7 @@ namespace vmath
 
     static inline mat4 perspective(float fovy, float aspect, float n, float f)
     {
-        float q = 1.0f / tan(radians(0.5f * fovy));
+        float q = 1.0f / tanf(radians(0.5f * fovy));
         float A = q / aspect;
         float B = (n + f) / (n - f);
         float C = (2.0f * n * f) / (n - f);
@@ -1234,32 +1133,6 @@ namespace vmath
         return result;
     }
 
-    /*
-    template <typename T>
-    static inline void quaternionToMatrix(const Tquaternion<T>& q, matNM<T,4,4>& m)
-    {
-    m[0][0] = q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3];
-    m[0][1] = T(2) * (q[1] * q[2] + q[0] * q[3]);
-    m[0][2] = T(2) * (q[1] * q[3] - q[0] * q[2]);
-    m[0][3] = 0.0f;
-
-    m[1][0] = T(2) * (q[1] * q[2] - q[0] * q[3]);
-    m[1][1] = q[0] * q[0] - q[1] * q[1] + q[2] * q[2] - q[3] * q[3];
-    m[1][2] = T(2) * (q[2] * q[3] + q[0] * q[1]);
-    m[1][3] = 0.0f;
-
-    m[2][0] = T(2) * (q[1] * q[3] + q[0] * q[2]);
-    m[2][1] = T(2) * (q[2] * q[3] - q[0] * q[1]);
-    m[2][2] = q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3];
-    m[2][3] = 0.0f;
-
-    m[3][0] = 0.0f;
-    m[3][1] = 0.0f;
-    m[3][2] = 0.0f;
-    m[3][3] = 1.0f;
-    }
-    */
-
     template <typename T>
     static inline void quaternionToMatrix(const Tquaternion<T>& q, matNM<T, 4, 4>& m)
     {
@@ -1278,4 +1151,6 @@ namespace vmath
         return B + t * (B - A);
     }
 
+    const vec3 DEFAULT_FORWARD_VECTOR = vec3(0, 0, -1.0f);
+    const vec3 DEFAULT_UP_VECTOR = vec3(0, -1.0f, 0);
 };

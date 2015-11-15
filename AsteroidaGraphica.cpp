@@ -222,56 +222,20 @@ Version::Status AsteroidaGraphica::Run()
             glClearBufferfv(GL_COLOR, 0, color);
             glClearBufferfv(GL_DEPTH, 0, &one);
             
-            /*
-            // Use our boring shader and clear the display
-            glUseProgram(flatShaderProgram);
-
-            const GLfloat color[] = { 0, 0, 0, 1 };
-            const GLfloat one = 1.0f;
-            glClearBufferfv(GL_COLOR, 0, color);
-            glClearBufferfv(GL_DEPTH, 0, &one);
-
-            // Rotate the camera to be in the proper location based on the ship.
-            // physicsManager.shipOrientation *= vmath::rotate(0.0001f, vmath::vec3(0, 0, 1));
-            // vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation;
-            lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
-            vmath::mat4 result = perspectiveMatrix * lookAtMatrix;
-            glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
-
-            // No translation
-            vmath::mat4 mv_matrix = vmath::rotate(0.0f, 0.0f, ((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 90.0f);
-            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-
-            // Render!
-            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-            */
-
+            // TEST CODE DRAWING
             glUseProgram(flatShaderProgram);
             glBindVertexArray(vao);
             glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
 
-            vmath::mat4 result = perspectiveMatrix * vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation;
-            lookAtMatrix = vmath::lookat(vmath::vec3(8, 0, 8), vmath::vec3(0, 0, 0), vmath::vec3(0, 0, 1));
-            result = perspectiveMatrix * lookAtMatrix;
+            // *physicsManager.shipOrientation;
+            lookAtMatrix = vmath::lookat(physicsManager.shipPosition, vmath::vec3(0, 0, 0), vmath::vec3(0, 1, 0));
+            vmath::mat4 quatMatrix = vmath::translate(-physicsManager.shipPosition) * physicsManager.shipOrientation.asMatrix();
+            vmath::mat4 result = perspectiveMatrix * quatMatrix; // lookAtMatrix;
             glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
 
-            // Render-static
-            vmath::mat4 mv_matrix = vmath::translate(0.0f, 5.0f, 3.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
+            vmath::mat4 mv_matrix = vmath::mat4::identity();
             glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-            mv_matrix = vmath::translate(18.0f, 18.0f, 0.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
-            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-            mv_matrix = vmath::translate(-18.0f, -18.0f, 0.0f) * vmath::rotate(((float)clock.getElapsedTime().asMilliseconds() / 1000.0f) * 90.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
-            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-            mv_matrix = vmath::translate(18.0f, -18.0f, 0.0f) * vmath::rotate(-140.0f, vmath::vec3(0, 0, 1)) * vmath::scale(0.5f);
-            glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-            
 
             // Draws our HUD dials
             glUseProgram(flatTextureShaderProgram);

@@ -11,10 +11,16 @@ class Physica
 
     bool isAlive;
     bool isPaused;
+
+    void Thrust(bool forwards);
+    void SideThrust(bool left);
+    void VerticalThrust(bool up);
+    void RotateHorizontal(bool left);
+    void RotateVertical(bool up);
 public:
     // Ship positioning
     vmath::vec3 shipPosition;
-    vmath::mat4 shipOrientation;
+    vmath::quaternion shipOrientation;
 
     Physica();
     void Run();
