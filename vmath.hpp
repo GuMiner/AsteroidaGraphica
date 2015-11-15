@@ -10,74 +10,17 @@ namespace vmath
     template <typename T, const int len> class vecN;
     template <typename T> class Tquaternion;
 
-    template <typename T>
-    inline T degrees(T angleInRadians)
+    // Goes from radians to degrees
+    inline float degrees(float angleInRadians)
     {
-        return angleInRadians * static_cast<T>(180.0 / M_PI);
+        return angleInRadians * (float)(180.0 / M_PI);
     }
 
-    template <typename T>
-    inline T radians(T angleInDegrees)
+    // Goes from degrees to radians
+    inline float radians(float angleInDegrees)
     {
-        return angleInDegrees * static_cast<T>(M_PI / 180.0);
+        return angleInDegrees * (float)(M_PI / 180.0);
     }
-
-    template <typename T>
-    struct random
-    {
-        operator T ()
-        {
-            static unsigned int seed = 0x13371337;
-            unsigned int res;
-            unsigned int tmp;
-
-            seed *= 16807;
-
-            tmp = seed ^ (seed >> 4) ^ (seed << 15);
-
-            res = (tmp >> 9) | 0x3F800000;
-
-            return static_cast<T>(res);
-        }
-    };
-
-    template<>
-    struct random<float>
-    {
-        operator float()
-        {
-            static unsigned int seed = 0x13371337;
-            float res;
-            unsigned int tmp;
-
-            seed *= 16807;
-
-            tmp = seed ^ (seed >> 4) ^ (seed << 15);
-
-            *((unsigned int *)&res) = (tmp >> 9) | 0x3F800000;
-
-            return (res - 1.0f);
-        }
-    };
-
-    template<>
-    struct random<unsigned int>
-    {
-        operator unsigned int()
-        {
-            static unsigned int seed = 0x13371337;
-            unsigned int res;
-            unsigned int tmp;
-
-            seed *= 16807;
-
-            tmp = seed ^ (seed >> 4) ^ (seed << 15);
-
-            res = (tmp >> 9) | 0x3F800000;
-
-            return res;
-        }
-    };
 
     template <typename T, const int len>
     class vecN
@@ -388,24 +331,9 @@ namespace vmath
     // (constructors and such). This is enough to get some template functions
     // to compile correctly.
     typedef vecN<float, 1> vec1;
-    typedef vecN<int, 1> ivec1;
-    typedef vecN<unsigned int, 1> uvec1;
-    typedef vecN<double, 1> dvec1;
-
     typedef Tvec2<float> vec2;
-    typedef Tvec2<int> ivec2;
-    typedef Tvec2<unsigned int> uvec2;
-    typedef Tvec2<double> dvec2;
-
     typedef Tvec3<float> vec3;
-    typedef Tvec3<int> ivec3;
-    typedef Tvec3<unsigned int> uvec3;
-    typedef Tvec3<double> dvec3;
-
     typedef Tvec4<float> vec4;
-    typedef Tvec4<int> ivec4;
-    typedef Tvec4<unsigned int> uvec4;
-    typedef Tvec4<double> dvec4;
 
     template <typename T, int n>
     static inline const vecN<T, n> operator * (T x, const vecN<T, n>& v)
@@ -529,10 +457,37 @@ namespace vmath
                 w * z2 + z * w2 + x * y2 - y * x2,
                 w * w2 - x * x2 - y * y2 - z * z2);
         }
+        
+        inline void normalize()
+        {
+            T magnitude = x*x + y*y + z*z + w*w;
+            if (fabsf(magnitude - 1) < NORMALIZE_TOLERANCE)
+            {
+                T magnitudeReal = sqrtf(magnitude);
+                x /= magnitudeReal;
+                y /= magnitudeReal;
+                z /= magnitudeReal;
+                w /= magnitudeReal;
+            }
+        }
 
         inline Tquaternion conjugate() const
         {
             return Tquaternion(-x, -y, -z, w);
+        }
+
+        // Given an axis and an angle (in radians), returns a unit quaternion.
+        static inline Tquaternion fromAxisAngle(T angle, Tvec3<T> axis)
+        {
+            T halfAngle = angle * 0.5f;
+            T sinAngle = sin(angle);
+
+            T x = (axis[0] * sinAngle);
+            T y = (axis[1] * sinAngle);
+            T z = (axis[2] * sinAngle);
+            T w = cos(angle);
+
+            return Tquaternion(x, y, z, w);
         }
 
         inline Tvec3<T> upVector() const
@@ -602,9 +557,6 @@ namespace vmath
     };
 
     typedef Tquaternion<float> quaternion;
-    typedef Tquaternion<int> iquaternion;
-    typedef Tquaternion<unsigned int> uquaternion;
-    typedef Tquaternion<double> dquaternion;
 
     template <typename T>
     static inline Tquaternion<T> operator*(T a, const Tquaternion<T>& b)
@@ -791,37 +743,6 @@ namespace vmath
                 data[n] = that.data[n];
         }
     };
-
-    /*
-    template <typename T, const int N>
-    class TmatN : public matNM<T,N,N>
-    {
-    public:
-    typedef matNM<T,N,N> base;
-    typedef TmatN<T,N> my_type;
-
-    inline TmatN() {}
-    inline TmatN(const my_type& that) : base(that) {}
-    inline TmatN(float f) : base(f) {}
-    inline TmatN(const vecN<T,4>& v) : base(v) {}
-
-    inline my_type transpose(void)
-    {
-    my_type result;
-    int x, y;
-
-    for (y = 0; y < h; y++)
-    {
-    for (x = 0; x < h; x++)
-    {
-    result[x][y] = data[y][x];
-    }
-    }
-
-    return result;
-    }
-    };
-    */
 
     template <typename T>
     class Tmat4 : public matNM<T, 4, 4>
@@ -1156,4 +1077,5 @@ namespace vmath
 
     const vec3 DEFAULT_FORWARD_VECTOR = vec3(0, 0, -1.0f);
     const vec3 DEFAULT_UP_VECTOR = vec3(0, -1.0f, 0);
+    const float NORMALIZE_TOLERANCE = 0.00001f;
 };

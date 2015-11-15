@@ -59,16 +59,24 @@ void Physica::VerticalThrust(bool up)
 
 void Physica::RotateHorizontal(bool left)
 {
+    float speed = vmath::radians(1.0f);
+    shipOrientation = vmath::quaternion::fromAxisAngle(left ? -speed : speed, shipOrientation.upVector()) * shipOrientation;
+    shipOrientation.normalize();
 }
 
 void Physica::RotateVertical(bool up)
 {
-
+    float speed = vmath::radians(1.0f);
+    vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
+    shipOrientation = vmath::quaternion::fromAxisAngle(up ? -speed : speed, sidewaysVector) * shipOrientation;
+    shipOrientation.normalize();
 }
 
 void Physica::BarrelRoll(bool clockwise)
 {
-
+    float speed = vmath::radians(1.0f);
+    shipOrientation = vmath::quaternion::fromAxisAngle(clockwise ? speed : -speed, shipOrientation.forwardVector()) * shipOrientation;
+    shipOrientation.normalize();
 }
 
 void Physica::Run()
@@ -79,55 +87,7 @@ void Physica::Run()
         if (!isPaused)
         {
             // Manage ship physics
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            {
-                Thrust(true);
-            }
-            
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-            {
-                Thrust(false);
-            }
-            
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-            {
-                SideThrust(true);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            {
-                SideThrust(false);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            {
-                VerticalThrust(true);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-            {
-                VerticalThrust(false);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-                RotateHorizontal(true);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-                RotateHorizontal(false);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            {
-                RotateVertical(true);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            {
-                RotateVertical(false);
-            }
+            HandleStandardMotion();
 
             // TODO manage asteroid and game physics.
         }
@@ -140,6 +100,70 @@ void Physica::Run()
             std::chrono::milliseconds sleepTime(33);
             std::this_thread::sleep_for(sleepTime);
         }
+    }
+}
+
+// Handles standard ship motion key commands.
+void Physica::HandleStandardMotion()
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    {
+        Thrust(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+    {
+        Thrust(false);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    {
+        SideThrust(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    {
+        SideThrust(false);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
+        VerticalThrust(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+    {
+        VerticalThrust(false);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        RotateHorizontal(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
+        RotateHorizontal(false);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    {
+        RotateVertical(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    {
+        RotateVertical(false);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+    {
+        BarrelRoll(true);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+    {
+        BarrelRoll(false);
     }
 }
 

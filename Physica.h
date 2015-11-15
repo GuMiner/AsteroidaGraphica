@@ -18,6 +18,8 @@ class Physica
     void RotateHorizontal(bool left);
     void RotateVertical(bool up);
     void BarrelRoll(bool clockwise);
+
+    void HandleStandardMotion();
 public:
     // Ship positioning
     vmath::vec3 shipPosition;
