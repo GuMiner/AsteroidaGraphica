@@ -16,15 +16,15 @@ Physica::Physica()
     shipRotation = vmath::vec3(0, 0, 0); // Radians / tick (@ 30 ticks/sec)
     shipMass = 1000; // 1 ton (kg)
 
-    shipThrustSpeed = 10.0f;
-    shipSideThrustSpeed = 10.0f;
-    shipVerticalThrustSpeed = 10.0f;
+    shipThrustSpeed = 90.0f;
+    shipSideThrustSpeed = 90.0f;
+    shipVerticalThrustSpeed = 90.0f;
     transDampenerThrustSpeed = 5.0f;
 
-    shipHorizRotSpeed = 0.5f; 
-    shipVertRotSpeed = 0.5f;
-    shipBarrelRollSpeed = 0.5f;
-    rotDampenerSpeed = 0.25f;
+    shipHorizRotSpeed = 0.0015f; 
+    shipVertRotSpeed = 0.0015f;
+    shipBarrelRollSpeed = 0.0015f;
+    rotDampenerSpeed = 0.00025f;
 
     rotationalDampener = false;
     translationalDampener = false;
@@ -118,11 +118,15 @@ void Physica::HandleShipMotion()
     if (!didTranslate && translationalDampener)
     {
         // Apply translational dampening
+        // TODO use real dampening forces instead of just a multiplying force
+        shipVelocity *= 0.98f;
     }
 
     if (!didRotate && rotationalDampener)
     {
         // Apply rotational dampening
+        // TODO use real dampening forces instead of just a multiplying force
+        shipRotation *= 0.98f;
     }
 }
 
