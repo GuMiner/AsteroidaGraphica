@@ -94,7 +94,7 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
     {
         // We need to add to the mapping of character sizes this new character size.
         CharInfo charInfo;
-        charInfo.scale = stbtt_ScaleForPixelHeight(&fontInfo, (int)fontPixelHeight);
+        charInfo.scale = stbtt_ScaleForPixelHeight(&fontInfo, (float)fontPixelHeight);
         stbtt_GetCodepointHMetrics(&fontInfo, character, &charInfo.advanceWidth, &charInfo.leftSideBearing);
         charInfo.characterBitmap = stbtt_GetCodepointBitmap(&fontInfo, 0, charInfo.scale, character, &charInfo.width, &charInfo.height, &charInfo.xOffset, &charInfo.yOffset);
    
@@ -111,10 +111,25 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
 colorTextureVertex* FontManager::AllocateSentenceVertices(std::string sentence, int pixelHeight, vmath::vec3 textColor)
 {
     // Note that we 'render' space, tab, etc.
-    colorTextureVertex *vertices = new colorTextureVertex[sentence.length() * 6];
-    for (int i = 0; i < sentence.length(); i++)
+    int verticesPerChar = 6;
+    colorTextureVertex *vertices = new colorTextureVertex[sentence.length() * verticesPerChar];
+
+    vmath::vec3 lastPos(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < (int)sentence.length(); i++)
     {
-        // TODO
+        CharInfo& charInfo = GetCharacterInfo(pixelHeight, sentence[i]);
+
+        // TODO fill in the 0's and 1's with the correct data and fill in the 0's and 1's with the correct texture data.
+
+        // Lower-left, upper-left, lower-right (CW triangle)
+        vertices[i*verticesPerChar + 0].Set(0, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 1);
+        vertices[i*verticesPerChar + 1].Set(0, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 0);
+        vertices[i*verticesPerChar + 2].Set(1, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 1);
+
+        // Lower-left, upper-left, upper-right (CW triangle)
+        vertices[i*verticesPerChar + 3].Set(1, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 1);
+        vertices[i*verticesPerChar + 4].Set(0, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 0);
+        vertices[i*verticesPerChar + 5].Set(1, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 0);
     }
     return vertices;
 }
