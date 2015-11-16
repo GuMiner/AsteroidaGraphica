@@ -19,7 +19,7 @@ Physica::Physica()
 void Physica::Thrust(bool forwards)
 {
     // TODO tie into a physics algorithm to integrate the accel and all that fancy stuff
-    float speed = 0.07f;
+    float speed = 0.4f;
     if (forwards)
     {
         shipPosition += shipOrientation.forwardVector() * speed;
@@ -32,7 +32,7 @@ void Physica::Thrust(bool forwards)
 
 void Physica::SideThrust(bool left)
 {
-    float speed = 0.07f;
+    float speed = 0.4;
     vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
     if (left)
     {
@@ -46,7 +46,7 @@ void Physica::SideThrust(bool left)
 
 void Physica::VerticalThrust(bool up)
 {
-    float speed = 0.07f;
+    float speed = 0.4f;
     if (up)
     {
         shipPosition -= shipOrientation.upVector() * speed;

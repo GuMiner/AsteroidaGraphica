@@ -134,6 +134,7 @@
     <ClInclude Include="ShipHud.h" />
     <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="TextInfo.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="vmath.hpp" />

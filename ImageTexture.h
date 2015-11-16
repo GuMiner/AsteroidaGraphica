@@ -1,3 +1,5 @@
+#pragma once
+
 // Holds a pointer to image texture data in GL_RGBA32F fomat.
 struct ImageTexture
 {

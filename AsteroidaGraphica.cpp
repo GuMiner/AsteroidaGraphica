@@ -237,11 +237,12 @@ Version::Status AsteroidaGraphica::Run()
 
             // Let's add a 5x5x5 grid of these things to help with debugging.
             float separation = 7;
-            for (int i = 0; i < 5; i++)
+            int scale = 4;
+            for (int i = 0; i < scale; i++)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < scale; j++)
                 {
-                    for (int k = 0; k < 5; k++)
+                    for (int k = 0; k < scale; k++)
                     {
                         vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(i*separation, j*separation, k*separation));
                         glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
