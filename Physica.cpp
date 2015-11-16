@@ -13,70 +13,59 @@ Physica::Physica()
     
     shipVelocity = vmath::vec3(0, 0, 0);
     shipForce = vmath::vec3(0, 0, 0);
+    shipRotation = vmath::vec3(0, 0, 0); // Radians / tick (@ 30 ticks/sec)
     shipMass = 1000; // 1 ton (kg)
+
+    shipThrustSpeed = 10.0f;
+    shipSideThrustSpeed = 10.0f;
+    shipVerticalThrustSpeed = 10.0f;
+    transDampenerThrustSpeed = 5.0f;
+
+    shipHorizRotSpeed = 0.5f; 
+    shipVertRotSpeed = 0.5f;
+    shipBarrelRollSpeed = 0.5f;
+    rotDampenerSpeed = 0.25f;
+
+    rotationalDampener = false;
+    translationalDampener = false;
+
+    rotDampToggled = false;
+    tranDampToggled = false;
+
+    didTranslate = false;
+    didRotate = false;
 }
 
 void Physica::Thrust(bool forwards)
 {
-    // TODO tie into a physics algorithm to integrate the accel and all that fancy stuff
-    float speed = 0.4f;
-    if (forwards)
-    {
-        shipPosition += shipOrientation.forwardVector() * speed;
-    }
-    else
-    {
-        shipPosition -= shipOrientation.forwardVector() * speed;
-    }
+    shipForce += (forwards ? shipThrustSpeed : -shipThrustSpeed) * shipOrientation.forwardVector();
 }
 
 void Physica::SideThrust(bool left)
 {
-    float speed = 0.4;
     vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
-    if (left)
-    {
-        shipPosition -= speed*sidewaysVector;
-    }
-    else
-    {
-        shipPosition += speed*sidewaysVector;
-    }
+    shipForce += (left ? -shipSideThrustSpeed : shipSideThrustSpeed) * sidewaysVector;
 }
 
 void Physica::VerticalThrust(bool up)
 {
-    float speed = 0.4f;
-    if (up)
-    {
-        shipPosition -= shipOrientation.upVector() * speed;
-    }
-    else
-    {
-        shipPosition += shipOrientation.upVector() * speed;
-    }
+    shipForce += (up ? -shipVerticalThrustSpeed : shipVerticalThrustSpeed) * shipOrientation.upVector();
 }
 
 void Physica::RotateHorizontal(bool left)
 {
-    float speed = vmath::radians(1.0f);
-    shipOrientation = vmath::quaternion::fromAxisAngle(left ? -speed : speed, shipOrientation.upVector()) * shipOrientation;
-    shipOrientation.normalize();
+    shipRotation[0] += left ? -shipHorizRotSpeed : shipHorizRotSpeed;
+    
 }
 
 void Physica::RotateVertical(bool up)
 {
-    float speed = vmath::radians(1.0f);
-    vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
-    shipOrientation = vmath::quaternion::fromAxisAngle(up ? -speed : speed, sidewaysVector) * shipOrientation;
-    shipOrientation.normalize();
+    shipRotation[1] += up ? -shipVertRotSpeed : shipVertRotSpeed;
 }
 
 void Physica::BarrelRoll(bool clockwise)
 {
-    float speed = vmath::radians(1.0f);
-    shipOrientation = vmath::quaternion::fromAxisAngle(clockwise ? speed : -speed, shipOrientation.forwardVector()) * shipOrientation;
-    shipOrientation.normalize();
+    shipRotation[2] += clockwise ? shipBarrelRollSpeed : -shipBarrelRollSpeed;
 }
 
 void Physica::Run()
@@ -87,7 +76,9 @@ void Physica::Run()
         if (!isPaused)
         {
             // Manage ship physics
-            HandleStandardMotion();
+            shipForce = vmath::vec3(0.0f, 0.0f, 0.0f);
+            HandleShipControls();
+            HandleShipMotion();
 
             // TODO manage asteroid and game physics.
         }
@@ -103,67 +94,134 @@ void Physica::Run()
     }
 }
 
-// Handles standard ship motion key commands.
-void Physica::HandleStandardMotion()
+void Physica::HandleShipMotion()
 {
+    // Apply forces.
+    // TODO use an actual physical algorithm (RK4) instead of Euler integration.
+    // F = ma
+    vmath::vec3 shipAccel = shipForce / shipMass;
+    // v = a*deltaT, x = v*deltaT
+    // deltaT =  33 ms
+    shipVelocity += shipAccel * (33.0f / 1000.0f);
+    shipPosition += shipVelocity * (33.0f / 1000.0f);
+
+    // Apply rotation (yaw, pitch, and then roll, in that order).
+    // This is actually horrendously incorrect (physically speaking). However, it looks ok and works ok for small rotation speeds.
+    shipOrientation = vmath::quaternion::fromAxisAngle(shipRotation[0], shipOrientation.upVector()) * shipOrientation;
+
+    vmath::vec3 sidewaysVector = vmath::cross(shipOrientation.upVector(), shipOrientation.forwardVector());
+    shipOrientation = vmath::quaternion::fromAxisAngle(shipRotation[1], sidewaysVector) * shipOrientation;
+
+    shipOrientation = vmath::quaternion::fromAxisAngle(shipRotation[2], shipOrientation.forwardVector()) * shipOrientation;
+    shipOrientation.normalize();
+
+    if (!didTranslate && translationalDampener)
+    {
+        // Apply translational dampening
+    }
+
+    if (!didRotate && rotationalDampener)
+    {
+        // Apply rotational dampening
+    }
+}
+
+// Handles standard ship motion key commands.
+void Physica::HandleShipControls()
+{
+    didRotate = false;
+    didTranslate = false;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
         Thrust(true);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
     {
         Thrust(false);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
     {
         SideThrust(true);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
         SideThrust(false);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
         VerticalThrust(true);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
     {
         VerticalThrust(false);
+        didTranslate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         RotateHorizontal(true);
+        didRotate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
         RotateHorizontal(false);
+        didRotate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
         RotateVertical(true);
+        didRotate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
         RotateVertical(false);
+        didRotate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
     {
         BarrelRoll(true);
+        didRotate = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
     {
         BarrelRoll(false);
+        didRotate = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !rotDampToggled)
+    {
+        rotationalDampener = !rotationalDampener;
+        rotDampToggled = true;
+    }
+    else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    {
+        rotDampToggled = false;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && !tranDampToggled)
+    {
+        translationalDampener = !translationalDampener;
+        tranDampToggled = true;
+    }
+    else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+    {
+        tranDampToggled = false;
     }
 }
 
