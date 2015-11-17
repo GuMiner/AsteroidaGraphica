@@ -10,10 +10,12 @@
 
 #ifndef _DEBUG
 #pragma comment(lib, "lib/glew32.lib")
+#pragma comment(lib, "lib/sfml-audio")
 #pragma comment(lib, "lib/sfml-system")
 #pragma comment(lib, "lib/sfml-window")
 #else
 #pragma comment(lib, "lib/glew32d.lib")
+#pragma comment(lib, "lib/sfml-audio-d")
 #pragma comment(lib, "lib/sfml-system-d")
 #pragma comment(lib, "lib/sfml-window-d")
 #endif
@@ -135,6 +137,19 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Font loading done!");
 
+    // Sounds
+    AsteroidaGraphica::Log->Log("Sound loading...");
+    if (!soundManager.LoadSounds())
+    {
+        return Version::Status::BAD_SOUND;
+    }
+    AsteroidaGraphica::Log->Log("Sound loading done!");
+
+    // Physica
+    AsteroidaGraphica::Log->Log("Physica loading...");
+    physicsManager.Initialize(&soundManager);
+    AsteroidaGraphica::Log->Log("Physica loading done!");
+
     // TEST CODE TEST CODE
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -163,8 +178,11 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     
     delete[] pVertices;
 
+    // HUD
+    AsteroidaGraphica::Log->Log("HUD loading...");
     shipHud.Initialize(compassTexture, projTexLocation, mvTexLocation);
-    
+    AsteroidaGraphica::Log->Log("HUD loading done!");
+
     return Version::Status::OK;
 }
 

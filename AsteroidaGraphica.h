@@ -7,6 +7,7 @@
 #include "Logger.hpp"
 #include "Physica.h"
 #include "ShaderManager.h"
+#include "SoundManager.h"
 #include "ShipHud.h"
 #include "Version.h"
 #include "vmath.hpp"
@@ -34,6 +35,7 @@ class AsteroidaGraphica
 
     ImageManager imageManager;
     ShaderManager shaderManager;
+    SoundManager soundManager;
     FontManager fontManager;
     Physica physicsManager;
     sf::Thread physicaThread;

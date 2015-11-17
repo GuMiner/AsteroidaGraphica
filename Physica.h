@@ -1,9 +1,13 @@
 #pragma once
+#include <memory>
+#include "SoundManager.h"
 #include "vmath.hpp"
 
 // Manages object physics.
 class Physica
 {
+    SoundManager *soundManager;
+
     // Ship physical constants
     vmath::vec3 shipVelocity;
     vmath::vec3 shipForce;
@@ -47,6 +51,7 @@ public:
     vmath::quaternion shipOrientation;
 
     Physica();
+    void Initialize(SoundManager *soundManager);
     void Run();
 
     void Pause()

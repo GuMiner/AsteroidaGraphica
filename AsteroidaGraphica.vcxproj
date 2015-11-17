@@ -132,6 +132,7 @@
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="TextInfo.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShipHud.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="Version.cpp" />

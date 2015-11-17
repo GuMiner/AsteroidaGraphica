@@ -8,6 +8,7 @@ include/
 *.exp
 *.def
 images/
+sounds/
 
 # User-specific files
 *.suo
