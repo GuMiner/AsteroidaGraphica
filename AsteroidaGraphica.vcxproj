@@ -129,6 +129,7 @@
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="Logger.hpp" />
+    <ClInclude Include="MusicManager.h" />
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
     <ClCompile Include="ImageManager.cpp" />
+    <ClCompile Include="MusicManager.cpp" />
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShipHud.cpp" />

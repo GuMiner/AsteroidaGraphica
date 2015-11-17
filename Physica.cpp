@@ -7,6 +7,8 @@
 Physica::Physica()
 {
     isAlive = true;
+    isPaused = false;
+    initialized = false;
 
     shipPosition = vmath::vec3(0, 0, 8);
     shipOrientation = vmath::quaternion(0, 0, 0, 1);
@@ -71,6 +73,7 @@ void Physica::BarrelRoll(bool clockwise)
 void Physica::Initialize(SoundManager *soundManager)
 {
     this->soundManager = soundManager;
+    initialized = true;
 }
 
 void Physica::Run()
@@ -78,7 +81,7 @@ void Physica::Run()
     sf::Clock clock;
     while (isAlive)
     {
-        if (!isPaused)
+        if (!isPaused && initialized)
         {
             // Manage ship physics
             shipForce = vmath::vec3(0.0f, 0.0f, 0.0f);
@@ -266,11 +269,6 @@ void Physica::HandleShipControls()
     {
         tranDampToggled = false;
     }
-}
-
-void Physica::Stop()
-{
-    isAlive = false;
 }
 
 Physica::~Physica()

@@ -5,6 +5,7 @@
 #include "FontManager.h"
 #include "ImageManager.h"
 #include "Logger.hpp"
+#include "MusicManager.h"
 #include "Physica.h"
 #include "ShaderManager.h"
 #include "SoundManager.h"
@@ -37,10 +38,15 @@ class AsteroidaGraphica
     ShaderManager shaderManager;
     SoundManager soundManager;
     FontManager fontManager;
+
     Physica physicsManager;
     sf::Thread physicaThread;
 
+    MusicManager musicManager;
+    sf::Thread musicThread;
+
     Version::Status LoadFirstTimeGraphics();
+    Version::Status LoadAssets(GLuint& compassTexture);
     void LogGraphicsSettings();
     void UpdatePerspective(unsigned int width, unsigned int height);
 public:

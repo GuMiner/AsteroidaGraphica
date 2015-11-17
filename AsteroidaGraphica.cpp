@@ -23,7 +23,7 @@
 std::unique_ptr<Logger> AsteroidaGraphica::Log;
 
 AsteroidaGraphica::AsteroidaGraphica()
-    : physicsManager(), physicaThread(&Physica::Run, &physicsManager)
+    : physicsManager(), physicaThread(&Physica::Run, &physicsManager), musicThread(&MusicManager::Run, &musicManager)
 {
 }
 
@@ -58,6 +58,7 @@ Version::Status AsteroidaGraphica::Initialize()
 {
     glewExperimental = TRUE;
     physicaThread.launch();
+    musicThread.launch();
     AsteroidaGraphica::Log->Log("Physica Thread Started!");
 
     return Version::Status::OK;
@@ -118,37 +119,12 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     AsteroidaGraphica::Log->Log("Shader creation done!");
 
-    // Images
-    AsteroidaGraphica::Log->Log("Image loading...");
-    GLuint compassTexture = imageManager.AddImage("images/DirectionDial.png");
-    if (compassTexture == 0)
+    GLuint compassTexture;
+    Version::Status status = LoadAssets(compassTexture);
+    if (status != Version::Status::OK)
     {
-        return Version::Status::BAD_IMAGES;
+        return status;
     }
-
-    AsteroidaGraphica::Log->Log("Image loading done!");
-
-    // Fonts
-    AsteroidaGraphica::Log->Log("Font loading...");
-    if (!fontManager.LoadFont("fonts/DejaVuSans.ttf"))
-    {
-        return Version::Status::BAD_FONT;
-    }
-
-    AsteroidaGraphica::Log->Log("Font loading done!");
-
-    // Sounds
-    AsteroidaGraphica::Log->Log("Sound loading...");
-    if (!soundManager.LoadSounds())
-    {
-        return Version::Status::BAD_SOUND;
-    }
-    AsteroidaGraphica::Log->Log("Sound loading done!");
-
-    // Physica
-    AsteroidaGraphica::Log->Log("Physica loading...");
-    physicsManager.Initialize(&soundManager);
-    AsteroidaGraphica::Log->Log("Physica loading done!");
 
     // TEST CODE TEST CODE
     glGenVertexArrays(1, &vao);
@@ -182,6 +158,52 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     AsteroidaGraphica::Log->Log("HUD loading...");
     shipHud.Initialize(compassTexture, projTexLocation, mvTexLocation);
     AsteroidaGraphica::Log->Log("HUD loading done!");
+
+    return Version::Status::OK;
+}
+
+// Loads up the in-game assets at the start of the game.
+Version::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
+{
+    // Images
+    AsteroidaGraphica::Log->Log("Image loading...");
+    compassTexture = imageManager.AddImage("images/DirectionDial.png");
+    if (compassTexture == 0)
+    {
+        return Version::Status::BAD_IMAGES;
+    }
+
+    AsteroidaGraphica::Log->Log("Image loading done!");
+
+    // Fonts
+    AsteroidaGraphica::Log->Log("Font loading...");
+    if (!fontManager.LoadFont("fonts/DejaVuSans.ttf"))
+    {
+        return Version::Status::BAD_FONT;
+    }
+
+    AsteroidaGraphica::Log->Log("Font loading done!");
+
+    // Sounds
+    AsteroidaGraphica::Log->Log("Sound loading...");
+    if (!soundManager.LoadSounds())
+    {
+        return Version::Status::BAD_SOUND;
+    }
+    AsteroidaGraphica::Log->Log("Sound loading done!");
+
+    // Music
+    AsteroidaGraphica::Log->Log("Music loading...");
+    if (!musicManager.LoadMusic())
+    {
+        return Version::Status::BAD_MUSIC;
+    }
+    AsteroidaGraphica::Log->Log("Music loading done!");
+
+    // Physica
+    AsteroidaGraphica::Log->Log("Physica loading...");
+    physicsManager.Initialize(&soundManager);
+    AsteroidaGraphica::Log->Log("Physica loading done!");
 
     return Version::Status::OK;
 }
@@ -221,11 +243,13 @@ Version::Status AsteroidaGraphica::Run()
             {
                 paused = true;
                 physicsManager.Pause();
+                musicManager.Pause();
             }
             else if (event.type == sf::Event::GainedFocus)
             {
                 paused = false;
                 physicsManager.Resume();
+                musicManager.Resume();
             }
             else if (event.type == sf::Event::Resized)
             {
@@ -295,10 +319,16 @@ void AsteroidaGraphica::Deinitialize()
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &pointBuffer);
 
+    AsteroidaGraphica::Log->Log("Music Thread Stopping...");
+    musicManager.Stop();
+
     AsteroidaGraphica::Log->Log("Physica Thread Stopping...");
     physicsManager.Stop();
     physicaThread.wait();
     AsteroidaGraphica::Log->Log("Physica Thread Stopped.");
+
+    musicThread.wait();
+    AsteroidaGraphica::Log->Log("Music Thread Stopped.");
 }
 
 // Runs the main application.

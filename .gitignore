@@ -9,6 +9,7 @@ include/
 *.def
 images/
 sounds/
+music/
 
 # User-specific files
 *.suo

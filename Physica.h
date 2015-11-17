@@ -25,6 +25,7 @@ class Physica
 
     bool isAlive;
     bool isPaused;
+    bool initialized;
 
     float shipThrustSpeed;
     float shipSideThrustSpeed;
@@ -64,7 +65,11 @@ public:
         isPaused = false;
     }
 
-    void Stop();
+    void Stop()
+    {
+        isAlive = false;
+    }
+
     ~Physica();
 };
 
