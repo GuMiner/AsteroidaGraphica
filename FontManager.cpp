@@ -58,7 +58,7 @@ bool FontManager::LoadFont(const char *fontName)
 // Adds the specified font to the font texture, loading the character position information into the provided structure.
 void FontManager::AddToFontTexture(CharInfo& charInfo)
 {
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
 
     // Move down a row if we need to.
@@ -106,32 +106,71 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
     return fontData[character].characterSizes[fontPixelHeight];
 }
 
-// Given a sentence, allocates the vertexes corresponding to the sentence.
-// The vertexes start at (0, 0, 0) and go in the X-direction, with 1 unit == pixelHeight.
-colorTextureVertex* FontManager::AllocateSentenceVertices(std::string sentence, int pixelHeight, vmath::vec3 textColor)
+int FontManager::GetSentenceVertexCount(std::string& sentence)
 {
     // Note that we 'render' space, tab, etc.
-    int verticesPerChar = 6;
-    colorTextureVertex *vertices = new colorTextureVertex[sentence.length() * verticesPerChar];
+    return sentence.length() * verticesPerChar;
+}
 
-    vmath::vec3 lastPos(0.0f, 0.0f, 0.0f);
+// Given a sentence, allocates the vertexes corresponding to the sentence.
+// The vertexes start at (0, 0, 0) and go in the X-direction, with 1 unit == pixelHeight.
+colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence, int pixelHeight, vmath::vec3 textColor)
+{
+    colorTextureVertex *vertices = new colorTextureVertex[GetSentenceVertexCount(sentence)];
+
+    float lastZPos = 0.0f;
+    float lastYPos = 0.0f;
+    float lastXPos = 0.0f;
+    float vertScale;
     for (int i = 0; i < (int)sentence.length(); i++)
     {
         CharInfo& charInfo = GetCharacterInfo(pixelHeight, sentence[i]);
+        if (i == 0)
+        {
+            vertScale = 1.0f / (float)charInfo.height;
+        }
 
-        // TODO fill in the 0's and 1's with the correct data and fill in the 0's and 1's with the correct texture data.
+        // Character vertex positions.
+        float effectiveWidth = vertScale * (float)charInfo.width;;
+        float xDepth = effectiveWidth + lastXPos;
+        float yDepth = vertScale * (float)charInfo.height;
+        
+        // Character texture vertex positions.
+        float textureX = (float)charInfo.textureX / (float)width;
+        float textureY = (float)charInfo.textureY / (float)height;
+        float textureXEnd = (float)(charInfo.textureX + charInfo.width) / (float)width;
+        float textureYEnd = (float)(charInfo.textureY + charInfo.height) / (float)height;
 
         // Lower-left, upper-left, lower-right (CW triangle)
-        vertices[i*verticesPerChar + 0].Set(0, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 1);
-        vertices[i*verticesPerChar + 1].Set(0, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 0);
-        vertices[i*verticesPerChar + 2].Set(1, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 1);
+        vertices[i*verticesPerChar + 0].Set(lastXPos, lastYPos, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureYEnd);
+        vertices[i*verticesPerChar + 1].Set(lastXPos, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
+        vertices[i*verticesPerChar + 2].Set(xDepth, lastYPos, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
 
         // Lower-left, upper-left, upper-right (CW triangle)
-        vertices[i*verticesPerChar + 3].Set(1, 0, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 1);
-        vertices[i*verticesPerChar + 4].Set(0, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 0, 0);
-        vertices[i*verticesPerChar + 5].Set(1, 1, lastPos[2], textColor[0], textColor[1], textColor[2], 1, 0);
+        vertices[i*verticesPerChar + 3].Set(xDepth, lastYPos, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
+        vertices[i*verticesPerChar + 4].Set(lastYPos, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
+        vertices[i*verticesPerChar + 5].Set(xDepth, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureY);
+
+        lastXPos += effectiveWidth;
     }
     return vertices;
+}
+
+// TODO some of this code should remain, some should leave (currently too vague)
+void FontManager::RenderSentenceVertices(GLuint vao, GLuint vbo, GLint projLocation, GLint mvLocation, vmath::mat4& perspectiveMatrix, vmath::mat4& mvMatrix, int vertexCount)
+{
+    // Bind in the texture and vertices we're using.
+    glBindVertexArray(vao);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, fontTexture);
+
+    glUniformMatrix4fv(projLocation, 1, GL_FALSE, perspectiveMatrix);
+    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mvMatrix);
+
+    // Draw the text
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }
 
 FontManager::~FontManager()

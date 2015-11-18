@@ -11,10 +11,14 @@ ShipHud::ShipHud()
     zxCompassTranslation = vmath::translate(-3.6f, compassHeight, compassDepth);
 
     xyzCompassRotations = vmath::vec3(0, 0.0f, 0.0f);
+
+    textTranslation = vmath::translate(-2.0f, -1.0f, -5.0f);
 }
 
-void ShipHud::Initialize(GLuint compassTexture, GLint projLocation, GLint mvLocation)
+void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
 {
+    this->fontManager = fontManager;
+
     this->compassTexture = compassTexture;
     this->projLocation = projLocation;
     this->mvLocation = mvLocation;
@@ -45,6 +49,21 @@ void ShipHud::Initialize(GLuint compassTexture, GLint projLocation, GLint mvLoca
 
     colorTextureVertex::TransferToOpenGl(pVertices, totalVertexCount);
     delete[] pVertices;
+
+
+    // Now create our text information.
+    glGenVertexArrays(1, &textVao);
+    glBindVertexArray(textVao);
+
+    glGenBuffers(1, &textVertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+
+    std::string sentence = std::string("H");
+    textVertexCount = fontManager->GetSentenceVertexCount(sentence);
+    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(sentence, 30, vmath::vec3(1.0f, 1.0f, 1.0f));
+
+    colorTextureVertex::TransferToOpenGl(textVertices, totalVertexCount);
+    delete[] textVertices;
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -93,13 +112,18 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);
+
+    // TODO testing text
+    fontManager->RenderSentenceVertices(textVao, textVertexBuffer, projLocation, mvLocation, perspectiveMatrix, textTranslation, textVertexCount);
 }
 
 
 ShipHud::~ShipHud()
 {
-    // Free up the ship HUD vertex buffer
+    // Free up the ship HUD VAO and VBO
     glDeleteVertexArrays(1, &compassVao);
-
     glDeleteBuffers(1, &compassVertexBuffer);
+
+    glDeleteVertexArrays(1, &textVao);
+    glDeleteBuffers(1, &textVertexBuffer);
 }

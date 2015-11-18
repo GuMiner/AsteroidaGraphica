@@ -156,7 +156,7 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     // HUD
     AsteroidaGraphica::Log->Log("HUD loading...");
-    shipHud.Initialize(compassTexture, projTexLocation, mvTexLocation);
+    shipHud.Initialize(&fontManager, compassTexture, projTexLocation, mvTexLocation);
     AsteroidaGraphica::Log->Log("HUD loading done!");
 
     return Version::Status::OK;
