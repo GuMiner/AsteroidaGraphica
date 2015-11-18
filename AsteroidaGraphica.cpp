@@ -200,6 +200,8 @@ Version::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
     }
     AsteroidaGraphica::Log->Log("Music loading done!");
 
+    musicManager.Pause(); // TODO temp code (annoying when developing)
+
     // Physica
     AsteroidaGraphica::Log->Log("Physica loading...");
     physicsManager.Initialize(&soundManager);

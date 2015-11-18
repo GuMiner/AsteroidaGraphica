@@ -8,8 +8,7 @@ namespace vmath
 {
     template <typename T, const int w, const int h> class matNM;
     template <typename T, const int len> class vecN;
-    template <typename T> class Tquaternion;
-
+    
     // Goes from radians to degrees
     inline float degrees(float angleInRadians)
     {
@@ -171,19 +170,7 @@ namespace vmath
         inline static int size(void) { return len; }
 
         inline operator const T* () const { return &data[0]; }
-
-        static inline vecN random()
-        {
-            vecN result;
-            int i;
-
-            for (i = 0; i < len; i++)
-            {
-                result[i] = vmath::random<T>();
-            }
-            return result;
-        }
-
+        
     protected:
         T data[len];
 
@@ -192,25 +179,6 @@ namespace vmath
             int n;
             for (n = 0; n < len; n++)
                 data[n] = that.data[n];
-        }
-    };
-
-    template <typename T>
-    class Tvec2 : public vecN<T, 2>
-    {
-    public:
-        typedef vecN<T, 2> base;
-
-        // Uninitialized variable
-        inline Tvec2() {}
-        // Copy constructor
-        inline Tvec2(const base& v) : base(v) {}
-
-        // vec2(x, y);
-        inline Tvec2(T x, T y)
-        {
-            base::data[0] = x;
-            base::data[1] = y;
         }
     };
 
@@ -232,22 +200,6 @@ namespace vmath
             base::data[0] = x;
             base::data[1] = y;
             base::data[2] = z;
-        }
-
-        // vec3(v, z);
-        inline Tvec3(const Tvec2<T>& v, T z)
-        {
-            base::data[0] = v[0];
-            base::data[1] = v[1];
-            base::data[2] = z;
-        }
-
-        // vec3(x, v)
-        inline Tvec3(T x, const Tvec2<T>& v)
-        {
-            base::data[0] = x;
-            base::data[1] = v[0];
-            base::data[2] = v[1];
         }
     };
 
@@ -271,67 +223,12 @@ namespace vmath
             base::data[2] = z;
             base::data[3] = w;
         }
-
-        // vec4(v, z, w);
-        inline Tvec4(const Tvec2<T>& v, T z, T w)
-        {
-            base::data[0] = v[0];
-            base::data[1] = v[1];
-            base::data[2] = z;
-            base::data[3] = w;
-        }
-
-        // vec4(x, v, w);
-        inline Tvec4(T x, const Tvec2<T>& v, T w)
-        {
-            base::data[0] = x;
-            base::data[1] = v[0];
-            base::data[2] = v[1];
-            base::data[3] = w;
-        }
-
-        // vec4(x, y, v);
-        inline Tvec4(T x, T y, const Tvec2<T>& v)
-        {
-            base::data[0] = x;
-            base::data[1] = y;
-            base::data[2] = v[0];
-            base::data[3] = v[1];
-        }
-
-        // vec4(v1, v2);
-        inline Tvec4(const Tvec2<T>& u, const Tvec2<T>& v)
-        {
-            base::data[0] = u[0];
-            base::data[1] = u[1];
-            base::data[2] = v[0];
-            base::data[3] = v[1];
-        }
-
-        // vec4(v, w);
-        inline Tvec4(const Tvec3<T>& v, T w)
-        {
-            base::data[0] = v[0];
-            base::data[1] = v[1];
-            base::data[2] = v[2];
-            base::data[3] = w;
-        }
-
-        // vec4(x, v);
-        inline Tvec4(T x, const Tvec3<T>& v)
-        {
-            base::data[0] = x;
-            base::data[1] = v[0];
-            base::data[2] = v[1];
-            base::data[3] = v[2];
-        }
     };
 
     // These types don't exist in GLSL and don't have full implementations
     // (constructors and such). This is enough to get some template functions
     // to compile correctly.
     typedef vecN<float, 1> vec1;
-    typedef Tvec2<float> vec2;
     typedef Tvec3<float> vec3;
     typedef Tvec4<float> vec4;
 
@@ -339,12 +236,6 @@ namespace vmath
     static inline const vecN<T, n> operator * (T x, const vecN<T, n>& v)
     {
         return v * x;
-    }
-
-    template <typename T>
-    static inline const Tvec2<T> operator / (T x, const Tvec2<T>& v)
-    {
-        return Tvec2<T>(x / v[0], x / v[1]);
     }
 
     template <typename T>
@@ -408,172 +299,6 @@ namespace vmath
     static inline T angle(const vecN<T, len>& a, const vecN<T, len>& b)
     {
         return arccos(dot(a, b));
-    }
-
-    template <typename T>
-    class Tquaternion
-    {
-    public:
-        inline Tquaternion()
-        {
-        }
-
-        // Assignment operator
-        inline Tquaternion& operator=(const Tquaternion& that)
-        {
-            x = that.x;
-            y = that.y;
-            z = that.z;
-            w = that.w;
-            return *this;
-        }
-
-        inline Tquaternion(const Tquaternion& q)
-        {
-            x = that.x;
-            y = that.y;
-            z = that.z;
-            w = that.w;
-        }
-        
-        inline Tquaternion(T _x, T _y, T _z, T _w)
-        {
-            x = _x;
-            y = _y;
-            z = _z;
-            w = _w;
-        }
-        
-        inline Tquaternion operator*(const Tquaternion& q) const
-        {
-            const T x2 = q.x;
-            const T y2 = q.y;
-            const T z2 = q.z;
-            const T w2 = q.w;
-
-            return Tquaternion(
-                w * x2 + x * w2 + y * z2 - z * y2,
-                w * y2 + y * w2 + z * x2 - x * z2,
-                w * z2 + z * w2 + x * y2 - y * x2,
-                w * w2 - x * x2 - y * y2 - z * z2);
-        }
-        
-        inline void normalize()
-        {
-            T magnitude = x*x + y*y + z*z + w*w;
-            if (fabsf(magnitude - 1) < NORMALIZE_TOLERANCE)
-            {
-                T magnitudeReal = sqrtf(magnitude);
-                x /= magnitudeReal;
-                y /= magnitudeReal;
-                z /= magnitudeReal;
-                w /= magnitudeReal;
-            }
-        }
-
-        inline Tquaternion conjugate() const
-        {
-            return Tquaternion(-x, -y, -z, w);
-        }
-
-        // Given an axis and an angle (in radians), returns a unit quaternion.
-        static inline Tquaternion fromAxisAngle(T angle, Tvec3<T> axis)
-        {
-            T halfAngle = angle * 0.5f;
-            T sinAngle = sin(angle);
-
-            T x = (axis[0] * sinAngle);
-            T y = (axis[1] * sinAngle);
-            T z = (axis[2] * sinAngle);
-            T w = cos(angle);
-
-            return Tquaternion(x, y, z, w);
-        }
-
-        inline Tvec3<T> upVector() const
-        {
-            Tquaternion resultingVector = *this * (Tquaternion(DEFAULT_UP_VECTOR[0], DEFAULT_UP_VECTOR[1], DEFAULT_UP_VECTOR[2], 0) * this->conjugate());
-            return Tvec3<T>(resultingVector.x, resultingVector.y, resultingVector.z);
-        }
-
-        inline Tvec3<T> forwardVector() const
-        {
-            Tquaternion resultingVector = *this * (Tquaternion(DEFAULT_FORWARD_VECTOR[0], DEFAULT_FORWARD_VECTOR[1], DEFAULT_FORWARD_VECTOR[2], 0) * this->conjugate());
-            return Tvec3<T>(resultingVector.x, resultingVector.y, resultingVector.z);
-        }
-
-        // Returns the Yaw-then-Pitch-then-Roll XYZ Euler Angles from the quaternion, in radians.
-        inline Tvec3<T> asEulerAngles() const
-        {
-            return Tvec3<T>(
-                atan2f(2 * (w*x + y*z), 1 - 2 * (x*x + y*y)),
-                asinf(2 * (w*y - z*x)),
-                atan2f(2 * (w*z + x*y), 1 - 2 * (y*y + z*z)));
-        }
-
-        inline matNM<T, 4, 4> asMatrix() const
-        {
-            matNM<T, 4, 4> m;
-
-            const T xx = x * x;
-            const T yy = y * y;
-            const T zz = z * z;
-            const T ww = w * w;
-            const T xy = x * y;
-            const T xz = x * z;
-            const T xw = x * w;
-            const T yz = y * z;
-            const T yw = y * w;
-            const T zw = z * w;
-
-            m[0][0] = T(1) - T(2) * (yy + zz);
-            m[0][1] = T(2) * (xy - zw);
-            m[0][2] = T(2) * (xz + yw);
-            m[0][3] = T(0);
-
-            m[1][0] = T(2) * (xy + zw);
-            m[1][1] = T(1) - T(2) * (xx + zz);
-            m[1][2] = T(2) * (yz - xw);
-            m[1][3] = T(0);
-
-            m[2][0] = T(2) * (xz - yw);
-            m[2][1] = T(2) * (yz + xw);
-            m[2][2] = T(1) - T(2) * (xx + yy);
-            m[2][3] = T(0);
-
-            m[3][0] = T(0);
-            m[3][1] = T(0);
-            m[3][2] = T(0);
-            m[3][3] = T(1);
-
-            return m;
-        }
-
-    private:
-        T           x;
-        T           y;
-        T           z;
-        T           w;
-    };
-
-    typedef Tquaternion<float> quaternion;
-
-    template <typename T>
-    static inline Tquaternion<T> operator*(T a, const Tquaternion<T>& b)
-    {
-        return b * a;
-    }
-
-    template <typename T>
-    static inline Tquaternion<T> operator/(T a, const Tquaternion<T>& b)
-    {
-        return Tquaternion<T>(a / b[0], a / b[1], a / b[2], a / b[3]);
-    }
-
-    template <typename T>
-    static inline Tquaternion<T> normalize(const Tquaternion<T>& q)
-    {
-        return q / length(vecN<T, 4>(q));
     }
 
     template <typename T, const int w, const int h>
@@ -768,55 +493,6 @@ namespace vmath
     };
 
     typedef Tmat4<float> mat4;
-    typedef Tmat4<int> imat4;
-    typedef Tmat4<unsigned int> umat4;
-    typedef Tmat4<double> dmat4;
-
-    template <typename T>
-    class Tmat2 : public matNM<T, 2, 2>
-    {
-    public:
-        typedef matNM<T, 2, 2> base;
-        typedef Tmat2<T> my_type;
-
-        inline Tmat2() {}
-        inline Tmat2(const my_type& that) : base(that) {}
-        inline Tmat2(const base& that) : base(that) {}
-        inline Tmat2(const vecN<T, 2>& v) : base(v) {}
-        inline Tmat2(const vecN<T, 2>& v0,
-            const vecN<T, 2>& v1)
-        {
-            base::data[0] = v0;
-            base::data[1] = v1;
-        }
-    };
-
-    typedef Tmat2<float> mat2;
-
-    static inline mat4 frustum(float left, float right, float bottom, float top, float n, float f)
-    {
-        mat4 result(mat4::identity());
-
-        if ((right == left) ||
-            (top == bottom) ||
-            (n == f) ||
-            (n < 0.0) ||
-            (f < 0.0))
-            return result;
-
-        result[0][0] = (2.0f * n) / (right - left);
-        result[1][1] = (2.0f * n) / (top - bottom);
-
-        result[2][0] = (right + left) / (right - left);
-        result[2][1] = (top + bottom) / (top - bottom);
-        result[2][2] = -(f + n) / (f - n);
-        result[2][3] = -1.0f;
-
-        result[3][2] = -(2.0f * f * n) / (f - n);
-        result[3][3] = 0.0f;
-
-        return result;
-    }
 
     static inline mat4 perspective(float fovy, float aspect, float n, float f)
     {
@@ -833,14 +509,6 @@ namespace vmath
         result[3] = vec4(0.0f, 0.0f, C, 0.0f);
 
         return result;
-    }
-
-    static inline mat4 ortho(float left, float right, float bottom, float top, float n, float f)
-    {
-        return mat4(vec4(2.0f / (right - left), 0.0f, 0.0f, 0.0f),
-            vec4(0.0f, 2.0f / (top - bottom), 0.0f, 0.0f),
-            vec4(0.0f, 0.0f, 2.0f / (n - f), 0.0f),
-            vec4((left + right) / (left - right), (bottom + top) / (bottom - top), (n + f) / (f - n), 1.0f));
     }
 
     template <typename T>
@@ -889,15 +557,6 @@ namespace vmath
     }
 
     template <typename T>
-    static inline Tmat4<T> scale(T x)
-    {
-        return Tmat4<T>(Tvec4<T>(x, 0.0f, 0.0f, 0.0f),
-            Tvec4<T>(0.0f, x, 0.0f, 0.0f),
-            Tvec4<T>(0.0f, 0.0f, x, 0.0f),
-            Tvec4<T>(0.0f, 0.0f, 0.0f, 1.0f));
-    }
-
-    template <typename T>
     static inline Tmat4<T> rotate(T angle, T x, T y, T z)
     {
         Tmat4<T> result;
@@ -923,14 +582,155 @@ namespace vmath
     {
         return rotate<T>(angle, v[0], v[1], v[2]);
     }
+    
+    const vec3 DEFAULT_FORWARD_VECTOR = vec3(0, 0, -1.0f);
+    const vec3 DEFAULT_UP_VECTOR = vec3(0, -1.0f, 0);
+    const float NORMALIZE_TOLERANCE = 0.00001f;
 
-    template <typename T>
-    static inline Tmat4<T> rotate(T angle_x, T angle_y, T angle_z)
+    class quaternion
     {
-        return rotate(angle_z, 0.0f, 0.0f, 1.0f) *
-            rotate(angle_y, 0.0f, 1.0f, 0.0f) *
-            rotate(angle_x, 1.0f, 0.0f, 0.0f);
-    }
+    public:
+        inline quaternion()
+        {
+        }
+
+        // Assignment operator
+        inline quaternion& operator=(const quaternion& that)
+        {
+            x = that.x;
+            y = that.y;
+            z = that.z;
+            w = that.w;
+            return *this;
+        }
+
+        inline quaternion(const quaternion& that)
+        {
+            x = that.x;
+            y = that.y;
+            z = that.z;
+            w = that.w;
+        }
+
+        inline quaternion(float _x, float _y, float _z, float _w)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+            w = _w;
+        }
+
+        inline quaternion operator*(const quaternion& q) const
+        {
+            const float x2 = q.x;
+            const float y2 = q.y;
+            const float z2 = q.z;
+            const float w2 = q.w;
+
+            return quaternion(
+                w * x2 + x * w2 + y * z2 - z * y2,
+                w * y2 + y * w2 + z * x2 - x * z2,
+                w * z2 + z * w2 + x * y2 - y * x2,
+                w * w2 - x * x2 - y * y2 - z * z2);
+        }
+
+        inline void normalize()
+        {
+            float magnitude = x*x + y*y + z*z + w*w;
+            if (fabsf(magnitude - 1) < NORMALIZE_TOLERANCE)
+            {
+                float magnitudeReal = sqrtf(magnitude);
+                x /= magnitudeReal;
+                y /= magnitudeReal;
+                z /= magnitudeReal;
+                w /= magnitudeReal;
+            }
+        }
+
+        inline quaternion conjugate() const
+        {
+            return quaternion(-x, -y, -z, w);
+        }
+
+        // Given an axis and an angle (in radians), returns a unit quaternion.
+        static inline quaternion fromAxisAngle(float angle, Tvec3<float> axis)
+        {
+            float halfAngle = angle * 0.5f;
+            float sinAngle = sinf(angle);
+
+            float x = (axis[0] * sinAngle);
+            float y = (axis[1] * sinAngle);
+            float z = (axis[2] * sinAngle);
+            float w = cosf(angle);
+
+            return quaternion(x, y, z, w);
+        }
+
+        inline Tvec3<float> upVector() const
+        {
+            quaternion resultingVector = *this * (quaternion(DEFAULT_UP_VECTOR[0], DEFAULT_UP_VECTOR[1], DEFAULT_UP_VECTOR[2], 0) * this->conjugate());
+            return Tvec3<float>(resultingVector.x, resultingVector.y, resultingVector.z);
+        }
+
+        inline Tvec3<float> forwardVector() const
+        {
+            quaternion resultingVector = *this * (quaternion(DEFAULT_FORWARD_VECTOR[0], DEFAULT_FORWARD_VECTOR[1], DEFAULT_FORWARD_VECTOR[2], 0) * this->conjugate());
+            return Tvec3<float>(resultingVector.x, resultingVector.y, resultingVector.z);
+        }
+
+        // Returns the Yaw-then-Pitch-then-Roll XYZ Euler Angles from the quaternion, in radians.
+        inline Tvec3<float> asEulerAngles() const
+        {
+            return Tvec3<float>(
+                atan2f(2 * (w*x + y*z), 1 - 2 * (x*x + y*y)),
+                asinf(2 * (w*y - z*x)),
+                atan2f(2 * (w*z + x*y), 1 - 2 * (y*y + z*z)));
+        }
+
+        inline matNM<float, 4, 4> asMatrix() const
+        {
+            matNM<float, 4, 4> m;
+
+            const float xx = x * x;
+            const float yy = y * y;
+            const float zz = z * z;
+            const float ww = w * w;
+            const float xy = x * y;
+            const float xz = x * z;
+            const float xw = x * w;
+            const float yz = y * z;
+            const float yw = y * w;
+            const float zw = z * w;
+
+            m[0][0] = 1.0f - 2.0f * (yy + zz);
+            m[0][1] = 2.0f * (xy - zw);
+            m[0][2] = 2.0f * (xz + yw);
+            m[0][3] = 0.0f;
+
+            m[1][0] = 2.0f * (xy + zw);
+            m[1][1] = 1.0f - 2.0f * (xx + zz);
+            m[1][2] = 2.0f * (yz - xw);
+            m[1][3] = 0.0f;
+
+            m[2][0] = 2.0f * (xz - yw);
+            m[2][1] = 2.0f * (yz + xw);
+            m[2][2] = 1.0f - 2.0f * (xx + yy);
+            m[2][3] = 0.0f;
+
+            m[3][0] = 0.0f;
+            m[3][1] = 0.0f;
+            m[3][2] = 0.0f;
+            m[3][3] = 1.0f;
+
+            return m;
+        }
+
+    private:
+        float x;
+        float y;
+        float z;
+        float w;
+    };
 
 #ifdef min
 #undef min
@@ -950,86 +750,6 @@ namespace vmath
     static inline T max(T a, T b)
     {
         return a >= b ? a : b;
-    }
-
-    template <typename T, const int N>
-    static inline vecN<T, N> min(const vecN<T, N>& x, const vecN<T, N>& y)
-    {
-        vecN<T, N> t;
-        int n;
-
-        for (n = 0; n < N; n++)
-        {
-            t[n] = min(x[n], y[n]);
-        }
-
-        return t;
-    }
-
-    template <typename T, const int N>
-    static inline vecN<T, N> max(const vecN<T, N>& x, const vecN<T, N>& y)
-    {
-        vecN<T, N> t;
-        int n;
-
-        for (n = 0; n < N; n++)
-        {
-            t[n] = max<T>(x[n], y[n]);
-        }
-
-        return t;
-    }
-
-    template <typename T, const int N>
-    static inline vecN<T, N> clamp(const vecN<T, N>& x, const vecN<T, N>& minVal, const vecN<T, N>& maxVal)
-    {
-        return min<T>(max<T>(x, minVal), maxVal);
-    }
-
-    template <typename T, const int N>
-    static inline vecN<T, N> smoothstep(const vecN<T, N>& edge0, const vecN<T, N>& edge1, const vecN<T, N>& x)
-    {
-        vecN<T, N> t;
-        t = clamp((x - edge0) / (edge1 - edge0), vecN<T, N>(T(0)), vecN<T, N>(T(1)));
-        return t * t * (vecN<T, N>(T(3)) - vecN<T, N>(T(2)) * t);
-    }
-
-    template <typename T, const int S>
-    static inline vecN<T, S> reflect(const vecN<T, S>& I, const vecN<T, S>& N)
-    {
-        return I - 2 * dot(N, I) * N;
-    }
-
-    template <typename T, const int S>
-    static inline vecN<T, S> refract(const vecN<T, S>& I, const vecN<T, S>& N, T eta)
-    {
-        T d = dot(N, I);
-        T k = T(1) - eta * eta * (T(1) - d * d);
-        if (k < 0.0)
-        {
-            return vecN<T, N>(0);
-        }
-        else
-        {
-            return eta * I - (eta * d + sqrt(k)) * N;
-        }
-    }
-
-    template <typename T, const int N, const int M>
-    static inline matNM<T, N, M> matrixCompMult(const matNM<T, N, M>& x, const matNM<T, N, M>& y)
-    {
-        matNM<T, N, M> result;
-        int i, j;
-
-        for (j = 0; j < M; ++j)
-        {
-            for (i = 0; i < N; ++i)
-            {
-                result[i][j] = x[i][j] * y[i][j];
-            }
-        }
-
-        return result;
     }
 
     template <typename T, const int N, const int M>
@@ -1062,20 +782,4 @@ namespace vmath
 
         return result;
     }
-
-    template <typename T>
-    static inline T mix(const T& A, const T& B, typename T::element_type t)
-    {
-        return B + t * (B - A);
-    }
-
-    template <typename T>
-    static inline T mix(const T& A, const T& B, const T& t)
-    {
-        return B + t * (B - A);
-    }
-
-    const vec3 DEFAULT_FORWARD_VECTOR = vec3(0, 0, -1.0f);
-    const vec3 DEFAULT_UP_VECTOR = vec3(0, -1.0f, 0);
-    const float NORMALIZE_TOLERANCE = 0.00001f;
 };
