@@ -12,7 +12,7 @@ ShipHud::ShipHud()
 
     xyzCompassRotations = vmath::vec3(0, 0.0f, 0.0f);
 
-    textTranslation = vmath::translate(-2.0f, -1.0f, -5.0f);
+    textTranslation = vmath::translate(-4.0f, -1.0f, -6.0f);
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -58,11 +58,11 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     glGenBuffers(1, &textVertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
 
-    std::string sentence = std::string("Hi");
+    std::string sentence = std::string("ABCDEFGHIJKmnopq7%");
     textVertexCount = fontManager->GetSentenceVertexCount(sentence);
-    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(sentence, 30, vmath::vec3(1.0f, 1.0f, 1.0f));
+    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(sentence, 80, vmath::vec3(1.0f, 1.0f, 1.0f));
 
-    colorTextureVertex::TransferToOpenGl(textVertices, totalVertexCount);
+    colorTextureVertex::TransferToOpenGl(textVertices, textVertexCount);
     delete[] textVertices;
 }
 

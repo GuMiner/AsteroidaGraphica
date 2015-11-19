@@ -97,7 +97,7 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
         charInfo.scale = stbtt_ScaleForPixelHeight(&fontInfo, (float)fontPixelHeight);
         stbtt_GetCodepointHMetrics(&fontInfo, character, &charInfo.advanceWidth, &charInfo.leftSideBearing);
         charInfo.characterBitmap = stbtt_GetCodepointBitmap(&fontInfo, 0, charInfo.scale, character, &charInfo.width, &charInfo.height, &charInfo.xOffset, &charInfo.yOffset);
-   
+
         AddToFontTexture(charInfo);
 
         fontData[character].characterSizes[fontPixelHeight] = charInfo;
@@ -109,7 +109,7 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
 int FontManager::GetSentenceVertexCount(std::string& sentence)
 {
     // Note that we 'render' space, tab, etc.
-    return sentence.length() * verticesPerChar;
+    return sentence.size() * verticesPerChar;
 }
 
 // Given a sentence, allocates the vertexes corresponding to the sentence.
@@ -122,7 +122,7 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
     float lastYPos = 0.0f;
     float lastXPos = 0.0f;
     float vertScale;
-    for (int i = 0; i < (int)sentence.length(); i++)
+    for (int i = 0; i < (int)sentence.size(); i++)
     {
         CharInfo& charInfo = GetCharacterInfo(pixelHeight, sentence[i]);
         if (i == 0)
@@ -131,7 +131,7 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
         }
 
         // Character vertex positions.
-        float effectiveWidth = vertScale * (float)charInfo.width;;
+        float effectiveWidth = vertScale * (float)charInfo.width;
         float xDepth = effectiveWidth + lastXPos;
         float yDepth = vertScale * (float)charInfo.height;
         
@@ -148,11 +148,12 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
 
         // Lower-left, upper-left, upper-right (CW triangle)
         vertices[i*verticesPerChar + 3].Set(xDepth, lastYPos, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
-        vertices[i*verticesPerChar + 4].Set(lastYPos, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
+        vertices[i*verticesPerChar + 4].Set(lastXPos, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
         vertices[i*verticesPerChar + 5].Set(xDepth, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureY);
 
         lastXPos += effectiveWidth;
     }
+
     return vertices;
 }
 

@@ -44,3 +44,15 @@ else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
     yMin -= speed;
     yMax -= speed;
 }
+
+
+/////////////////////// Displaying buffers on the console (taken from stb) ///////////////////////
+#include <stdio.h>   
+
+for (int j = 0; j < charInfo.height; ++j) {
+    for (int i = 0; i < charInfo.width; ++i)
+    {
+        putchar(" 1234567"[charInfo.characterBitmap[j*charInfo.width + i] >> 5]);
+    }
+    putchar('\n');
+}
