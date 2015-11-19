@@ -58,7 +58,7 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     glGenBuffers(1, &textVertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
 
-    std::string sentence = std::string("H");
+    std::string sentence = std::string("Hi");
     textVertexCount = fontManager->GetSentenceVertexCount(sentence);
     colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(sentence, 30, vmath::vec3(1.0f, 1.0f, 1.0f));
 

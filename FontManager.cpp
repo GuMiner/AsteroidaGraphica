@@ -38,7 +38,7 @@ bool FontManager::LoadFont(const char *fontName)
     glGenTextures(1, &fontTexture);
 
     // Bind the texture and prepare to send in image data.
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
 
     int maxTextureSize;
@@ -46,7 +46,7 @@ bool FontManager::LoadFont(const char *fontName)
     width = maxTextureSize;
     height = maxTextureSize;
 
-    glTextureStorage2D(GL_TEXTURE_2D, 1, GL_RED, width, height);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RED, width, height);
    
     // Wrap around if we have excessive UVs
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
