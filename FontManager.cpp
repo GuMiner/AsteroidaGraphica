@@ -46,7 +46,7 @@ bool FontManager::LoadFont(const char *fontName)
     width = maxTextureSize;
     height = maxTextureSize;
 
-    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RED, width, height);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
    
     // Wrap around if we have excessive UVs
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -70,7 +70,7 @@ void FontManager::AddToFontTexture(CharInfo& charInfo)
     }
 
     // Store the image and move around our current position.
-    glTexSubImage2D(GL_TEXTURE_2D, 0, usedWidth, usedHeight, charInfo.width, charInfo.height, GL_RED, GL_UNSIGNED_BYTE, charInfo.characterBitmap);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, usedWidth, usedHeight, charInfo.width, charInfo.height, GL_RGBA, GL_UNSIGNED_BYTE, charInfo.characterBitmap);
     charInfo.textureX = usedWidth;
     charInfo.textureY = usedHeight;
 
@@ -97,6 +97,22 @@ CharInfo& FontManager::GetCharacterInfo(int fontPixelHeight, int character)
         charInfo.scale = stbtt_ScaleForPixelHeight(&fontInfo, (float)fontPixelHeight);
         stbtt_GetCodepointHMetrics(&fontInfo, character, &charInfo.advanceWidth, &charInfo.leftSideBearing);
         charInfo.characterBitmap = stbtt_GetCodepointBitmap(&fontInfo, 0, charInfo.scale, character, &charInfo.width, &charInfo.height, &charInfo.xOffset, &charInfo.yOffset);
+
+        // Make this an RGBA bitmap image.
+        unsigned char* extraStorage = new unsigned char[charInfo.width*charInfo.height * 4];
+        for (int j = 0; j < charInfo.height; j++)
+        {
+            for (int i = 0; i < charInfo.width; i++)
+            {
+                extraStorage[(i + j*charInfo.width) * 4 + 0] = charInfo.characterBitmap[i + j*charInfo.width];
+                extraStorage[(i + j*charInfo.width) * 4 + 1] = charInfo.characterBitmap[i + j*charInfo.width];
+                extraStorage[(i + j*charInfo.width) * 4 + 2] = charInfo.characterBitmap[i + j*charInfo.width];
+                extraStorage[(i + j*charInfo.width) * 4 + 3] = charInfo.characterBitmap[i + j*charInfo.width];
+            }
+        }
+
+        stbtt_FreeBitmap(charInfo.characterBitmap, nullptr);
+        charInfo.characterBitmap = extraStorage;
 
         AddToFontTexture(charInfo);
 
@@ -182,7 +198,7 @@ FontManager::~FontManager()
         std::map<int, CharInfo>& charSizes = iterator->second.characterSizes;
         for (std::map<int, CharInfo>::iterator charIterator = charSizes.begin(); charIterator != charSizes.end(); charIterator++)
         {
-            stbtt_FreeBitmap(charIterator->second.characterBitmap, nullptr);
+            delete[] charIterator->second.characterBitmap;
         }
     }
 

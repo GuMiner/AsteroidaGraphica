@@ -38,6 +38,7 @@ class ShipHud
     vmath::vec3 xyzCompassRotations;
 
     void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
+    void ReloadRotationalText();
 public:
     ShipHud();
     void Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation);

@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include "ShipHud.h"
 
 ShipHud::ShipHud()
@@ -10,9 +12,9 @@ ShipHud::ShipHud()
     yzCompassTranslation = vmath::translate(-4.8f, compassHeight, compassDepth);
     zxCompassTranslation = vmath::translate(-3.6f, compassHeight, compassDepth);
 
-    xyzCompassRotations = vmath::vec3(0, 0.0f, 0.0f);
+    xyzCompassRotations = vmath::vec3(0.0f, 0.0f, 0.0f);
 
-    textTranslation = vmath::translate(-4.0f, -1.0f, -6.0f);
+    textTranslation = vmath::translate(-1.0f, -1.0f, -4.0f) * vmath::scale(0.3f, 0.3f, 0.3f);
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -50,20 +52,12 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     colorTextureVertex::TransferToOpenGl(pVertices, totalVertexCount);
     delete[] pVertices;
 
-
-    // Now create our text information.
+    // Create (but don't setup) the buffers to hold text data.
     glGenVertexArrays(1, &textVao);
     glBindVertexArray(textVao);
 
     glGenBuffers(1, &textVertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
-
-    std::string sentence = std::string("ABCDEFGHIJKmnopq7%");
-    textVertexCount = fontManager->GetSentenceVertexCount(sentence);
-    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(sentence, 80, vmath::vec3(1.0f, 1.0f, 1.0f));
-
-    colorTextureVertex::TransferToOpenGl(textVertices, textVertexCount);
-    delete[] textVertices;
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -82,6 +76,19 @@ void ShipHud::LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset
 void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
 {
     xyzCompassRotations = vmath::vec3(vmath::degrees(compassRotations[0]), vmath::degrees(compassRotations[1]), vmath::degrees(compassRotations[2]));
+
+    glBindVertexArray(textVao);
+    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+
+    // TODO break apart into separate strings that are drawn in one VBO.
+    std::stringstream combinedRotationStream;
+    combinedRotationStream.precision(5);
+    combinedRotationStream << vmath::degrees(compassRotations[0]) << "X," << vmath::degrees(compassRotations[1]) << "Y," << vmath::degrees(compassRotations[2]) << "Z";
+    textVertexCount = fontManager->GetSentenceVertexCount(combinedRotationStream.str());
+    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(combinedRotationStream.str(), 40, vmath::vec3(1.0f, 0.5f, 1.0f));
+
+    colorTextureVertex::TransferToOpenGl(textVertices, textVertexCount);
+    delete[] textVertices;
 }
 
 // Renders the HUD of the ship.
@@ -116,7 +123,6 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     // TODO testing text
     fontManager->RenderSentenceVertices(textVao, textVertexBuffer, projLocation, mvLocation, perspectiveMatrix, textTranslation, textVertexCount);
 }
-
 
 ShipHud::~ShipHud()
 {
