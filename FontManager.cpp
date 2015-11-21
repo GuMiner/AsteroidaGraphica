@@ -75,7 +75,7 @@ void FontManager::AddToFontTexture(CharInfo& charInfo)
     charInfo.textureY = usedHeight;
 
     usedWidth += charInfo.width + 1; // 1 px buffer space
-    lastMaxHeight = vmath::max(lastMaxHeight, charInfo.height + 1);
+    lastMaxHeight = (int)vmath::max((float)lastMaxHeight, (float)(charInfo.height + 1));
 }
 
 // Returns the character info pertaining to the specified font pixel height and character
