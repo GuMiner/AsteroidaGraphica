@@ -6,9 +6,6 @@
 // Modified so that quaternions can actually be used and removing dead code.
 namespace vmath
 {
-    template <const int w, const int h> class matNM;
-    template <const int len> class vecN;
-    
     // Goes from radians to degrees
     inline float degrees(float angleInRadians)
     {
@@ -213,6 +210,11 @@ namespace vmath
         // Copy constructor
         inline vec4(const base& v) : base(v) {}
 
+        inline vec4(float scale)
+            : vec4(scale, scale, scale, scale)
+        {
+        }
+
         // vec4(x, y, z, w);
         inline vec4(float x, float y, float z, float w)
         {
@@ -287,109 +289,112 @@ namespace vmath
         return arccos(dot(a, b));
     }
 
-    template <const int w, const int h>
-    class matNM
+    class mat4
     {
     public:
-        typedef class matNM<w, h> my_type;
-        typedef class vecN<h> vector_type;
+        typedef class vec4 vector_type;
 
         // Default constructor does nothing, just like built-in types
-        inline matNM()
+        inline mat4()
         {
             // Uninitialized variable
         }
 
         // Copy constructor
-        inline matNM(const matNM& that)
+        inline mat4(const mat4& that)
         {
             assign(that);
         }
 
+        inline mat4(const vec4& v0,
+            const vec4& v1,
+            const vec4& v2,
+            const vec4& v3)
+        {
+            data[0] = v0;
+            data[1] = v1;
+            data[2] = v2;
+            data[3] = v3;
+        }
+
         // Construction from element type
         // explicit to prevent assignment from float
-        explicit inline matNM(float f)
+        explicit inline mat4(float f)
         {
-            for (int n = 0; n < w; n++)
+            for (int n = 0; n < 4; n++)
             {
-                data[n] = f;
+                data[n] = vmath::vec4(f, f, f, f);
             }
         }
 
         // Construction from vector
-        inline matNM(const vector_type& v)
+        inline mat4(const vector_type& v)
         {
-            for (int n = 0; n < w; n++)
+            for (int n = 0; n < 4; n++)
             {
                 data[n] = v;
             }
         }
 
         // Assignment operator
-        inline matNM& operator=(const my_type& that)
+        inline mat4& operator=(const mat4& that)
         {
             assign(that);
             return *this;
         }
 
-        inline matNM operator+(const my_type& that) const
+        inline mat4 operator+(const mat4& that) const
         {
-            my_type result;
-            int n;
-            for (n = 0; n < w; n++)
+            mat4 result;
+            for (int n = 0; n < 4; n++)
                 result.data[n] = data[n] + that.data[n];
             return result;
         }
 
-        inline my_type& operator+=(const my_type& that)
+        inline mat4& operator+=(const mat4& that)
         {
             return (*this = *this + that);
         }
 
-        inline my_type operator-(const my_type& that) const
+        inline mat4 operator-(const mat4& that) const
         {
-            my_type result;
-            int n;
-            for (n = 0; n < w; n++)
+            mat4 result;
+            for (int n = 0; n < 4; n++)
                 result.data[n] = data[n] - that.data[n];
             return result;
         }
 
-        inline my_type& operator-=(const my_type& that)
+        inline mat4& operator-=(const mat4& that)
         {
             return (*this = *this - that);
         }
 
-        inline my_type operator*(const float& that) const
+        inline mat4 operator*(const float& that) const
         {
-            my_type result;
-            int n;
-            for (n = 0; n < w; n++)
+            mat4 result;
+            for (int n = 0; n < 4; n++)
                 result.data[n] = data[n] * that;
             return result;
         }
 
-        inline my_type& operator*=(const float& that)
+        inline mat4& operator*=(const float& that)
         {
-            int n;
-            for (n = 0; n < w; n++)
+            for (int n = 0; n < 4; n++)
                 data[n] = data[n] * that;
             return *this;
         }
 
         // Matrix multiply.
-        // TODO: This only works for square matrices. Need more template skill to make a non-square version.
-        inline my_type operator*(const my_type& that) const
+        inline mat4 operator*(const mat4& that) const
         {
-            my_type result(0);
+            mat4 result(0);
 
-            for (int j = 0; j < w; j++)
+            for (int j = 0; j < 4; j++)
             {
-                for (int i = 0; i < h; i++)
+                for (int i = 0; i < 4; i++)
                 {
-                    float sum(0);
-
-                    for (int n = 0; n < w; n++)
+                    float sum = 0.0f;
+                    for (int n = 0; n < 4; n++)
                     {
                         sum += data[n][i] * that[j][n];
                     }
@@ -401,7 +406,7 @@ namespace vmath
             return result;
         }
 
-        inline my_type& operator*=(const my_type& that)
+        inline mat4& operator*=(const mat4& that)
         {
             return (*this = *this * that);
         }
@@ -411,14 +416,12 @@ namespace vmath
         inline operator float*() { return &data[0][0]; }
         inline operator const float*() const { return &data[0][0]; }
 
-        inline matNM<h, w> transpose(void) const
+        inline mat4 transpose(void) const
         {
-            matNM<h, w> result;
-            int x, y;
-
-            for (y = 0; y < w; y++)
+            mat4 result;
+            for (int y = 0; y < 4; y++)
             {
-                for (x = 0; x < h; x++)
+                for (int x = 0; x < 4; x++)
                 {
                     result[x][y] = data[y][x];
                 }
@@ -427,11 +430,11 @@ namespace vmath
             return result;
         }
 
-        static inline my_type identity()
+        static inline mat4 identity()
         {
-            my_type result(0);
+            mat4 result(0);
 
-            for (int i = 0; i < w; i++)
+            for (int i = 0; i < 4; i++)
             {
                 result[i][i] = 1;
             }
@@ -439,43 +442,17 @@ namespace vmath
             return result;
         }
 
-        static inline int width(void) { return w; }
-        static inline int height(void) { return h; }
-
     protected:
         // Column primary data (essentially, array of vectors)
-        vecN<h> data[w];
+        vec4 data[4];
 
         // Assignment function - called from assignment operator and copy constructor.
-        inline void assign(const matNM& that)
+        inline void assign(const mat4& that)
         {
-            int n;
-            for (n = 0; n < w; n++)
+            for (int n = 0; n < 4; n++)
                 data[n] = that.data[n];
         }
     };
-
-    class mat4 : public matNM<4, 4>
-    {
-    public:
-        typedef matNM<4, 4> base;
-
-        inline mat4() {}
-        inline mat4(const mat4& that) : base(that) {}
-        inline mat4(const base& that) : base(that) {}
-        inline mat4(const vecN<4>& v) : base(v) {}
-        inline mat4(const vecN<4>& v0,
-            const vecN<4>& v1,
-            const vecN<4>& v2,
-            const vecN<4>& v3)
-        {
-            base::data[0] = v0;
-            base::data[1] = v1;
-            base::data[2] = v2;
-            base::data[3] = v3;
-        }
-    };
-
 
     static inline mat4 perspective(float fovy, float aspect, float n, float f)
     {
@@ -663,9 +640,9 @@ namespace vmath
                 atan2f(2 * (w*z + x*y), 1 - 2 * (y*y + z*z)));
         }
 
-        inline matNM<4, 4> asMatrix() const
+        inline mat4 asMatrix() const
         {
-            matNM<4, 4> m;
+            mat4 m;
 
             const float xx = x * x;
             const float yy = y * y;
@@ -726,15 +703,12 @@ namespace vmath
         return a >= b ? a : b;
     }
 
-    template <const int N, const int M>
-    static inline vecN<N> operator*(const vecN<M>& vec, const matNM<N, M>& mat)
+    static inline vec4 operator*(const vec4& vec, const mat4& mat)
     {
-        int n, m;
-        vecN<N> result(0);
-
-        for (m = 0; m < M; m++)
+        vec4 result = vec4(0.0f);
+        for (int m = 0; m < 4; m++)
         {
-            for (n = 0; n < N; n++)
+            for (int n = 0; n < 4; n++)
             {
                 result[n] += vec[m] * mat[n][m];
             }
