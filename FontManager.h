@@ -25,7 +25,7 @@ class FontManager
     stbtt_fontinfo fontInfo;
     unsigned char *loadedFontFile;
 
-    const int verticesPerChar = 6;
+    const int verticesPerChar = 4;
     void AddToFontTexture(CharInfo& charInfo);
     CharInfo& GetCharacterInfo(int fontPixelHeight, int character);
 public:

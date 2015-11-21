@@ -14,15 +14,17 @@ class ShipHud
     GLuint xyCompassOffset;
     GLuint yzCompassOffset;
     GLuint zxCompassOffset;
-    vmath::mat4 xyCompassTranslation;
-    vmath::mat4 yzCompassTranslation;
-    vmath::mat4 zxCompassTranslation;
+    vmath::mat4 xyCompassMatrix;
+    vmath::mat4 yzCompassMatrix;
+    vmath::mat4 zxCompassMatrix;
 
     GLuint compassVao;
     GLuint compassVertexBuffer;
     GLuint compassTexture;
 
     // Text data
+    vmath::mat4 textScale;
+
     GLuint textVao;
     GLuint textVertexBuffer;
     GLsizei textVertexCount;
@@ -33,6 +35,7 @@ class ShipHud
     GLint mvLocation;
 
     FontManager* fontManager;
+    float hudDepth;
 
     // Holds the compass rotations in degrees.
     vmath::vec3 xyzCompassRotations;

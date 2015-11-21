@@ -1,7 +1,5 @@
-#include "AsteroidaGraphica.h"
+#include "Logger.h"
 #include "SoundManager.h"
-
-
 
 SoundManager::SoundManager()
 {
@@ -17,21 +15,21 @@ bool SoundManager::LoadSounds()
     soundBuffers[THRUST] = new sf::SoundBuffer();
     if (!soundBuffers[THRUST]->loadFromFile("sounds/thrust.ogg"))
     {
-        AsteroidaGraphica::Log->Log(Logger::LogType::ERR, "Could not load the thrust sound!");
+        Logger::LogError("Could not load the thrust sound!");
         return false;
     }
 
     soundBuffers[BUTTON_TOGGLE] = new sf::SoundBuffer();
     if (!soundBuffers[BUTTON_TOGGLE]->loadFromFile("sounds/button_toggle.ogg"))
     {
-        AsteroidaGraphica::Log->Log(Logger::LogType::ERR, "Could not load the button toggle sound!");
+        Logger::LogError("Could not load the button toggle sound!");
         return false;
     }
 
     soundBuffers[ROTATE] = new sf::SoundBuffer();
     if (!soundBuffers[ROTATE]->loadFromFile("sounds/rotate.ogg"))
     {
-        AsteroidaGraphica::Log->Log(Logger::LogType::ERR, "Could not load the rotate sound!");
+        Logger::LogError("Could not load the rotate sound!");
         return false;
     }
 

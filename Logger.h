@@ -4,7 +4,7 @@
 #include <fstream>
 #include <SFML\System.hpp>
 
-#include "Version.h"
+#include "Constants.h"
 
 // A simple class for logging program events out to a file.
 class Logger : sf::NonCopyable
@@ -13,6 +13,8 @@ public:
     enum LogType { DEBUG, INFO, WARN, ERR };
 
 private:
+    static Logger *LogInstance;
+
     std::ofstream logFile;
 
     // Logs the current time out to the log file.
@@ -51,28 +53,53 @@ public:
 
         if (logFile.is_open())
         {
-            logFile << Version::NAME << " " << Version::MAJOR_VERSION << "." << Version::MINOR_VERSION << std::endl << std::endl;
+            logFile << "Application Starting..." << std::endl;
         }
     }
 
     // Logs an informational message
-    void Log(const char* message)
+    void LogInternal(const char* message)
     {
-        Log(LogType::INFO, message);
+        LogInternal(LogType::INFO, message);
     }
 
     // Logs a message out the logger
-    void Log(LogType logType, const char* message)
+    void LogInternal(LogType logType, const char* message)
     {
         LogTime();
         logFile << GetLogType(logType) << message << std::endl;
     }
 
     // Logs a message out the logger with an error code for diagnosis
-    void Log(LogType logType, const char* message, int errorCode)
+    void LogInternal(LogType logType, const char* message, int errorCode)
     {
         LogTime();
         logFile << GetLogType(logType) << message << ": " << errorCode << std::endl;
+    }
+
+    static void Log(const char* message)
+    {
+        Logger::LogInstance->LogInternal(message);
+    }
+
+    static void LogError(const char* message)
+    {
+        Logger::LogInstance->LogInternal(LogType::ERR, message);
+    }
+
+    static void LogErrorCode(const char* message, int errorCode)
+    {
+        Logger::LogInstance->LogInternal(LogType::ERR, message, errorCode);
+    }
+
+    static void Setup()
+    {
+        LogInstance = new Logger("asteroid-graphica.log");
+    }
+
+    static void Shutdown()
+    {
+        delete LogInstance;
     }
 
     // Destructs the logger

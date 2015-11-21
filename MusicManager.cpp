@@ -1,8 +1,7 @@
 #include <sstream>
 #include <thread>
 #include <SFML\System.hpp>
-#include <SFML\Window.hpp> // TEMPORARY debugging code (mostly just for testing area and mood delta]
-#include "AsteroidaGraphica.h"
+#include "Logger.h"
 #include "MusicManager.h"
 
 MusicManager::MusicManager()
@@ -27,7 +26,7 @@ bool MusicManager::LoadSong(Area area, const char* songName)
     {
         std::stringstream errStream;
         errStream << "Could not load the " << songName << " song.";
-        AsteroidaGraphica::Log->Log(Logger::LogType::ERR, errStream.str().c_str());
+        Logger::LogError(errStream.str().c_str());
         return false;
     }
     
@@ -123,16 +122,6 @@ void MusicManager::Run()
                 // We exited a pause phase, so unpause the currently-active music.
                 musicData[currentArea][currentSong]->play();
                 wasPaused = false;
-            }
-
-            // TODO debug code remove
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::U))
-            {
-                HeightenMood();
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J))
-            {
-                LowerMood();
             }
         }
 

@@ -1,7 +1,7 @@
 #include <string>
 #include <sstream>
-#include "AsteroidaGraphica.h"
 #include "ImageManager.h"
+#include "Logger.h"
 
 ImageManager::ImageManager()
 {
@@ -44,7 +44,7 @@ GLuint ImageManager::AddImage(const char* filename)
     {
         std::stringstream errStream;
         errStream << "Failed to load image:" << stbi_failure_reason();
-        AsteroidaGraphica::Log->Log(Logger::ERR,  errStream.str().c_str());
+        Logger::LogError(errStream.str().c_str());
     }
 
     return 0;

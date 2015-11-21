@@ -4,7 +4,7 @@
 #include <thread>
 #include "FontManager.h"
 #include "ImageManager.h"
-#include "Logger.hpp"
+#include "Logger.h"
 #include "MusicManager.h"
 #include "Physica.h"
 #include "ShaderManager.h"
@@ -45,18 +45,17 @@ class AsteroidaGraphica
     MusicManager musicManager;
     sf::Thread musicThread;
 
-    Version::Status LoadFirstTimeGraphics();
-    Version::Status LoadAssets(GLuint& compassTexture);
+    Constants::Status LoadFirstTimeGraphics();
+    Constants::Status LoadAssets(GLuint& compassTexture);
     void LogGraphicsSettings();
     void UpdatePerspective(unsigned int width, unsigned int height);
 public:
-    // Held here as a common storage place.
-    static std::unique_ptr<Logger> Log;
     static Version Version;
+    static Constants Constant;
 
     AsteroidaGraphica();
-    Version::Status Initialize();
-    Version::Status Run();
+    Constants::Status Initialize();
+    Constants::Status Run();
     void Deinitialize();
 };
 

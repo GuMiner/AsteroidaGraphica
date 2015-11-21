@@ -179,15 +179,11 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
         float textureXEnd = (float)(charInfo.textureX + charInfo.width) / (float)width;
         float textureYEnd = (float)(charInfo.textureY + charInfo.height) / (float)height;
 
-        // Lower-left, upper-left, lower-right (CW triangle)
-        vertices[i*verticesPerChar + 0].Set(xStart, yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureYEnd);
-        vertices[i*verticesPerChar + 1].Set(xStart, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
-        vertices[i*verticesPerChar + 2].Set(xDepth, yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
-
-        // Lower-left, upper-left, upper-right (CW triangle)
-        vertices[i*verticesPerChar + 3].Set(xDepth, yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
-        vertices[i*verticesPerChar + 4].Set(xStart, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
-        vertices[i*verticesPerChar + 5].Set(xDepth, yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureY);
+        // Triangle fan. First position is at start, then +x, +x+y, +y
+        vertices[i*verticesPerChar + 0].Set(xStart, -yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
+        vertices[i*verticesPerChar + 1].Set(xStart, -yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureYEnd);
+        vertices[i*verticesPerChar + 2].Set(xDepth, -yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
+        vertices[i*verticesPerChar + 3].Set(xDepth, -yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureY);
 
         lastXPos += advanceWidth;
     }
@@ -198,6 +194,8 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
 // TODO some of this code should remain, some should leave (currently too vague)
 void FontManager::RenderSentenceVertices(GLuint vao, GLuint vbo, GLint projLocation, GLint mvLocation, vmath::mat4& perspectiveMatrix, vmath::mat4& mvMatrix, int vertexCount)
 {
+    glDisable(GL_CULL_FACE);
+
     // Bind in the texture and vertices we're using.
     glBindVertexArray(vao);
 
@@ -209,7 +207,25 @@ void FontManager::RenderSentenceVertices(GLuint vao, GLuint vbo, GLint projLocat
 
     // Draw the text
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    
+    // glDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
+    // FW: this should really be embedded in whatever data we return back, or we should just return an ID.
+    int fanCount = vertexCount / verticesPerChar;
+    GLint* startingElements = new GLint[fanCount];
+    GLsizei* elementCounts = new GLsizei[fanCount];
+    int currentCount = 0;
+    for (int i = 0; i < fanCount; i++)
+    {
+        startingElements[i] = currentCount*verticesPerChar;
+        elementCounts[i] = verticesPerChar;
+        ++currentCount;
+    }
+
+    glMultiDrawArrays(GL_TRIANGLE_FAN, startingElements, elementCounts, fanCount);
+    delete[] startingElements;
+    delete[] elementCounts;
+
+    glEnable(GL_CULL_FACE);
 }
 
 FontManager::~FontManager()

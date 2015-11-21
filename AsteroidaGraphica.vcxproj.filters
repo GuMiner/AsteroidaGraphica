@@ -18,27 +18,18 @@
     <Filter Include="Header Files\Managers">
       <UniqueIdentifier>{24a1f4b5-b492-4d22-953b-5c1e332d8287}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content\Shaders">
+      <UniqueIdentifier>{70f1b706-9333-4f5b-a3f1-35a7dd3049eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Physica.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StringUtils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShipHud.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.h">
@@ -65,12 +56,24 @@
     <ClInclude Include="MusicManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.hpp">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Physica.cpp">
@@ -100,10 +103,28 @@
     <ClCompile Include="MusicManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Content</Filter>
+    </None>
+    <None Include="shaders\render.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\render.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\texRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\texRender.vs">
+      <Filter>Content\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

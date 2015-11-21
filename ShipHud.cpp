@@ -4,17 +4,19 @@
 
 ShipHud::ShipHud()
 {
+    hudDepth = -1.0f;
     compassSize = 1.0f;
     float compassDepth = -8.2f;
     float compassHeight = -3.2f;
 
-    xyCompassTranslation = vmath::translate(-6.0f, compassHeight, compassDepth);
-    yzCompassTranslation = vmath::translate(-4.8f, compassHeight, compassDepth);
-    zxCompassTranslation = vmath::translate(-3.6f, compassHeight, compassDepth);
+    xyCompassMatrix = vmath::translate(-6.0f, compassHeight, compassDepth);
+    yzCompassMatrix = vmath::translate(-4.8f, compassHeight, compassDepth);
+    zxCompassMatrix = vmath::translate(-3.6f, compassHeight, compassDepth);
 
     xyzCompassRotations = vmath::vec3(0.0f, 0.0f, 0.0f);
 
-    textTranslation = vmath::translate(-1.0f, -1.0f, -4.0f) * vmath::scale(0.3f, 0.3f, 0.3f);
+    textScale = vmath::scale(0.02f, 0.02f, 0.02f);
+    textTranslation = vmath::translate(0.0f, 0.0f, hudDepth) * textScale;
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -85,7 +87,7 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
     combinedRotationStream.precision(5);
     combinedRotationStream << vmath::degrees(compassRotations[0]) << "X," << vmath::degrees(compassRotations[1]) << "Y," << vmath::degrees(compassRotations[2]) << "Z";
     textVertexCount = fontManager->GetSentenceVertexCount(combinedRotationStream.str());
-    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(combinedRotationStream.str(), 40, vmath::vec3(1.0f, 0.5f, 1.0f));
+    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(combinedRotationStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
 
     colorTextureVertex::TransferToOpenGl(textVertices, textVertexCount);
     delete[] textVertices;
@@ -103,19 +105,19 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, perspectiveMatrix);
 
     // Draw the XY compass.
-    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, xyCompassTranslation * vmath::rotate(xyzCompassRotations[0], vmath::vec3(0, 0, -1)));
+    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, xyCompassMatrix * vmath::rotate(xyzCompassRotations[0], vmath::vec3(0, 0, -1)));
 
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, xyCompassOffset, compassVertexCount);
 
     // YZ compass
-    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, yzCompassTranslation * vmath::rotate(xyzCompassRotations[1], vmath::vec3(0, 0, -1)));
+    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, yzCompassMatrix * vmath::rotate(xyzCompassRotations[1], vmath::vec3(0, 0, -1)));
 
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, yzCompassOffset, compassVertexCount);
 
     // ZX compass
-    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, zxCompassTranslation * vmath::rotate(xyzCompassRotations[2], vmath::vec3(0, 0, -1)));
+    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, zxCompassMatrix * vmath::rotate(xyzCompassRotations[2], vmath::vec3(0, 0, -1)));
 
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);

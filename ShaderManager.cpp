@@ -1,4 +1,4 @@
-#include "AsteroidaGraphica.h"
+#include "Logger.h"
 #include "StringUtils.hpp"
 #include "ShaderManager.h"
 
@@ -24,7 +24,7 @@ bool ShaderManager::CreateShader(GLenum shaderType, const char *shaderSource, GL
         
         glGetShaderInfoLog(shader, 1024, &len, buffer);
         logStream << "Error: " << glewGetErrorString(glGetError()) << " " << buffer;
-        AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
+        Logger::LogError(logStream.str().c_str());
         return false;
     }
 
@@ -48,14 +48,14 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
     if (!StringUtils::LoadStringFromFile(vsFilenameStream.str().c_str(), vsShader))
     {
         logStream << "Could not load vertex shader: " << vsShader << "!";
-        AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
+        Logger::LogError(logStream.str().c_str());
         return false;
     }
 
     if (!StringUtils::LoadStringFromFile(fsFilenameStream.str().c_str(), fsShader))
     {
         logStream << "Could not load fragment shader: " << fsShader << "!";
-        AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
+        Logger::LogError(logStream.str().c_str());
         return false;
     }
 
@@ -84,7 +84,7 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
         GLint len;
         glGetProgramInfoLog(program, 1024, &len, buffer);
         logStream << glewGetErrorString(glGetError()) << " " << buffer;
-        AsteroidaGraphica::Log->Log(Logger::ERR, logStream.str().c_str());
+        Logger::LogError(logStream.str().c_str());
         return false;
     }
 

@@ -20,7 +20,7 @@
 #pragma comment(lib, "lib/sfml-window-d")
 #endif
 
-std::unique_ptr<Logger> AsteroidaGraphica::Log;
+const char* Version::NAME;
 
 AsteroidaGraphica::AsteroidaGraphica()
     : physicsManager(), physicaThread(&Physica::Run, &physicsManager), musicThread(&MusicManager::Run, &musicManager)
@@ -31,18 +31,18 @@ void AsteroidaGraphica::LogGraphicsSettings()
 {
     std::stringstream graphicsSettings;
     graphicsSettings << "OpenGL vendor: " << glGetString(GL_VENDOR) << ", version " << glGetString(GL_VERSION) << ", renderer " << glGetString(GL_RENDERER);
-    AsteroidaGraphica::Log->Log(graphicsSettings.str().c_str());
+    Logger::Log(graphicsSettings.str().c_str());
 }
 
 // Ensures our viewport letterboxes when it doesn't match the 16:9 aspect ratio.
 void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int height)
 {
     // Letterboxing is done at the top and bottom.
-    float necessaryWidth = (float)height * Version::ASPECT;
+    float necessaryWidth = (float)height * Constants::ASPECT;
     if (necessaryWidth > width)
     {
         // Letterbox the top and the bottom of the screen so that the aspect ratio is met
-        float effectiveHeight = (float)width / Version::ASPECT;
+        float effectiveHeight = (float)width / Constants::ASPECT;
         float heightDelta = ((float)height - effectiveHeight) / 2.0f;
         glViewport(0, (int)heightDelta, (GLsizei)width, (GLsizei)effectiveHeight);
     }
@@ -54,25 +54,25 @@ void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int heigh
     }
 }
 
-Version::Status AsteroidaGraphica::Initialize()
+Constants::Status AsteroidaGraphica::Initialize()
 {
     glewExperimental = TRUE;
     physicaThread.launch();
     musicThread.launch();
-    AsteroidaGraphica::Log->Log("Physica Thread Started!");
+    Logger::Log("Physica Thread Started!");
 
-    return Version::Status::OK;
+    return Constants::Status::OK;
 }
 
 // Loads first time graphics settings.
-Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
+Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 {
     // GLEW
     GLenum err = glewInit();
     if (err != GLEW_OK)
     {
-        AsteroidaGraphica::Log->Log(Logger::ERR, "GLEW startup failure", err);
-        return Version::Status::BAD_GLEW;
+        Logger::LogErrorCode("GLEW startup failure", err);
+        return Constants::Status::BAD_GLEW;
     }
 
     LogGraphicsSettings();
@@ -92,23 +92,23 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     glDepthFunc(GL_LEQUAL);
 
     // Perspective display
-    perspectiveMatrix = vmath::perspective(Version::FOV_Y, Version::ASPECT, Version::NEAR_PLANE, Version::FAR_PLANE);
+    perspectiveMatrix = vmath::perspective(Constants::FOV_Y, Constants::ASPECT, Constants::NEAR_PLANE, Constants::FAR_PLANE);
 
     // Shaders
-    AsteroidaGraphica::Log->Log("Shader creation...");
+    Logger::Log("Shader creation...");
     if (!shaderManager.CreateShaderProgram("render", &flatShaderProgram))
     {
-        return Version::Status::BAD_SHADERS;
+        return Constants::Status::BAD_SHADERS;
     }
 
     if (!shaderManager.CreateShaderProgram("texRender", &textureShaderProgram))
     {
-        return Version::Status::BAD_SHADERS;
+        return Constants::Status::BAD_SHADERS;
     }
 
     if (!shaderManager.CreateShaderProgram("flatTexRender", &flatTextureShaderProgram))
     {
-        return Version::Status::BAD_SHADERS;
+        return Constants::Status::BAD_SHADERS;
     }
 
     mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
@@ -117,11 +117,11 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     projTexLocation = glGetUniformLocation(textureShaderProgram, "proj_matrix");
     projFlatTexLocation = glGetUniformLocation(flatTextureShaderProgram, "proj_matrix");
 
-    AsteroidaGraphica::Log->Log("Shader creation done!");
+    Logger::Log("Shader creation done!");
 
     GLuint compassTexture;
-    Version::Status status = LoadAssets(compassTexture);
-    if (status != Version::Status::OK)
+    Constants::Status status = LoadAssets(compassTexture);
+    if (status != Constants::Status::OK)
     {
         return status;
     }
@@ -155,75 +155,75 @@ Version::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     delete[] pVertices;
 
     // HUD
-    AsteroidaGraphica::Log->Log("HUD loading...");
+    Logger::Log("HUD loading...");
     shipHud.Initialize(&fontManager, compassTexture, projTexLocation, mvTexLocation);
-    AsteroidaGraphica::Log->Log("HUD loading done!");
+    Logger::Log("HUD loading done!");
 
-    return Version::Status::OK;
+    return Constants::Status::OK;
 }
 
 // Loads up the in-game assets at the start of the game.
-Version::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
+Constants::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
 {
     // Images
-    AsteroidaGraphica::Log->Log("Image loading...");
+    Logger::Log("Image loading...");
     compassTexture = imageManager.AddImage("images/DirectionDial.png");
     if (compassTexture == 0)
     {
-        return Version::Status::BAD_IMAGES;
+        return Constants::Status::BAD_IMAGES;
     }
 
-    AsteroidaGraphica::Log->Log("Image loading done!");
+    Logger::Log("Image loading done!");
 
     // Fonts
-    AsteroidaGraphica::Log->Log("Font loading...");
+    Logger::Log("Font loading...");
     if (!fontManager.LoadFont("fonts/DejaVuSans.ttf"))
     {
-        return Version::Status::BAD_FONT;
+        return Constants::Status::BAD_FONT;
     }
 
-    AsteroidaGraphica::Log->Log("Font loading done!");
+    Logger::Log("Font loading done!");
 
     // Sounds
-    AsteroidaGraphica::Log->Log("Sound loading...");
+    Logger::Log("Sound loading...");
     if (!soundManager.LoadSounds())
     {
-        return Version::Status::BAD_SOUND;
+        return Constants::Status::BAD_SOUND;
     }
-    AsteroidaGraphica::Log->Log("Sound loading done!");
+    Logger::Log("Sound loading done!");
 
     // Music
-    AsteroidaGraphica::Log->Log("Music loading...");
+    Logger::Log("Music loading...");
     if (!musicManager.LoadMusic())
     {
-        return Version::Status::BAD_MUSIC;
+        return Constants::Status::BAD_MUSIC;
     }
-    AsteroidaGraphica::Log->Log("Music loading done!");
+    Logger::Log("Music loading done!");
 
     musicManager.Pause(); // TODO temp code (annoying when developing)
 
     // Physica
-    AsteroidaGraphica::Log->Log("Physica loading...");
+    Logger::Log("Physica loading...");
     physicsManager.Initialize(&soundManager);
-    AsteroidaGraphica::Log->Log("Physica loading done!");
+    Logger::Log("Physica loading done!");
 
-    return Version::Status::OK;
+    return Constants::Status::OK;
 }
 
-Version::Status AsteroidaGraphica::Run()
+Constants::Status AsteroidaGraphica::Run()
 {
     // 24 depth bits, 8 stencil bits, 8x AA, major version 3.
-    AsteroidaGraphica::Log->Log("Graphics Initializing...");
+    Logger::Log("Graphics Initializing...");
     sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 3, 0, 0);
     sf::Window window(sf::VideoMode(1280, 720), Version::NAME, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, contextSettings);
-    Version::Status firstTimeSetup = LoadFirstTimeGraphics();
-    if (firstTimeSetup != Version::Status::OK)
+    Constants::Status firstTimeSetup = LoadFirstTimeGraphics();
+    if (firstTimeSetup != Constants::Status::OK)
     {
         return firstTimeSetup;
     }
 
     UpdatePerspective(window.getSize().x, window.getSize().y);
-    AsteroidaGraphica::Log->Log("Graphics Initialized!");
+    Logger::Log("Graphics Initialized!");
     
     sf::Clock clock;
     sf::Time clockStartTime;
@@ -303,7 +303,7 @@ Version::Status AsteroidaGraphica::Run()
             window.display();
         }
 
-        sf::Int64 sleepDelay = (1000000 / Version::MAX_FRAMERATE) - clock.getElapsedTime().asMicroseconds() - clockStartTime.asMicroseconds();
+        sf::Int64 sleepDelay = (1000000 / Constants::MAX_FRAMERATE) - clock.getElapsedTime().asMicroseconds() - clockStartTime.asMicroseconds();
         if (sleepDelay > 0)
         {
             std::chrono::microseconds sleepTime(sleepDelay);
@@ -312,7 +312,7 @@ Version::Status AsteroidaGraphica::Run()
     }
 
 
-    return Version::Status::OK;
+    return Constants::Status::OK;
 }
 
 void AsteroidaGraphica::Deinitialize()
@@ -321,43 +321,49 @@ void AsteroidaGraphica::Deinitialize()
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &pointBuffer);
 
-    AsteroidaGraphica::Log->Log("Music Thread Stopping...");
+    Logger::Log("Music Thread Stopping...");
     musicManager.Stop();
 
-    AsteroidaGraphica::Log->Log("Physica Thread Stopping...");
+    Logger::Log("Physica Thread Stopping...");
     physicsManager.Stop();
     physicaThread.wait();
-    AsteroidaGraphica::Log->Log("Physica Thread Stopped.");
+    Logger::Log("Physica Thread Stopped.");
 
     musicThread.wait();
-    AsteroidaGraphica::Log->Log("Music Thread Stopped.");
+    Logger::Log("Music Thread Stopped.");
 }
 
 // Runs the main application.
 int main(int argc, char* argv[])
 {
-    // Startup the log
+    // Startup 'static' stuff
     AsteroidaGraphica::Version = Version();
-    AsteroidaGraphica::Log = std::unique_ptr<Logger>(new Logger("asteroid-graphica.log"));
-    AsteroidaGraphica::Log->Log("Application Start!");
+    AsteroidaGraphica::Constant = Constants();
 
-    Version::Status runStatus;
+    Logger::Setup();
+    
+    std::stringstream startupDetails;
+    startupDetails << Version::NAME << " " << Version::MAJOR_VERSION << "." << Version::MINOR_VERSION << std::endl;
+    Logger::Log(startupDetails.str().c_str());
+
+    Constants::Status runStatus;
     std::unique_ptr<AsteroidaGraphica> asterioidaGraphica(new AsteroidaGraphica());
     
     // Run the application.
     runStatus = asterioidaGraphica->Initialize();
-    if (runStatus == Version::Status::OK)
+    if (runStatus == Constants::Status::OK)
     {
         runStatus = asterioidaGraphica->Run();
         asterioidaGraphica->Deinitialize();
     }
     else
     {
-        AsteroidaGraphica::Log->Log(Logger::ERR, "Could not initialize the main program!");
+        Logger::LogError("Could not initialize the main program!");
     }
 
     // Wait before closing for display purposes.
-    AsteroidaGraphica::Log->Log("Application End!");
+    Logger::Log("Application End!");
+    Logger::Shutdown();
     std::chrono::milliseconds sleepTime(1000);
     std::this_thread::sleep_for(sleepTime);
 

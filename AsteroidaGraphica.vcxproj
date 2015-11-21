@@ -126,9 +126,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageTexture.h" />
-    <ClInclude Include="Logger.hpp" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="MusicManager.h" />
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
@@ -143,7 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
+    <ClCompile Include="Constants.cpp" />
     <ClCompile Include="ImageManager.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MusicManager.cpp" />
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -151,11 +154,14 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="FontManager.cpp" />
-    <ClCompile Include="Version.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="shaders\render.fs" />
+    <None Include="shaders\render.vs" />
+    <None Include="shaders\texRender.fs" />
+    <None Include="shaders\texRender.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="DebugCode.txt" />
