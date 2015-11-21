@@ -252,7 +252,7 @@ namespace vmath
         return total;
     }
 
-    static inline vecN<3> cross(const vecN<3>& a, const vecN<3>& b)
+    static inline vec3 cross(const vec3& a, const vec3& b)
     {
         return vec3(a[1] * b[2] - b[1] * a[2],
             a[2] * b[0] - b[2] * a[0],
@@ -292,12 +292,8 @@ namespace vmath
     class mat4
     {
     public:
-        typedef class vec4 vector_type;
-
-        // Default constructor does nothing, just like built-in types
         inline mat4()
         {
-            // Uninitialized variable
         }
 
         // Copy constructor
@@ -328,7 +324,7 @@ namespace vmath
         }
 
         // Construction from vector
-        inline mat4(const vector_type& v)
+        inline mat4(const vec4& v)
         {
             for (int n = 0; n < 4; n++)
             {
@@ -411,8 +407,8 @@ namespace vmath
             return (*this = *this * that);
         }
 
-        inline vector_type& operator[](int n) { return data[n]; }
-        inline const vector_type& operator[](int n) const { return data[n]; }
+        inline vec4& operator[](int n) { return data[n]; }
+        inline const vec4& operator[](int n) const { return data[n]; }
         inline operator float*() { return &data[0][0]; }
         inline operator const float*() const { return &data[0][0]; }
 
@@ -473,7 +469,8 @@ namespace vmath
 
     static inline mat4 translate(float x, float y, float z)
     {
-        return mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+        return mat4(
+            vec4(1.0f, 0.0f, 0.0f, 0.0f),
             vec4(0.0f, 1.0f, 0.0f, 0.0f),
             vec4(0.0f, 0.0f, 1.0f, 0.0f),
             vec4(x, y, z, 1.0f));
@@ -490,7 +487,8 @@ namespace vmath
         const vec3 upN = normalize(up);
         const vec3 s = cross(f, upN);
         const vec3 u = cross(s, f);
-        const mat4 M = mat4(vec4(s[0], u[0], -f[0], 0.0f),
+        const mat4 M = mat4(
+            vec4(s[0], u[0], -f[0], 0.0f),
             vec4(s[1], u[1], -f[1], 0.0f),
             vec4(s[2], u[2], -f[2], 0.0f),
             vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -500,7 +498,8 @@ namespace vmath
 
     static inline mat4 scale(float x, float y, float z)
     {
-        return mat4(vec4(x, 0.0f, 0.0f, 0.0f),
+        return mat4(
+            vec4(x, 0.0f, 0.0f, 0.0f),
             vec4(0.0f, y, 0.0f, 0.0f),
             vec4(0.0f, 0.0f, z, 0.0f),
             vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -720,10 +719,8 @@ namespace vmath
     template <const int N>
     static inline vecN<N> operator/(const float s, const vecN<N>& v)
     {
-        int n;
         vecN<N> result;
-
-        for (n = 0; n < N; n++)
+        for (int n = 0; n < N; n++)
         {
             result[n] = s / v[n];
         }
