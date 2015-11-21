@@ -27,7 +27,7 @@ struct CharInfo
     int yOffset;
 };
 
-// Holds all of the cachaed bitmaps for the various character sizes of a character.
+// Holds all of the cached bitmaps for the various character sizes of a character.
 struct TextInfo
 {
     // Maps pixel size of a character into the related character info sizes.
@@ -35,4 +35,15 @@ struct TextInfo
 
     // Font ascent (unscaled)
     int ascent;
+};
+
+// Holds all the OpenGL information necessary to render a sentence
+struct SentenceInfo
+{
+    GLuint vao;
+    GLuint vertexBuffer;
+
+    GLsizei characterCount;
+    GLint *characterStartIndices;
+    GLsizei *characterVertexCounts;
 };

@@ -54,12 +54,7 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     colorTextureVertex::TransferToOpenGl(pVertices, totalVertexCount);
     delete[] pVertices;
 
-    // Create (but don't setup) the buffers to hold text data.
-    glGenVertexArrays(1, &textVao);
-    glBindVertexArray(textVao);
-
-    glGenBuffers(1, &textVertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
+    sentenceId = fontManager->CreateNewSentence();
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -78,19 +73,11 @@ void ShipHud::LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset
 void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
 {
     xyzCompassRotations = vmath::vec3(vmath::degrees(compassRotations[0]), vmath::degrees(compassRotations[1]), vmath::degrees(compassRotations[2]));
-
-    glBindVertexArray(textVao);
-    glBindBuffer(GL_ARRAY_BUFFER, textVertexBuffer);
-
-    // TODO break apart into separate strings that are drawn in one VBO.
+    
     std::stringstream combinedRotationStream;
     combinedRotationStream.precision(5);
     combinedRotationStream << vmath::degrees(compassRotations[0]) << "X," << vmath::degrees(compassRotations[1]) << "Y," << vmath::degrees(compassRotations[2]) << "Z";
-    textVertexCount = fontManager->GetSentenceVertexCount(combinedRotationStream.str());
-    colorTextureVertex *textVertices = fontManager->AllocateSentenceVertices(combinedRotationStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
-
-    colorTextureVertex::TransferToOpenGl(textVertices, textVertexCount);
-    delete[] textVertices;
+    fontManager->UpdateSentence(sentenceId, combinedRotationStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
 }
 
 // Renders the HUD of the ship.
@@ -122,8 +109,8 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);
 
-    // TODO testing text
-    fontManager->RenderSentenceVertices(textVao, textVertexBuffer, projLocation, mvLocation, perspectiveMatrix, textTranslation, textVertexCount);
+    // Draw our sentences
+    fontManager->RenderSentence(sentenceId, perspectiveMatrix, textTranslation);
 }
 
 ShipHud::~ShipHud()
@@ -131,7 +118,4 @@ ShipHud::~ShipHud()
     // Free up the ship HUD VAO and VBO
     glDeleteVertexArrays(1, &compassVao);
     glDeleteBuffers(1, &compassVertexBuffer);
-
-    glDeleteVertexArrays(1, &textVao);
-    glDeleteBuffers(1, &textVertexBuffer);
 }

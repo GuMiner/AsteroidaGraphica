@@ -24,10 +24,7 @@ class AsteroidaGraphica
 
     GLuint textureShaderProgram;
     GLint mvTexLocation, projTexLocation;
-
-    GLuint flatTextureShaderProgram;
-    GLint projFlatTexLocation;
-    
+        
     // TEST OBJECTS
     vmath::mat4 lookAtMatrix;
     GLuint vao;

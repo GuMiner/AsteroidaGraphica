@@ -106,16 +106,10 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return Constants::Status::BAD_SHADERS;
     }
 
-    if (!shaderManager.CreateShaderProgram("flatTexRender", &flatTextureShaderProgram))
-    {
-        return Constants::Status::BAD_SHADERS;
-    }
-
     mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
     proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
     mvTexLocation = glGetUniformLocation(textureShaderProgram, "mv_matrix");
     projTexLocation = glGetUniformLocation(textureShaderProgram, "proj_matrix");
-    projFlatTexLocation = glGetUniformLocation(flatTextureShaderProgram, "proj_matrix");
 
     Logger::Log("Shader creation done!");
 
@@ -177,7 +171,7 @@ Constants::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
 
     // Fonts
     Logger::Log("Font loading...");
-    if (!fontManager.LoadFont("fonts/DejaVuSans.ttf"))
+    if (!fontManager.LoadFont(&shaderManager, "fonts/DejaVuSans.ttf"))
     {
         return Constants::Status::BAD_FONT;
     }

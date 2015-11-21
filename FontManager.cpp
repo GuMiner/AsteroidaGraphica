@@ -1,6 +1,7 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include "Constants.h"
 #include "FontManager.h"
 
 FontManager::FontManager()
@@ -9,10 +10,21 @@ FontManager::FontManager()
     usedWidth = 0;
     usedHeight = 0;
     lastMaxHeight = 0;
+    nextSentenceId = 0;
 }
 
-bool FontManager::LoadFont(const char *fontName)
+bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
 {
+    /// Load in our shader for the font.
+    if (!shaderManager->CreateShaderProgram("fontRender", &fontShader))
+    {
+        return false;
+    }
+
+    mvLocation = glGetUniformLocation(fontShader, "mv_matrix");
+    projLocation = glGetUniformLocation(fontShader, "proj_matrix");
+
+    /// Load in the font file
     std::ifstream file(fontName, std::ios::binary | std::ios::ate);
     if (!file)
     {
@@ -191,45 +203,113 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
     return vertices;
 }
 
-// TODO some of this code should remain, some should leave (currently too vague)
-void FontManager::RenderSentenceVertices(GLuint vao, GLuint vbo, GLint projLocation, GLint mvLocation, vmath::mat4& perspectiveMatrix, vmath::mat4& mvMatrix, int vertexCount)
+// Creates a new sentence that can be referenced for drawing.
+int FontManager::CreateNewSentence()
 {
+    // Loads in the OpenGL components for this sentence.
+    SentenceInfo sentenceInfo;
+    glGenVertexArrays(1, &sentenceInfo.vao);
+    glBindVertexArray(sentenceInfo.vao);
+
+    glGenBuffers(1, &sentenceInfo.vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
+
+    sentenceInfo.characterCount = 0;
+    sentenceInfo.characterStartIndices = nullptr;
+    sentenceInfo.characterVertexCounts = nullptr;
+    sentences[nextSentenceId] = sentenceInfo;
+    ++nextSentenceId;
+    
+    return nextSentenceId - 1;
+}
+
+// Updates the graphical components of a sentence so it can be drawn.
+void FontManager::UpdateSentence(int sentenceId, std::string& sentence, int pixelHeight, vmath::vec3 textColor)
+{
+    SentenceInfo& sentenceInfo = sentences[sentenceId];
+
+    // Parse our the text textures
+    sentenceInfo.characterCount = sentence.size();
+    colorTextureVertex *vertices = AllocateSentenceVertices(sentence, pixelHeight, textColor);
+
+    // Send that data to OpenGL
+    glBindVertexArray(sentenceInfo.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
+
+    colorTextureVertex::TransferToOpenGl(vertices, GetSentenceVertexCount(sentence));
+    delete[] vertices;
+
+    // Update our character indices and vertex counts so we can do a multi-element drawing scheme.
+    if (sentenceInfo.characterStartIndices != nullptr)
+    {
+        delete[] sentenceInfo.characterStartIndices;
+    }
+
+    if (sentenceInfo.characterVertexCounts != nullptr)
+    {
+        delete[] sentenceInfo.characterVertexCounts;
+    }
+
+    GLint* startingElements = new GLint[sentenceInfo.characterCount];
+    GLsizei* elementCounts = new GLsizei[sentenceInfo.characterCount];
+    for (int i = 0; i < sentenceInfo.characterCount; i++)
+    {
+        startingElements[i] = i * verticesPerChar;
+        elementCounts[i] = verticesPerChar;
+    }
+
+    sentenceInfo.characterStartIndices = startingElements;
+    sentenceInfo.characterVertexCounts = elementCounts;
+}
+
+// Renders the specified sentence.
+void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath::mat4& mvMatrix)
+{
+    SentenceInfo& sentenceInfo = sentences[sentenceId];
+    if (sentenceInfo.characterStartIndices == nullptr)
+    {
+        // No sentence data to render, exit early.
+        return;
+    }
+
+    glUseProgram(fontShader);
     glDisable(GL_CULL_FACE);
 
     // Bind in the texture and vertices we're using.
-    glBindVertexArray(vao);
+    glBindVertexArray(sentenceInfo.vao);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
 
-    glUniformMatrix4fv(projLocation, 1, GL_FALSE, perspectiveMatrix);
+    glUniformMatrix4fv(projLocation, 1, GL_FALSE, perpective);
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mvMatrix);
 
     // Draw the text
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    
-    // glDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
-    // FW: this should really be embedded in whatever data we return back, or we should just return an ID.
-    int fanCount = vertexCount / verticesPerChar;
-    GLint* startingElements = new GLint[fanCount];
-    GLsizei* elementCounts = new GLsizei[fanCount];
-    int currentCount = 0;
-    for (int i = 0; i < fanCount; i++)
-    {
-        startingElements[i] = currentCount*verticesPerChar;
-        elementCounts[i] = verticesPerChar;
-        ++currentCount;
-    }
-
-    glMultiDrawArrays(GL_TRIANGLE_FAN, startingElements, elementCounts, fanCount);
-    delete[] startingElements;
-    delete[] elementCounts;
+    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
+    glMultiDrawArrays(GL_TRIANGLE_FAN, sentenceInfo.characterStartIndices, sentenceInfo.characterVertexCounts, sentenceInfo.characterCount);
 
     glEnable(GL_CULL_FACE);
 }
 
 FontManager::~FontManager()
 {
+    // Free all of our loaded OpenGL resources
+    for (std::map<int, SentenceInfo>::iterator iterator = sentences.begin(); iterator != sentences.end(); iterator++)
+    {
+        glDeleteVertexArrays(1, &iterator->second.vao);
+        glDeleteBuffers(1, &iterator->second.vertexBuffer);
+
+        if (iterator->second.characterStartIndices != nullptr)
+        {
+            delete[] iterator->second.characterStartIndices;
+        }
+
+        if (iterator->second.characterVertexCounts != nullptr)
+        {
+            delete[] iterator->second.characterVertexCounts;
+        }
+    }
+
     // Free all of the loaded font bitmaps at program end.
     for (std::map<int, TextInfo>::iterator iterator = fontData.begin(); iterator != fontData.end(); iterator++)
     {

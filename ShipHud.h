@@ -25,9 +25,8 @@ class ShipHud
     // Text data
     vmath::mat4 textScale;
 
-    GLuint textVao;
-    GLuint textVertexBuffer;
-    GLsizei textVertexCount;
+    // Single sentence data.
+    int sentenceId;
     vmath::mat4 textTranslation;
 
     // General shader and UI data

@@ -114,16 +114,22 @@
     <None Include="README.md">
       <Filter>Content</Filter>
     </None>
-    <None Include="shaders\render.fs">
-      <Filter>Content\Shaders</Filter>
-    </None>
-    <None Include="shaders\render.vs">
-      <Filter>Content\Shaders</Filter>
-    </None>
     <None Include="shaders\texRender.fs">
       <Filter>Content\Shaders</Filter>
     </None>
     <None Include="shaders\texRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\fontRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\fontRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\render.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\render.vs">
       <Filter>Content\Shaders</Filter>
     </None>
   </ItemGroup>
