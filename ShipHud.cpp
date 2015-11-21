@@ -15,8 +15,11 @@ ShipHud::ShipHud()
 
     xyzCompassRotations = vmath::vec3(0.0f, 0.0f, 0.0f);
 
-    textScale = vmath::scale(0.02f, 0.02f, 0.02f);
-    textTranslation = vmath::translate(0.0f, 0.0f, hudDepth) * textScale;
+    vmath::mat4 textScale = vmath::scale(0.02f, 0.02f, 0.02f);
+
+    xTextMatrix = vmath::translate(0.0f, 0.0f, hudDepth) * textScale;
+    yTextMatrix = vmath::translate(0.0f, 0.15f, hudDepth) * textScale;
+    zTextMatrix = vmath::translate(0.0f, -0.15f, hudDepth) * textScale;
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -54,7 +57,9 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     colorTextureVertex::TransferToOpenGl(pVertices, totalVertexCount);
     delete[] pVertices;
 
-    sentenceId = fontManager->CreateNewSentence();
+    xSentence = fontManager->CreateNewSentence();
+    ySentence = fontManager->CreateNewSentence();
+    zSentence = fontManager->CreateNewSentence();
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -74,10 +79,20 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
 {
     xyzCompassRotations = vmath::vec3(vmath::degrees(compassRotations[0]), vmath::degrees(compassRotations[1]), vmath::degrees(compassRotations[2]));
     
-    std::stringstream combinedRotationStream;
-    combinedRotationStream.precision(5);
-    combinedRotationStream << vmath::degrees(compassRotations[0]) << "X," << vmath::degrees(compassRotations[1]) << "Y," << vmath::degrees(compassRotations[2]) << "Z";
-    fontManager->UpdateSentence(sentenceId, combinedRotationStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
+    std::stringstream textOutputStream;
+    textOutputStream.precision(3);
+    textOutputStream << std::fixed;
+
+    textOutputStream << "XY: " << vmath::degrees(compassRotations[0]);
+    fontManager->UpdateSentence(xSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 1.0f, 0.0f));
+
+    textOutputStream.str("");
+    textOutputStream << "YZ: " << vmath::degrees(compassRotations[1]);
+    fontManager->UpdateSentence(ySentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
+
+    textOutputStream.str("");
+    textOutputStream << "ZX: " << vmath::degrees(compassRotations[2]);
+    fontManager->UpdateSentence(zSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 1.0f));
 }
 
 // Renders the HUD of the ship.
@@ -110,7 +125,9 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);
 
     // Draw our sentences
-    fontManager->RenderSentence(sentenceId, perspectiveMatrix, textTranslation);
+    fontManager->RenderSentence(xSentence, perspectiveMatrix, xTextMatrix);
+    fontManager->RenderSentence(ySentence, perspectiveMatrix, yTextMatrix);
+    fontManager->RenderSentence(zSentence, perspectiveMatrix, zTextMatrix);
 }
 
 ShipHud::~ShipHud()

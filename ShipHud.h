@@ -22,12 +22,15 @@ class ShipHud
     GLuint compassVertexBuffer;
     GLuint compassTexture;
 
-    // Text data
-    vmath::mat4 textScale;
-
-    // Single sentence data.
-    int sentenceId;
-    vmath::mat4 textTranslation;
+    // XYZ compass text information.
+    int xSentence;
+    vmath::mat4 xTextMatrix;
+    
+    int ySentence;
+    vmath::mat4 yTextMatrix;
+    
+    int zSentence;
+    vmath::mat4 zTextMatrix;
 
     // General shader and UI data
     GLint projLocation;
