@@ -23,6 +23,8 @@ class ShipHud
     GLuint compassTexture;
 
     // XYZ compass text information.
+    vmath::mat4 textScale;
+
     int xSentence;
     vmath::mat4 xTextMatrix;
     

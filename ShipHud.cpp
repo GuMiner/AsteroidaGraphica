@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include "ShipHud.h"
+#include <SFML\Window.hpp>
 
 ShipHud::ShipHud()
 {
@@ -15,11 +16,11 @@ ShipHud::ShipHud()
 
     xyzCompassRotations = vmath::vec3(0.0f, 0.0f, 0.0f);
 
-    vmath::mat4 textScale = vmath::scale(0.02f, 0.02f, 0.02f);
-
-    xTextMatrix = vmath::translate(0.0f, 0.0f, hudDepth) * textScale;
-    yTextMatrix = vmath::translate(0.0f, 0.15f, hudDepth) * textScale;
-    zTextMatrix = vmath::translate(0.0f, -0.15f, hudDepth) * textScale;
+    textScale = vmath::scale(0.02f, 0.02f, 0.02f);
+    
+    xTextMatrix = vmath::translate(-0.821f, -0.321f, hudDepth) * textScale;
+    yTextMatrix = vmath::translate(-0.659f, -0.321f, hudDepth) * textScale;
+    zTextMatrix = vmath::translate(-0.508f, -0.321f, hudDepth) * textScale;
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -83,15 +84,15 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
     textOutputStream.precision(3);
     textOutputStream << std::fixed;
 
-    textOutputStream << "XY: " << vmath::degrees(compassRotations[0]);
+    textOutputStream << "XY: " << xyzCompassRotations[0];
     fontManager->UpdateSentence(xSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 1.0f, 0.0f));
 
     textOutputStream.str("");
-    textOutputStream << "YZ: " << vmath::degrees(compassRotations[1]);
+    textOutputStream << "YZ: " << xyzCompassRotations[1];
     fontManager->UpdateSentence(ySentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 1.0f, 1.0f));
 
     textOutputStream.str("");
-    textOutputStream << "ZX: " << vmath::degrees(compassRotations[2]);
+    textOutputStream << "ZX: " << xyzCompassRotations[2];
     fontManager->UpdateSentence(zSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 1.0f));
 }
 
