@@ -1,6 +1,8 @@
 # AsteroidaGraphica
-## Asteroid Graphics
+## About
 --------------------
+
+AsteroidaGraphica is (being created) to be an infinite-world, futuristic, adventure and role-playing asteroid mining simulator.
 
 *This project is in progress; more details will be added when closer to completion*
 
