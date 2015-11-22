@@ -101,20 +101,12 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return Constants::Status::BAD_SHADERS;
     }
 
-    if (!shaderManager.CreateShaderProgram("texRender", &textureShaderProgram))
-    {
-        return Constants::Status::BAD_SHADERS;
-    }
-
     mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
     proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
-    mvTexLocation = glGetUniformLocation(textureShaderProgram, "mv_matrix");
-    projTexLocation = glGetUniformLocation(textureShaderProgram, "proj_matrix");
 
     Logger::Log("Shader creation done!");
 
-    GLuint compassTexture;
-    Constants::Status status = LoadAssets(compassTexture);
+    Constants::Status status = LoadAssets();
     if (status != Constants::Status::OK)
     {
         return status;
@@ -150,25 +142,18 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 
     // HUD
     Logger::Log("HUD loading...");
-    shipHud.Initialize(&fontManager, compassTexture, projTexLocation, mvTexLocation);
+    if (!shipHud.Initialize(&shaderManager, &fontManager, &imageManager))
+    {
+        return Constants::Status::BAD_HUD;
+    }
     Logger::Log("HUD loading done!");
 
     return Constants::Status::OK;
 }
 
 // Loads up the in-game assets at the start of the game.
-Constants::Status AsteroidaGraphica::LoadAssets(GLuint& compassTexture)
+Constants::Status AsteroidaGraphica::LoadAssets()
 {
-    // Images
-    Logger::Log("Image loading...");
-    compassTexture = imageManager.AddImage("images/DirectionDial.png");
-    if (compassTexture == 0)
-    {
-        return Constants::Status::BAD_IMAGES;
-    }
-
-    Logger::Log("Image loading done!");
-
     // Fonts
     Logger::Log("Font loading...");
     if (!fontManager.LoadFont(&shaderManager, "fonts/DejaVuSans.ttf"))
@@ -289,8 +274,7 @@ Constants::Status AsteroidaGraphica::Run()
                 }
             }
 
-            // Draws our HUD dials
-            glUseProgram(textureShaderProgram);
+            // Draws our HUD
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
             shipHud.UpdateShipPositition(physicsManager.shipPosition);
             shipHud.RenderHud(perspectiveMatrix, clock);

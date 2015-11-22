@@ -21,10 +21,7 @@ class AsteroidaGraphica
     vmath::mat4 perspectiveMatrix;
     GLuint flatShaderProgram;
     GLint mv_location, proj_location;
-
-    GLuint textureShaderProgram;
-    GLint mvTexLocation, projTexLocation;
-        
+            
     // TEST OBJECTS
     vmath::mat4 lookAtMatrix;
     GLuint vao;
@@ -43,7 +40,7 @@ class AsteroidaGraphica
     sf::Thread musicThread;
 
     Constants::Status LoadFirstTimeGraphics();
-    Constants::Status LoadAssets(GLuint& compassTexture);
+    Constants::Status LoadAssets();
     void LogGraphicsSettings();
     void UpdatePerspective(unsigned int width, unsigned int height);
 public:

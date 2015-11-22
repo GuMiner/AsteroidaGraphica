@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\System.hpp>
 #include <GL/glew.h>
+#include "ImageManager.h"
 #include "FontManager.h"
 #include "Vertex.h"
 #include "vmath.hpp"
@@ -17,6 +18,10 @@ class ShipHud
     vmath::mat4 xyCompassMatrix;
     vmath::mat4 yzCompassMatrix;
     vmath::mat4 zxCompassMatrix;
+
+    GLuint compassTextureProgram;
+    GLint projLocation;
+    GLint mvLocation;
 
     GLuint compassVao;
     GLuint compassVertexBuffer;
@@ -42,11 +47,7 @@ class ShipHud
 
     int zPosSentence;
     vmath::mat4 zPosTextMatrix;
-
-    // General shader and UI data
-    GLint projLocation;
-    GLint mvLocation;
-
+    
     FontManager* fontManager;
     float hudDepth;
 
@@ -56,7 +57,7 @@ class ShipHud
     void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
 public:
     ShipHud();
-    void Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation);
+    bool Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager);
     void UpdateCompassRotations(vmath::vec3& compassRotations);
     void UpdateShipPositition(vmath::vec3& shipPosition);
     void RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock);

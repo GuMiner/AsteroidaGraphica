@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include "Logger.h"
 #include "ShipHud.h"
 #include <SFML\Window.hpp>
 
@@ -27,14 +28,30 @@ ShipHud::ShipHud()
     zPosTextMatrix = vmath::translate(-0.508f, -0.296f, hudDepth) * textScale;
 }
 
-void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
+bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)
 {
     this->fontManager = fontManager;
 
-    this->compassTexture = compassTexture;
-    this->projLocation = projLocation;
-    this->mvLocation = mvLocation;
+    // Load the image texture and image shader
+    
+    Logger::Log("Loading compass texture shader program...");
+    if (!shaderManager->CreateShaderProgram("texRender", &compassTextureProgram))
+    {
+        return false;
+    }
+    mvLocation = glGetUniformLocation(compassTextureProgram, "mv_matrix");
+    projLocation = glGetUniformLocation(compassTextureProgram, "proj_matrix");
+    Logger::Log("Compass shader loading complete!");
 
+    Logger::Log("Loading compass texture...");
+    compassTexture = imageManager->AddImage("images/DirectionDial.png");
+    if (compassTexture == 0)
+    {
+        return false;
+    }
+
+    Logger::Log("Compass texture image loading done!");
+    
     // Create our general compass information
     compassVertexCount = 6;
 
@@ -69,6 +86,8 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     xPosSentence = fontManager->CreateNewSentence();
     yPosSentence = fontManager->CreateNewSentence();
     zPosSentence = fontManager->CreateNewSentence();
+
+    return true;
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -127,6 +146,7 @@ void ShipHud::UpdateShipPositition(vmath::vec3& shipPosition)
 void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 {
     // Bind in the texture and vertices we're using.
+    glUseProgram(compassTextureProgram);
     glBindVertexArray(compassVao);
     
     glActiveTexture(GL_TEXTURE0);
