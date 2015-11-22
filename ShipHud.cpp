@@ -21,6 +21,10 @@ ShipHud::ShipHud()
     xTextMatrix = vmath::translate(-0.821f, -0.321f, hudDepth) * textScale;
     yTextMatrix = vmath::translate(-0.659f, -0.321f, hudDepth) * textScale;
     zTextMatrix = vmath::translate(-0.508f, -0.321f, hudDepth) * textScale;
+
+    xPosTextMatrix = vmath::translate(-0.821f, -0.296f, hudDepth) * textScale;
+    yPosTextMatrix = vmath::translate(-0.659f, -0.296f, hudDepth) * textScale;
+    zPosTextMatrix = vmath::translate(-0.508f, -0.296f, hudDepth) * textScale;
 }
 
 void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation)
@@ -61,6 +65,10 @@ void ShipHud::Initialize(FontManager* fontManager, GLuint compassTexture, GLint 
     xSentence = fontManager->CreateNewSentence();
     ySentence = fontManager->CreateNewSentence();
     zSentence = fontManager->CreateNewSentence();
+
+    xPosSentence = fontManager->CreateNewSentence();
+    yPosSentence = fontManager->CreateNewSentence();
+    zPosSentence = fontManager->CreateNewSentence();
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
@@ -96,6 +104,25 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
     fontManager->UpdateSentence(zSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 1.0f));
 }
 
+// Updates the ship position text.
+void ShipHud::UpdateShipPositition(vmath::vec3& shipPosition)
+{
+    std::stringstream textOutputStream;
+    textOutputStream.precision(2);
+    textOutputStream << std::fixed;
+
+    textOutputStream << "X: " << shipPosition[0];
+    fontManager->UpdateSentence(xPosSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 0.0f));
+
+    textOutputStream.str("");
+    textOutputStream << "Y: " << shipPosition[1];
+    fontManager->UpdateSentence(yPosSentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 1.0f, 0.0f));
+
+    textOutputStream.str("");
+    textOutputStream << "Z: " << shipPosition[1];
+    fontManager->UpdateSentence(zPosSentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 0.0f, 1.0f));
+}
+
 // Renders the HUD of the ship.
 void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 {
@@ -129,6 +156,10 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     fontManager->RenderSentence(xSentence, perspectiveMatrix, xTextMatrix);
     fontManager->RenderSentence(ySentence, perspectiveMatrix, yTextMatrix);
     fontManager->RenderSentence(zSentence, perspectiveMatrix, zTextMatrix);
+    
+    fontManager->RenderSentence(xPosSentence, perspectiveMatrix, xPosTextMatrix);
+    fontManager->RenderSentence(yPosSentence, perspectiveMatrix, yPosTextMatrix);
+    fontManager->RenderSentence(zPosSentence, perspectiveMatrix, zPosTextMatrix);
 }
 
 ShipHud::~ShipHud()

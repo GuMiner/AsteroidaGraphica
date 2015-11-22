@@ -34,6 +34,15 @@ class ShipHud
     int zSentence;
     vmath::mat4 zTextMatrix;
 
+    int xPosSentence;
+    vmath::mat4 xPosTextMatrix;
+
+    int yPosSentence;
+    vmath::mat4 yPosTextMatrix;
+
+    int zPosSentence;
+    vmath::mat4 zPosTextMatrix;
+
     // General shader and UI data
     GLint projLocation;
     GLint mvLocation;
@@ -45,11 +54,11 @@ class ShipHud
     vmath::vec3 xyzCompassRotations;
 
     void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
-    void ReloadRotationalText();
 public:
     ShipHud();
     void Initialize(FontManager* fontManager, GLuint compassTexture, GLint projLocation, GLint mvLocation);
     void UpdateCompassRotations(vmath::vec3& compassRotations);
+    void UpdateShipPositition(vmath::vec3& shipPosition);
     void RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock);
 
     ~ShipHud();

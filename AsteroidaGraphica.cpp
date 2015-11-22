@@ -292,6 +292,7 @@ Constants::Status AsteroidaGraphica::Run()
             // Draws our HUD dials
             glUseProgram(textureShaderProgram);
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
+            shipHud.UpdateShipPositition(physicsManager.shipPosition);
             shipHud.RenderHud(perspectiveMatrix, clock);
 
             window.display();

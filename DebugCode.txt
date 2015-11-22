@@ -7,42 +7,27 @@ Debug Code
 
 #include <SFML\Window.hpp>
 
-float depth = -4;
-float xMax = 1;
-float xMin = 0;
-float yMax = 1;
-float yMin = 0;
+float xP;
+float yP;
 
 float speed = 0.01f;
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
 {
-    depth -= speed;
+    xP -= speed;
 }
-else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
 {
-    depth += speed;
+    xP += speed;
 }
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
 {
-    xMin -= speed;
-    xMax -= speed;
+    yP += speed;
 }
-else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+else if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 {
-    xMin += speed;
-    xMax += speed;
-}
-
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-{
-    yMin += speed;
-    yMax += speed;
-}
-else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-{
-    yMin -= speed;
-    yMax -= speed;
+    yP -= speed;
 }
 
 
