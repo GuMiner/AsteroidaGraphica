@@ -8,8 +8,7 @@ AsteroidaGraphica is (being created) to be an infinite-world, futuristic, advent
 
 ## Build
 --------
-- This project requires the listed **Referenced Libraries** below.
-- Place includes the *include* directory, and libraries in the *lib* directory.
+This project requires the listed **Referenced Libraries** below, in addition to (separately distributed) asset files.
 
 ## Referenced Libraries
 ---------------------

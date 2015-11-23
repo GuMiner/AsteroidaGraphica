@@ -1,5 +1,6 @@
+#include <sstream>
 #include "Logger.h"
-#include "StringUtils.hpp"
+#include "StringUtils.h"
 #include "ShaderManager.h"
 
 ShaderManager::ShaderManager()

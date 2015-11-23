@@ -21,6 +21,12 @@
     <Filter Include="Content\Shaders">
       <UniqueIdentifier>{70f1b706-9333-4f5b-a3f1-35a7dd3049eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{b265ccc9-c469-4f4e-aeba-026cc5a885dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{d2500184-1724-4eae-9dd9-0181e4f47b01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h">
@@ -47,29 +53,32 @@
     <ClInclude Include="TextInfo.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="vmath.hpp">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="MusicManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
+    <ClInclude Include="ConfigManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Version.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Header Files\Managers</Filter>
+    <ClInclude Include="vmath.hpp">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="StringUtils.hpp">
-      <Filter>Header Files\Managers</Filter>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -82,9 +91,6 @@
     <ClCompile Include="ShipHud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImageManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -94,20 +100,29 @@
     <ClCompile Include="FontManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="stb_implementations.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="MusicManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Constants.cpp">
-      <Filter>Source Files\Managers</Filter>
+    <ClCompile Include="stb_implementations.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
       <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="DebugCode.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="config\config.txt">
       <Filter>Content</Filter>
     </Text>
   </ItemGroup>

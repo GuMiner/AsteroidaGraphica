@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h" />
+    <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageTexture.h" />
@@ -135,7 +136,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
     <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="StringUtils.hpp" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="TextInfo.h" />
     <ClInclude Include="Version.h" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp" />
+    <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -154,6 +156,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +169,7 @@
     <None Include="shaders\texRender.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="config\config.txt" />
     <Text Include="DebugCode.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
