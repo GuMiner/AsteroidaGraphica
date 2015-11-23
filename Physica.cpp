@@ -1,8 +1,8 @@
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
 #include <thread>
+#include "ConfigManager.h"
 #include "Physica.h"
-
 
 Physica::Physica()
 {
@@ -158,21 +158,21 @@ void Physica::HandleShipControls()
     didTranslate = false;
 
     float thrustVolume = 40;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustForwardsKey))
     {
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(0, -3, -5), sf::Vector3f(8, 0, thrustVolume));
         Thrust(true);
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustReverseKey))
     {
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(0, 3, 5), sf::Vector3f(8, 0, thrustVolume));
         Thrust(false);
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustLeftKey))
     {
         // Thrust left and play a right thrust sound.
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(-5, 0, 0), sf::Vector3f(8, 0, thrustVolume));
@@ -180,7 +180,7 @@ void Physica::HandleShipControls()
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustRightKey))
     {
         // Thrust right, sound on left
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(5, 0, 0), sf::Vector3f(8, 0, thrustVolume));
@@ -188,51 +188,53 @@ void Physica::HandleShipControls()
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustUpKey))
     {
+        // Thrust up, sound below.
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(0, -5, 0), sf::Vector3f(8, 0, thrustVolume));
         VerticalThrust(true);
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ThrustDownKey))
     {
+        // Thrust down, sound above.
         soundManager->PlaySound(SoundManager::THRUST, sf::Vector3f(0, 5, 0), sf::Vector3f(8, 0, thrustVolume));
         VerticalThrust(false);
         didTranslate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateLeftKey))
     {
         RotateHorizontal(true);
         didRotate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateRightKey))
     {
         RotateHorizontal(false);
         didRotate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateUpKey))
     {
         RotateVertical(true);
         didRotate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateDownKey))
     {
         RotateVertical(false);
         didRotate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateCWKey))
     {
         BarrelRoll(true);
         didRotate = true;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+    if (sf::Keyboard::isKeyPressed(ConfigManager::RotateCCWKey))
     {
         BarrelRoll(false);
         didRotate = true;
@@ -245,27 +247,27 @@ void Physica::HandleShipControls()
     }
 
     // Toggles on/off the rotational dampener
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !rotDampToggled)
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ToggleRotationDampeningKey) && !rotDampToggled)
     {
         soundManager->PlaySound(SoundManager::BUTTON_TOGGLE, sf::Vector3f(0, 0, 0), sf::Vector3f(5, 0, 100));
 
         rotationalDampener = !rotationalDampener;
         rotDampToggled = true;
     }
-    else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    else if (!sf::Keyboard::isKeyPressed(ConfigManager::ToggleRotationDampeningKey))
     {
         rotDampToggled = false;
     }
 
     // Toggles on/off the translational dampener
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && !tranDampToggled)
+    if (sf::Keyboard::isKeyPressed(ConfigManager::ToggleTranslationDampeningKey) && !tranDampToggled)
     {
         soundManager->PlaySound(SoundManager::BUTTON_TOGGLE, sf::Vector3f(0, 0, 0), sf::Vector3f(5, 0, 100));
 
         translationalDampener = !translationalDampener;
         tranDampToggled = true;
     }
-    else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+    else if (!sf::Keyboard::isKeyPressed(ConfigManager::ToggleTranslationDampeningKey))
     {
         tranDampToggled = false;
     }

@@ -3,29 +3,29 @@
 #include "StringUtils.h"
 #include "ConfigManager.h"
 
-int ConfigManager::configVersion;
+int ConfigManager::ConfigVersion;
 
-bool ConfigManager::isFullscreen;
-int ConfigManager::screenWidth;
-int ConfigManager::screenHeight;
+bool ConfigManager::IsFullscreen;
+int ConfigManager::ScreenWidth;
+int ConfigManager::ScreenHeight;
 
-sf::Keyboard::Key ConfigManager::thrustForwardsKey;
-sf::Keyboard::Key ConfigManager::thrustReverseKey;
-sf::Keyboard::Key ConfigManager::thrustLeftKey;
-sf::Keyboard::Key ConfigManager::thrustRightKey;
-sf::Keyboard::Key ConfigManager::thrustUpKey;
-sf::Keyboard::Key ConfigManager::thrustDownKey;
+sf::Keyboard::Key ConfigManager::ThrustForwardsKey;
+sf::Keyboard::Key ConfigManager::ThrustReverseKey;
+sf::Keyboard::Key ConfigManager::ThrustLeftKey;
+sf::Keyboard::Key ConfigManager::ThrustRightKey;
+sf::Keyboard::Key ConfigManager::ThrustUpKey;
+sf::Keyboard::Key ConfigManager::ThrustDownKey;
 
-sf::Keyboard::Key ConfigManager::rotateLeftKey;
-sf::Keyboard::Key ConfigManager::rotateRightKey;
-sf::Keyboard::Key ConfigManager::rotateUpKey;
-sf::Keyboard::Key ConfigManager::rotateDownKey;
-sf::Keyboard::Key ConfigManager::rotateCWKey;
-sf::Keyboard::Key ConfigManager::rotateCCWKey;
+sf::Keyboard::Key ConfigManager::RotateLeftKey;
+sf::Keyboard::Key ConfigManager::RotateRightKey;
+sf::Keyboard::Key ConfigManager::RotateUpKey;
+sf::Keyboard::Key ConfigManager::RotateDownKey;
+sf::Keyboard::Key ConfigManager::RotateCWKey;
+sf::Keyboard::Key ConfigManager::RotateCCWKey;
 
-sf::Keyboard::Key ConfigManager::toggleRotationDampeningKey;
-sf::Keyboard::Key ConfigManager::toggleTranslationDampeningKey;
-sf::Keyboard::Key ConfigManager::pauseKey;
+sf::Keyboard::Key ConfigManager::ToggleRotationDampeningKey;
+sf::Keyboard::Key ConfigManager::ToggleTranslationDampeningKey;
+sf::Keyboard::Key ConfigManager::PauseKey;
 
 ConfigManager::ConfigManager()
 {
@@ -33,38 +33,219 @@ ConfigManager::ConfigManager()
     configFileName = "config/config.txt";
 }
 
+// Loads in a boolean configuration value.
+bool ConfigManager::LoadBool(std::string& line, bool& boolean)
+{
+    std::string tempInput;
+    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseBoolFromString(tempInput, boolean));
+}
+
+// Loads in an integer configuration value.
+bool ConfigManager::LoadInt(std::string& line, int& integer)
+{
+    std::string tempInput;
+    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseIntFromString(tempInput, integer));
+}
+
+// Loads in an SFML keyboard key.
+bool ConfigManager::LoadKey(std::string& line, sf::Keyboard::Key& key)
+{
+    int keyInt;
+    if (!LoadInt(line, keyInt))
+    {
+        return false;
+    }
+
+    key = (sf::Keyboard::Key)keyInt;
+    return true;
+}
+
+void ConfigManager::WriteBool(std::vector<std::string>& lines, const char* itemName, bool& boolean)
+{
+    std::stringstream tempOutput;
+    tempOutput << itemName << StringUtils::Space << std::boolalpha << boolean;
+    lines.push_back(tempOutput.str());
+}
+
+void ConfigManager::WriteInt(std::vector<std::string>& lines, const char* itemName, int& integer)
+{
+    std::stringstream tempOutput;
+    tempOutput << itemName << StringUtils::Space << integer;
+    lines.push_back(tempOutput.str());
+}
+
+void ConfigManager::WriteKey(std::vector<std::string>& lines, const char* itemName, sf::Keyboard::Key& key)
+{
+    std::stringstream tempOutput;
+    tempOutput << itemName << StringUtils::Space << (int)key;
+    lines.push_back(tempOutput.str());
+}
+
+// Loads in all the configuration values.
 bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFileLines)
 {
     int lineCounter = 0;
 
-    std::string tempInput;
-    if (!StringUtils::SplitAndGrabSecondary(configFileLines[lineCounter], tempInput) || !StringUtils::ParseIntFromString(tempInput, configVersion))
+    if (!LoadInt(configFileLines[lineCounter], ConfigVersion))
     {
         Logger::Log("Error decoding the configuration file version!");
         return false;
     }
 
     ++lineCounter;
-    if (!StringUtils::SplitAndGrabSecondary(configFileLines[lineCounter], tempInput) || !StringUtils::ParseBoolFromString(tempInput, isFullscreen))
+    if (!LoadBool(configFileLines[lineCounter], IsFullscreen))
     {
         Logger::Log("Error decoding the fullscreen toggle!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadInt(configFileLines[lineCounter], ScreenWidth))
+    {
+        Logger::Log("Error reading in the screen width!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadInt(configFileLines[lineCounter], ScreenHeight))
+    {
+        Logger::Log("Error reading in the screen height!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustForwardsKey))
+    {
+        Logger::Log("Error reading in the thrust forwards key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustReverseKey))
+    {
+        Logger::Log("Error reading in the thrust reverse key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustLeftKey))
+    {
+        Logger::Log("Error reading in the thrust left key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustRightKey))
+    {
+        Logger::Log("Error reading in the thrust right key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustUpKey))
+    {
+        Logger::Log("Error reading in the thrust up key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ThrustDownKey))
+    {
+        Logger::Log("Error reading in the thrust down key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateLeftKey))
+    {
+        Logger::Log("Error reading in the rotate left key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateRightKey))
+    {
+        Logger::Log("Error reading in the rotate right key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateUpKey))
+    {
+        Logger::Log("Error reading in the rotate up key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateDownKey))
+    {
+        Logger::Log("Error reading in the rotate down key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateCWKey))
+    {
+        Logger::Log("Error reading in the rotate CW key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], RotateCCWKey))
+    {
+        Logger::Log("Error reading in the rotate CCW key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ToggleRotationDampeningKey))
+    {
+        Logger::Log("Error reading in the rotation dampening toggle key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], ToggleTranslationDampeningKey))
+    {
+        Logger::Log("Error reading in the translational dampening toggle key!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadKey(configFileLines[lineCounter], PauseKey))
+    {
+        Logger::Log("Error reading in the pause key!");
         return false;
     }
 
     return true;
 }
 
-bool ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFileLines)
+void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFileLines)
 {
-    std::stringstream tempOutput;
-    tempOutput << "ConfigVersion" << StringUtils::Space << configVersion;
-    configFileLines.push_back(tempOutput.str());
+    WriteInt(configFileLines, "ConfigVersion", ConfigVersion);
+    
+    WriteBool(configFileLines, "FullScreen", IsFullscreen);
+    WriteInt(configFileLines, "ScreenWidth", ScreenWidth);
+    WriteInt(configFileLines, "ScreenHeight", ScreenHeight);
 
-    tempOutput.str("");
-    tempOutput << "FullScreen" << StringUtils::Space << (isFullscreen ? "true" : "false");
-    configFileLines.push_back(tempOutput.str());
-
-    return true;
+    WriteKey(configFileLines, "ThrustForwards", ThrustForwardsKey);
+    WriteKey(configFileLines, "ThrustReverse", ThrustReverseKey);
+    WriteKey(configFileLines, "ThrustLeft", ThrustLeftKey);
+    WriteKey(configFileLines, "ThrustRight", ThrustRightKey);
+    WriteKey(configFileLines, "ThrustUp", ThrustUpKey);
+    WriteKey(configFileLines, "ThrustDown", ThrustDownKey);
+    
+    WriteKey(configFileLines, "RotateLeft", RotateLeftKey);
+    WriteKey(configFileLines, "RotateRight", RotateRightKey);
+    WriteKey(configFileLines, "RotateUp", RotateUpKey);
+    WriteKey(configFileLines, "RotateDown", RotateDownKey);
+    WriteKey(configFileLines, "RotateCW", RotateCWKey);
+    WriteKey(configFileLines, "RotateCCW", RotateCCWKey);
+    
+    WriteKey(configFileLines, "ToggleRotationDampening", ToggleRotationDampeningKey);
+    WriteKey(configFileLines, "ToggleTranslationDampening", ToggleTranslationDampeningKey);
+    WriteKey(configFileLines, "Pause", PauseKey);
 }
 
 // Reads in the configuration and sets up the variables listed
@@ -116,12 +297,7 @@ bool ConfigManager::WriteConfiguration()
 {
     // Write out our config file, ensuring we re-insert comment lines as appropriate.
     std::vector<std::string> lines;
-
-    if (!WriteConfigurationValues(lines))
-    {
-        Logger::Log("Couldn't parse out the current configuration values!");
-        return false;
-    }
+    WriteConfigurationValues(lines);
 
     for (unsigned int i = 0; i < lines.size(); i++)
     {
