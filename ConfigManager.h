@@ -9,14 +9,16 @@ class ConfigManager
 {
     const char* configFileName;
     
+    // Empty lines are counted as comment lines to preserve formatting of spacing.
     std::string CommentString;
-
     std::map<int, std::string> commentLines;
 
     bool LoadConfigurationValues(std::vector<std::string>& lines);
     bool WriteConfigurationValues(std::vector<std::string>& lines);
 
 public:
+    static int configVersion;
+
     static bool isFullscreen;
     static int screenWidth;
     static int screenHeight;

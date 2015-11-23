@@ -52,22 +52,19 @@ void StringUtils::Split(const std::string& stringToSplit, char delimator, bool e
     }
 }
 
-// Splits a line into two parts and grabs the number in the second part.
-bool StringUtils::SplitAndGrabInt(const std::string& line, int& value)
+// Splits a line into two parts and grabs the secondary part.
+bool StringUtils::SplitAndGrabSecondary(const std::string& line, std::string& secondary)
 {
-    char SPACE = ' ';
-
     std::vector<std::string> stringParts;
-    Split(line, SPACE, true, stringParts);
+    Split(line, Space, true, stringParts);
 
     if (stringParts.size() != 2)
     {
         return false;
     }
-    if (!ParseIntFromString(stringParts[1], value))
-    {
-        return false;
-    }
+
+    secondary = stringParts[1];
+
     return true;
 }
 
@@ -80,6 +77,31 @@ bool StringUtils::StartsWith(const std::string& givenString, const std::string& 
     }
 
     return (strncmp(givenString.substr(0, subString.length()).c_str(), subString.c_str(), subString.length()) == 0);
+}
+
+// Determines if the given string is completely empty or whitespace.
+bool StringUtils::IsWhitespaceOrEmpty(const std::string& givenString)
+{
+    if (givenString.length() == 0)
+    {
+        return true;
+    }
+
+    for (char character : givenString)
+    {
+        if (character != ' ' && character != '\r' && character != '\n' && character != '\t')
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Attempts to parse a boolean from a string.
+bool StringUtils::ParseBoolFromString(const std::string& stringToParse, bool& value)
+{
+    std::istringstream inputStream(stringToParse);
+    return inputStream >> std::boolalpha >> value ? true : false;
 }
 
 // Attempts to parse an integer from a string.

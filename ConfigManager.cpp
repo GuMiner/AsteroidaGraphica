@@ -3,22 +3,67 @@
 #include "StringUtils.h"
 #include "ConfigManager.h"
 
+int ConfigManager::configVersion;
+
+bool ConfigManager::isFullscreen;
+int ConfigManager::screenWidth;
+int ConfigManager::screenHeight;
+
+sf::Keyboard::Key ConfigManager::thrustForwardsKey;
+sf::Keyboard::Key ConfigManager::thrustReverseKey;
+sf::Keyboard::Key ConfigManager::thrustLeftKey;
+sf::Keyboard::Key ConfigManager::thrustRightKey;
+sf::Keyboard::Key ConfigManager::thrustUpKey;
+sf::Keyboard::Key ConfigManager::thrustDownKey;
+
+sf::Keyboard::Key ConfigManager::rotateLeftKey;
+sf::Keyboard::Key ConfigManager::rotateRightKey;
+sf::Keyboard::Key ConfigManager::rotateUpKey;
+sf::Keyboard::Key ConfigManager::rotateDownKey;
+sf::Keyboard::Key ConfigManager::rotateCWKey;
+sf::Keyboard::Key ConfigManager::rotateCCWKey;
+
+sf::Keyboard::Key ConfigManager::toggleRotationDampeningKey;
+sf::Keyboard::Key ConfigManager::toggleTranslationDampeningKey;
+sf::Keyboard::Key ConfigManager::pauseKey;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
-
     configFileName = "config/config.txt";
 }
 
 bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFileLines)
 {
-    // TODO implement
+    int lineCounter = 0;
+
+    std::string tempInput;
+    if (!StringUtils::SplitAndGrabSecondary(configFileLines[lineCounter], tempInput) || !StringUtils::ParseIntFromString(tempInput, configVersion))
+    {
+        Logger::Log("Error decoding the configuration file version!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!StringUtils::SplitAndGrabSecondary(configFileLines[lineCounter], tempInput) || !StringUtils::ParseBoolFromString(tempInput, isFullscreen))
+    {
+        Logger::Log("Error decoding the fullscreen toggle!");
+        return false;
+    }
+
     return true;
 }
 
 bool ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFileLines)
 {
-    // TODO implement
+    std::stringstream tempOutput;
+    tempOutput << "ConfigVersion" << StringUtils::Space << configVersion;
+    configFileLines.push_back(tempOutput.str());
+
+    tempOutput.str("");
+    tempOutput << "FullScreen" << StringUtils::Space << (isFullscreen ? "true" : "false");
+    configFileLines.push_back(tempOutput.str());
+
     return true;
 }
 
@@ -35,15 +80,22 @@ bool ConfigManager::ReadConfiguration()
     }
 
     int currentLine = 0;
-    StringUtils::Split(entireFile, StringUtils::Newline, true, lines);
-    for (std::vector<std::string>::iterator iterator = lines.begin(); iterator != lines.end(); iterator++)
+    StringUtils::Split(entireFile, StringUtils::Newline, false, lines);
+    for (unsigned int i = 0; i < lines.size(); i++)
     {
-        if (StringUtils::StartsWith(*iterator, CommentString))
+        if (StringUtils::StartsWith(lines[i], CommentString))
         {
-            commentLines[currentLine] = std::string(*iterator);
+            commentLines[currentLine] = std::string(lines[i]);
 
-            iterator = lines.erase(iterator);
-            --iterator;
+            lines.erase(lines.begin() + i);
+            i--;
+        }
+        else if (StringUtils::IsWhitespaceOrEmpty(lines[i]))
+        {
+            commentLines[currentLine] = std::string(lines[i]);
+
+            lines.erase(lines.begin() + i);
+            i--;
         }
         
         ++currentLine;

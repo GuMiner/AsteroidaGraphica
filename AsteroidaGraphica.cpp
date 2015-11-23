@@ -57,9 +57,20 @@ void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int heigh
 Constants::Status AsteroidaGraphica::Initialize()
 {
     glewExperimental = TRUE;
+
+    if (!configManager.ReadConfiguration())
+    {
+        return Constants::Status::BAD_CONFIG;
+    }
+
+    // TESTING CODE
+    configManager.WriteConfiguration();
+
     physicaThread.launch();
-    musicThread.launch();
     Logger::Log("Physica Thread Started!");
+
+    musicThread.launch();
+    Logger::Log("Music Thread Started!");
 
     return Constants::Status::OK;
 }

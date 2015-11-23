@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <thread>
+#include "ConfigManager.h"
 #include "FontManager.h"
 #include "ImageManager.h"
 #include "Logger.h"
@@ -28,17 +29,18 @@ class AsteroidaGraphica
     GLuint pointBuffer;
     GLsizei vertexCount;
 
+    // Managers
+    ConfigManager configManager;
     ImageManager imageManager;
     ShaderManager shaderManager;
     SoundManager soundManager;
     FontManager fontManager;
-
-    Physica physicsManager;
-    sf::Thread physicaThread;
-
     MusicManager musicManager;
     sf::Thread musicThread;
 
+    Physica physicsManager;
+    sf::Thread physicaThread;
+    
     Constants::Status LoadFirstTimeGraphics();
     Constants::Status LoadAssets();
     void LogGraphicsSettings();
