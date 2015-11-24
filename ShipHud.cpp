@@ -39,9 +39,28 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
     {
         return false;
     }
+    
     mvLocation = glGetUniformLocation(compassTextureProgram, "mv_matrix");
     projLocation = glGetUniformLocation(compassTextureProgram, "proj_matrix");
     Logger::Log("Compass shader loading complete!");
+
+    Logger::Log("Loading ship map texture...");
+    shipMapTexture = imageManager->AddImage("images/ShipMap.png");
+    if (shipMapTexture == 0)
+    {
+        return false;
+    }
+
+    Logger::Log("Ship map texture loading done!");
+
+    // Load in the ship map vertex data.
+    glGenVertexArrays(1, &shipMapVao);
+    glBindVertexArray(shipMapVao);
+
+    glGenBuffers(1, &shipMapVertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
+
+
 
     Logger::Log("Loading compass texture...");
     compassTexture = imageManager->AddImage("images/DirectionDial.png");
@@ -51,7 +70,7 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
     }
 
     Logger::Log("Compass texture image loading done!");
-    
+
     // Create our general compass information
     compassVertexCount = 6;
 
@@ -187,4 +206,7 @@ ShipHud::~ShipHud()
     // Free up the ship HUD VAO and VBO
     glDeleteVertexArrays(1, &compassVao);
     glDeleteBuffers(1, &compassVertexBuffer);
+
+    glDeleteVertexArrays(1, &shipMapVao);
+    glDeleteBuffers(1, &shipMapVertexBuffer);
 }

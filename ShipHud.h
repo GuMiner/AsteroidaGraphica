@@ -27,6 +27,10 @@ class ShipHud
     GLuint compassVertexBuffer;
     GLuint compassTexture;
 
+    GLuint shipMapVao;
+    GLuint shipMapVertexBuffer;
+    GLuint shipMapTexture;
+
     // XYZ compass text information.
     vmath::mat4 textScale;
 
