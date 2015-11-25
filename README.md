@@ -3,8 +3,13 @@
 --------------------
 
 AsteroidaGraphica is (being created) to be an infinite-world, futuristic, adventure and role-playing asteroid mining simulator.
-
 *This project is in progress; more details will be added when closer to completion*
+
+## Status
+-------------------
+### ACTIVE (Delayed)
+
+*Delay:* I'm transitioning my website from a solution that will run on OWIN instead of just IIS. 
 
 ## Build
 --------
