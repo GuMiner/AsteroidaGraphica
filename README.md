@@ -10,7 +10,7 @@ AsteroidaGraphica is (being created) to be an infinite-world, futuristic, advent
 ### ACTIVE (Delayed)
 
 *Delay:* I'm transitioning my website from a solution that will run on OWIN instead of just IIS.
-Days Impacted: 2
+Days Impacted: 4 (Thanksgiving and day after)
 
 ## Build
 --------
