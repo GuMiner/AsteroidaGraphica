@@ -26,23 +26,32 @@ ShipHud::ShipHud()
     xPosTextMatrix = vmath::translate(-0.821f, -0.296f, hudDepth) * textScale;
     yPosTextMatrix = vmath::translate(-0.659f, -0.296f, hudDepth) * textScale;
     zPosTextMatrix = vmath::translate(-0.508f, -0.296f, hudDepth) * textScale;
+    
+    mapBorderWidth = 0.05f;
+    mapSize = 0.15f;
+    positionIndicatorSize = (1.0f - (2.0f*mapBorderWidth)) / 30.0f; // Resolution of 30 map units.
+    shipMapMatrix = vmath::translate(-0.36f, -0.45f, hudDepth);
+
+    indicatorPosSize = vmath::vec3(0.5f, 0.4f, 0.1f);
+    indicatorColor = vmath::vec3(1.0f, 0.0f, 1.0f);
 }
 
 bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)
 {
     this->fontManager = fontManager;
 
-    // Load the image texture and image shader
-    
-    Logger::Log("Loading compass texture shader program...");
-    if (!shaderManager->CreateShaderProgram("texRender", &compassTextureProgram))
+    Logger::Log("Loading in the ship map shader program...");
+    if (!shaderManager->CreateShaderProgram("mapRender", &shipMapShaderProgram))
     {
         return false;
     }
-    
-    mvLocation = glGetUniformLocation(compassTextureProgram, "mv_matrix");
-    projLocation = glGetUniformLocation(compassTextureProgram, "proj_matrix");
-    Logger::Log("Compass shader loading complete!");
+
+    shipMapMvLocation = glGetUniformLocation(shipMapShaderProgram, "mv_matrix");
+    shipMapProjLocation = glGetUniformLocation(shipMapShaderProgram, "proj_matrix");
+    indicatorPosLocation = glGetUniformLocation(shipMapShaderProgram, "indicator_pos");
+    indicatorSizeLocation = glGetUniformLocation(shipMapShaderProgram, "indicator_size");
+    indicatorColorLocation = glGetUniformLocation(shipMapShaderProgram, "indicator_color");
+    Logger::Log("Ship map loading complete!");
 
     Logger::Log("Loading ship map texture...");
     shipMapTexture = imageManager->AddImage("images/ShipMap.png");
@@ -54,13 +63,32 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
     Logger::Log("Ship map texture loading done!");
 
     // Load in the ship map vertex data.
+    shipMapVertexCount = 4;
+
     glGenVertexArrays(1, &shipMapVao);
     glBindVertexArray(shipMapVao);
 
     glGenBuffers(1, &shipMapVertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
 
+    colorTextureVertex *shipVertices = new colorTextureVertex[shipMapVertexCount];
+    shipVertices[0].Set(0, 0, 0, 0, 1.0f, 0, 0, 1);
+    shipVertices[1].Set(mapSize, 0, 0, 1.0f, 0.0f, 0.0f, 1, 1);
+    shipVertices[2].Set(mapSize, mapSize, 0, 0, 0, 1.0f, 1, 0);
+    shipVertices[3].Set(0, mapSize, 0, 1.0f, 1.0f, 1.0f, 0, 0);
 
+    colorTextureVertex::TransferToOpenGl(shipVertices, shipMapVertexCount);
+    delete[] shipVertices;
+
+    Logger::Log("Loading compass texture shader program...");
+    if (!shaderManager->CreateShaderProgram("texRender", &compassTextureProgram))
+    {
+        return false;
+    }
+
+    mvLocation = glGetUniformLocation(compassTextureProgram, "mv_matrix");
+    projLocation = glGetUniformLocation(compassTextureProgram, "proj_matrix");
+    Logger::Log("Compass shader loading complete!");
 
     Logger::Log("Loading compass texture...");
     compassTexture = imageManager->AddImage("images/DirectionDial.png");
@@ -115,7 +143,7 @@ void ShipHud::LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset
     pVertices[0 + offset].Set(-compassSize / 2, -compassSize / 2, 0, 0, 0, 0, 0, 1);
     pVertices[1 + offset].Set(-compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 0, 0);
     pVertices[2 + offset].Set(-compassSize / 2 + compassSize, -compassSize / 2, 0, 0, 0, 0, 1, 1);
-                                                                                   
+
     pVertices[3 + offset].Set(compassSize / 2, -compassSize / 2, 0, 0, 0, 0, 1, 1);
     pVertices[4 + offset].Set(-compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 0, 0);
     pVertices[5 + offset].Set(compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 1, 0);
@@ -190,6 +218,23 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 
     glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);
+
+    // Draw the map
+    glUseProgram(shipMapShaderProgram);
+    glBindVertexArray(shipMapVao);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, shipMapTexture);
+
+    glUniformMatrix4fv(shipMapProjLocation, 1, GL_FALSE, perspectiveMatrix);
+    glUniformMatrix4fv(shipMapMvLocation, 1, GL_FALSE, shipMapMatrix);
+
+    glUniform2f(indicatorPosLocation, indicatorPosSize[0], indicatorPosSize[1]);
+    glUniform2f(indicatorSizeLocation, indicatorPosSize[2], indicatorPosSize[2]);
+    glUniform3f(indicatorColorLocation, indicatorColor[0], indicatorColor[1], indicatorColor[2]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, shipMapVertexCount);
 
     // Draw our sentences
     fontManager->RenderSentence(xSentence, perspectiveMatrix, xTextMatrix);

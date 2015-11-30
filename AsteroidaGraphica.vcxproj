@@ -163,6 +163,8 @@
     <None Include="README.md" />
     <None Include="shaders\fontRender.fs" />
     <None Include="shaders\fontRender.vs" />
+    <None Include="shaders\mapRender.fs" />
+    <None Include="shaders\mapRender.vs" />
     <None Include="shaders\render.fs" />
     <None Include="shaders\render.vs" />
     <None Include="shaders\texRender.fs" />

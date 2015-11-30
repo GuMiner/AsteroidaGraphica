@@ -96,7 +96,8 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_MULTISAMPLE);
 
-    glEnable(GL_CULL_FACE);
+    // Note that we do NOT cull faces, because that leads to incorrect see-through triangle behaviour.
+    glDisable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
     glEnable(GL_DEPTH_TEST);

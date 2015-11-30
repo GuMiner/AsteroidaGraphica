@@ -27,10 +27,6 @@ class ShipHud
     GLuint compassVertexBuffer;
     GLuint compassTexture;
 
-    GLuint shipMapVao;
-    GLuint shipMapVertexBuffer;
-    GLuint shipMapTexture;
-
     // XYZ compass text information.
     vmath::mat4 textScale;
 
@@ -57,6 +53,29 @@ class ShipHud
 
     // Holds the compass rotations in degrees.
     vmath::vec3 xyzCompassRotations;
+
+    // Ship Map data
+    float mapSize;
+    float positionIndicatorSize;
+    vmath::mat4 shipMapMatrix;
+
+    GLsizei shipMapVertexCount;
+
+    GLuint shipMapShaderProgram;
+    GLint shipMapProjLocation;
+    GLint shipMapMvLocation;
+    GLint indicatorSizeLocation;
+    GLint indicatorPosLocation;
+    GLint indicatorColorLocation;
+
+    GLuint shipMapVao;
+    GLuint shipMapVertexBuffer;
+    GLuint shipMapTexture;
+
+    // Ship Map information
+    float mapBorderWidth;
+    vmath::vec3 indicatorPosSize;
+    vmath::vec3 indicatorColor;
 
     void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
 public:

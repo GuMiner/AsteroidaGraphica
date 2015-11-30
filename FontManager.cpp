@@ -273,7 +273,6 @@ void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath:
     }
 
     glUseProgram(fontShader);
-    glDisable(GL_CULL_FACE);
 
     // Bind in the texture and vertices we're using.
     glBindVertexArray(sentenceInfo.vao);
@@ -287,8 +286,6 @@ void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath:
     // Draw the text
     glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
     glMultiDrawArrays(GL_TRIANGLE_FAN, sentenceInfo.characterStartIndices, sentenceInfo.characterVertexCounts, sentenceInfo.characterCount);
-
-    glEnable(GL_CULL_FACE);
 }
 
 FontManager::~FontManager()

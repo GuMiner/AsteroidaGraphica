@@ -7,10 +7,11 @@ AsteroidaGraphica is (being created) to be an infinite-world, futuristic, advent
 
 ## Status
 -------------------
-### ACTIVE (Delayed)
+### ACTIVE 
 
-*Delay:* I'm transitioning my website from a solution that will run on OWIN instead of just IIS.
-Days Impacted: 4 (Thanksgiving and day after)
+####Delays
+* Transitioning http://helium24.net to Digital Ocean (cuts hosting bill in half).
+* **Total days impacted:** 4
 
 ## Build
 --------

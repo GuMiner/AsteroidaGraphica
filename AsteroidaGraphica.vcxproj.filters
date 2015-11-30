@@ -147,6 +147,12 @@
     <None Include="shaders\render.vs">
       <Filter>Content\Shaders</Filter>
     </None>
+    <None Include="shaders\mapRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\mapRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="DebugCode.txt">
