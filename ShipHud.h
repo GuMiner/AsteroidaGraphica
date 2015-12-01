@@ -68,9 +68,18 @@ class ShipHud
     GLint indicatorPosLocation;
     GLint indicatorColorLocation;
 
+    GLuint shipMapTexture;
+
     GLuint shipMapVao;
     GLuint shipMapVertexBuffer;
-    GLuint shipMapTexture;
+
+    // The vertical map indicator (which is just the ship map indicator, but squashed)
+    vmath::mat4 verticalMapMatrix;
+
+    GLsizei verticalMapVertexCount;
+
+    GLuint verticalMapVao;
+    GLuint verticalMapVertexBuffer;
 
     // Ship Map information
     float mapBorderWidth;

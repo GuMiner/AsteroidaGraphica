@@ -34,6 +34,8 @@ ShipHud::ShipHud()
 
     indicatorPosSize = vmath::vec3(0.5f, 0.4f, positionIndicatorSize);
     indicatorColor = vmath::vec3(1.0f, 0.0f, 1.0f);
+
+    verticalMapMatrix = vmath::translate(0.0f, 0.0f, hudDepth) * vmath::scale(1.0f, 0.20f, 1.0f);
 }
 
 bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)
@@ -78,6 +80,17 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
     shipVertices[3].Set(0, mapSize, 0, 1.0f, 1.0f, 1.0f, 0, 0);
 
     colorTextureVertex::TransferToOpenGl(shipVertices, shipMapVertexCount);
+
+    // Load in the ship map vertex data for the vertical map.
+    verticalMapVertexCount = 4;
+
+    glGenVertexArrays(1, &verticalMapVao);
+    glBindVertexArray(verticalMapVao);
+
+    glGenBuffers(1, &verticalMapVertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, verticalMapVertexBuffer);
+
+    colorTextureVertex::TransferToOpenGl(shipVertices, verticalMapVertexCount);
     delete[] shipVertices;
 
     Logger::Log("Loading compass texture shader program...");
@@ -246,6 +259,15 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 
     glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
     glDrawArrays(GL_TRIANGLE_FAN, 0, shipMapVertexCount);
+
+    // Draw the vertical map. TODO perhaps I should limit the shader cross-coupling?
+    glBindVertexArray(verticalMapVao);
+    glUniformMatrix4fv(shipMapMvLocation, 1, GL_FALSE, verticalMapMatrix);
+
+    // TODO need to update indicator pos, size, and olor.
+
+    glBindBuffer(GL_ARRAY_BUFFER, verticalMapVertexBuffer);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, verticalMapVertexCount);
 
     // Draw our sentences
     fontManager->RenderSentence(xSentence, perspectiveMatrix, xTextMatrix);
