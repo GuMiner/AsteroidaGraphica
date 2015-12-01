@@ -27,12 +27,12 @@ ShipHud::ShipHud()
     yPosTextMatrix = vmath::translate(-0.659f, -0.296f, hudDepth) * textScale;
     zPosTextMatrix = vmath::translate(-0.508f, -0.296f, hudDepth) * textScale;
     
-    mapBorderWidth = 0.05f;
-    mapSize = 0.15f;
+    mapBorderWidth = 0.05f; // Texture coordinates
+    mapSize = 0.15f; // Physical coordinates
     positionIndicatorSize = (1.0f - (2.0f*mapBorderWidth)) / 30.0f; // Resolution of 30 map units.
     shipMapMatrix = vmath::translate(-0.36f, -0.45f, hudDepth);
 
-    indicatorPosSize = vmath::vec3(0.5f, 0.4f, 0.1f);
+    indicatorPosSize = vmath::vec3(0.5f, 0.4f, positionIndicatorSize);
     indicatorColor = vmath::vec3(1.0f, 0.0f, 1.0f);
 }
 
@@ -170,7 +170,7 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
     fontManager->UpdateSentence(zSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 1.0f));
 }
 
-// Updates the ship position text.
+// Updates the ship position text and map location.
 void ShipHud::UpdateShipPositition(vmath::vec3& shipPosition)
 {
     std::stringstream textOutputStream;
@@ -187,6 +187,17 @@ void ShipHud::UpdateShipPositition(vmath::vec3& shipPosition)
     textOutputStream.str("");
     textOutputStream << "Z: " << shipPosition[1];
     fontManager->UpdateSentence(zPosSentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 0.0f, 1.0f));
+
+    // (0, 0, 0) is the center of the sun.
+    // Note that for every displayable unit (large scale), there are 10 units of traversal, and that the max view area is 30x30
+    // Also note that the map has a border that needs to be accounted for.
+ 
+    vmath::vec3 transformedCoordinates = (shipPosition / (10.0f * 15.0f)) + vmath::vec3(0.5f, 0.5f, 0.5f);
+
+    // Now account for the map border.
+    transformedCoordinates *= (1.0f - 2 * mapBorderWidth);
+    transformedCoordinates += mapBorderWidth;
+    indicatorPosSize = vmath::vec3(transformedCoordinates[0], transformedCoordinates[1], positionIndicatorSize);
 }
 
 // Renders the HUD of the ship.
