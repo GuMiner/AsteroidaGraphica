@@ -86,12 +86,15 @@ class ShipHud
     vmath::vec3 indicatorPosSize;
     vmath::vec3 indicatorColor;
 
+    vmath::vec3 verticalIndicatorPosSize;
+    vmath::vec3 verticalIndicatorColor;
+
     void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
 public:
     ShipHud();
     bool Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager);
     void UpdateCompassRotations(vmath::vec3& compassRotations);
-    void UpdateShipPositition(vmath::vec3& shipPosition);
+    void UpdateShipPosition(vmath::vec3& shipOrientation, vmath::vec3& shipPosition);
     void RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock);
 
     ~ShipHud();

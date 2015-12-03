@@ -29,13 +29,16 @@ ShipHud::ShipHud()
     
     mapBorderWidth = 0.05f; // Texture coordinates
     mapSize = 0.15f; // Physical coordinates
-    positionIndicatorSize = (1.0f - (2.0f*mapBorderWidth)) / 30.0f; // Resolution of 30 map units.
+    positionIndicatorSize = (1.0f - (2.0f*mapBorderWidth)) / (30.0f * 2.0f); // Resolution of 30 map units.
     shipMapMatrix = vmath::translate(-0.36f, -0.45f, hudDepth);
 
     indicatorPosSize = vmath::vec3(0.5f, 0.4f, positionIndicatorSize);
-    indicatorColor = vmath::vec3(1.0f, 0.0f, 1.0f);
+    indicatorColor = vmath::vec3(0.0f, 1.0f, 1.0f);
 
-    verticalMapMatrix = vmath::translate(0.0f, 0.0f, hudDepth) * vmath::scale(1.0f, 0.20f, 1.0f);
+    verticalMapMatrix = vmath::translate(-0.195f, -0.450f, hudDepth) * vmath::scale(0.20f, 1.0f, 1.0f);
+
+    verticalIndicatorPosSize = vmath::vec3(0.5f, 0.4f, positionIndicatorSize);
+    verticalIndicatorColor = vmath::vec3(0.0f, 1.0f, 1.0f);
 }
 
 bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)
@@ -184,33 +187,35 @@ void ShipHud::UpdateCompassRotations(vmath::vec3& compassRotations)
 }
 
 // Updates the ship position text and map location.
-void ShipHud::UpdateShipPositition(vmath::vec3& shipPosition)
+void ShipHud::UpdateShipPosition(vmath::vec3& shipOrientation, vmath::vec3& shipPosition)
 {
     std::stringstream textOutputStream;
     textOutputStream.precision(2);
     textOutputStream << std::fixed;
 
     textOutputStream << "X: " << shipPosition[0];
-    fontManager->UpdateSentence(xPosSentence, textOutputStream.str(), 20, vmath::vec3(1.0f, 0.0f, 0.0f));
+    fontManager->UpdateSentence(xPosSentence, textOutputStream.str(), 20, shipOrientation[0] > 0 ? vmath::vec3(0.0f, 1.0f, 0.0f) : vmath::vec3(1.0f, 0.0f, 0.0f));
 
     textOutputStream.str("");
     textOutputStream << "Y: " << shipPosition[1];
-    fontManager->UpdateSentence(yPosSentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 1.0f, 0.0f));
+    fontManager->UpdateSentence(yPosSentence, textOutputStream.str(), 20, shipOrientation[1] > 0 ? vmath::vec3(0.0f, 1.0f, 0.0f) : vmath::vec3(1.0f, 0.0f, 0.0f));
 
     textOutputStream.str("");
-    textOutputStream << "Z: " << shipPosition[1];
-    fontManager->UpdateSentence(zPosSentence, textOutputStream.str(), 20, vmath::vec3(0.0f, 0.0f, 1.0f));
+    textOutputStream << "Z: " << shipPosition[2];
+    fontManager->UpdateSentence(zPosSentence, textOutputStream.str(), 20, shipOrientation[2] > 0 ? vmath::vec3(0.0f, 1.0f, 0.0f) : vmath::vec3(1.0f, 0.0f, 0.0f));
 
     // (0, 0, 0) is the center of the sun.
     // Note that for every displayable unit (large scale), there are 10 units of traversal, and that the max view area is 30x30
     // Also note that the map has a border that needs to be accounted for.
  
-    vmath::vec3 transformedCoordinates = (shipPosition / (10.0f * 15.0f)) + vmath::vec3(0.5f, 0.5f, 0.5f);
+    vmath::vec3 transformedCoordinates = (shipPosition / (10.0f * 15.0f * 2.0f)) + vmath::vec3(0.5f, 0.5f, 0.5f);
 
     // Now account for the map border.
     transformedCoordinates *= (1.0f - 2 * mapBorderWidth);
     transformedCoordinates += mapBorderWidth;
-    indicatorPosSize = vmath::vec3(transformedCoordinates[0], transformedCoordinates[1], positionIndicatorSize);
+    indicatorPosSize = vmath::vec3(transformedCoordinates[0], 1.0f - transformedCoordinates[1], positionIndicatorSize);
+
+    verticalIndicatorPosSize = vmath::vec3(0.5f, 1.0f - transformedCoordinates[2], positionIndicatorSize);
 }
 
 // Renders the HUD of the ship.
@@ -264,7 +269,9 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glBindVertexArray(verticalMapVao);
     glUniformMatrix4fv(shipMapMvLocation, 1, GL_FALSE, verticalMapMatrix);
 
-    // TODO need to update indicator pos, size, and olor.
+    glUniform2f(indicatorPosLocation, verticalIndicatorPosSize[0], verticalIndicatorPosSize[1]);
+    glUniform2f(indicatorSizeLocation, (1.0f - 2.0f * mapBorderWidth) / 2.0f, verticalIndicatorPosSize[2]);
+    glUniform3f(indicatorColorLocation, verticalIndicatorColor[0], verticalIndicatorColor[1], verticalIndicatorColor[2]);
 
     glBindBuffer(GL_ARRAY_BUFFER, verticalMapVertexBuffer);
     glDrawArrays(GL_TRIANGLE_FAN, 0, verticalMapVertexCount);

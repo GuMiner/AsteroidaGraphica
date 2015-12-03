@@ -290,7 +290,7 @@ Constants::Status AsteroidaGraphica::Run()
 
             // Draws our HUD
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
-            shipHud.UpdateShipPositition(physicsManager.shipPosition);
+            shipHud.UpdateShipPosition(physicsManager.shipOrientation.forwardVector(), physicsManager.shipPosition);
             shipHud.RenderHud(perspectiveMatrix, clock);
 
             window.display();

@@ -13,5 +13,5 @@ public:
     // Name and version details
     static const char* NAME;
     const static int MAJOR_VERSION = 1;
-    const static int MINOR_VERSION = 566;
+    const static int MINOR_VERSION = 578;
 };
