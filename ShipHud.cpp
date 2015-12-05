@@ -97,7 +97,7 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
     delete[] shipVertices;
 
     Logger::Log("Loading compass texture shader program...");
-    if (!shaderManager->CreateShaderProgram("texRender", &compassTextureProgram))
+    if (!shaderManager->CreateShaderProgram("textureRender", &compassTextureProgram))
     {
         return false;
     }
@@ -294,4 +294,7 @@ ShipHud::~ShipHud()
 
     glDeleteVertexArrays(1, &shipMapVao);
     glDeleteBuffers(1, &shipMapVertexBuffer);
+
+    glDeleteVertexArrays(1, &verticalMapVao);
+    glDeleteBuffers(1, &verticalMapVertexBuffer);
 }

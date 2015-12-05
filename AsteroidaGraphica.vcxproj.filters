@@ -80,6 +80,9 @@
     <ClInclude Include="StringUtils.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Asteroida.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -124,16 +127,13 @@
     <ClCompile Include="StringUtils.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Asteroida.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Content</Filter>
-    </None>
-    <None Include="shaders\texRender.fs">
-      <Filter>Content\Shaders</Filter>
-    </None>
-    <None Include="shaders\texRender.vs">
-      <Filter>Content\Shaders</Filter>
     </None>
     <None Include="shaders\fontRender.fs">
       <Filter>Content\Shaders</Filter>
@@ -141,16 +141,22 @@
     <None Include="shaders\fontRender.vs">
       <Filter>Content\Shaders</Filter>
     </None>
-    <None Include="shaders\render.fs">
-      <Filter>Content\Shaders</Filter>
-    </None>
-    <None Include="shaders\render.vs">
-      <Filter>Content\Shaders</Filter>
-    </None>
     <None Include="shaders\mapRender.fs">
       <Filter>Content\Shaders</Filter>
     </None>
     <None Include="shaders\mapRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\textureRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\textureRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\asteroidRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\asteroidRender.vs">
       <Filter>Content\Shaders</Filter>
     </None>
   </ItemGroup>

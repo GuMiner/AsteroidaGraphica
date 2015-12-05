@@ -63,9 +63,6 @@ Constants::Status AsteroidaGraphica::Initialize()
         return Constants::Status::BAD_CONFIG;
     }
 
-    // TESTING CODE
-    configManager.WriteConfiguration();
-
     physicaThread.launch();
     Logger::Log("Physica Thread Started!");
 
@@ -106,51 +103,12 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     // Perspective display
     perspectiveMatrix = vmath::perspective(Constants::FOV_Y, Constants::ASPECT, Constants::NEAR_PLANE, Constants::FAR_PLANE);
 
-    // Shaders
-    Logger::Log("Shader creation...");
-    if (!shaderManager.CreateShaderProgram("render", &flatShaderProgram))
-    {
-        return Constants::Status::BAD_SHADERS;
-    }
-
-    mv_location = glGetUniformLocation(flatShaderProgram, "mv_matrix");
-    proj_location = glGetUniformLocation(flatShaderProgram, "proj_matrix");
-
-    Logger::Log("Shader creation done!");
-
+    // Assets
     Constants::Status status = LoadAssets();
     if (status != Constants::Status::OK)
     {
         return status;
     }
-
-    // TEST CODE TEST CODE
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Setup of vertex transfer (note we're using the "vertex" object in CodeGell)
-    glGenBuffers(1, &pointBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
-
-    // Send some random data to the GPU
-    // This was a reload operation, changes were performed that must be flushed to the GPU.
-    colorVertex *pVertices = new colorVertex[9];
-    pVertices[0].Set(0, 0, 0, 1, 1, 1);
-    pVertices[1].Set(0, 5, 0, 0, 1, 0);
-    pVertices[2].Set(5, 0, 0, 1, 0, 0);
-
-    pVertices[3].Set(0, 5, 0, 0, 1, 0);
-    pVertices[4].Set(0, 0, 5, 0, 0, 1);
-    pVertices[5].Set(0, 0, 0, 1, 1, 1);
-    
-    pVertices[6].Set(5, 0, 0, 1, 0, 0);
-    pVertices[7].Set(0, 0, 5, 0, 0, 1);
-    pVertices[8].Set(0, 0, 0, 1, 1, 1);
-
-    vertexCount = 9;
-    colorVertex::TransferToOpenGl(pVertices, vertexCount);
-    
-    delete[] pVertices;
 
     // HUD
     Logger::Log("HUD loading...");
@@ -197,6 +155,13 @@ Constants::Status AsteroidaGraphica::LoadAssets()
     Logger::Log("Physica loading...");
     physicsManager.Initialize(&soundManager);
     Logger::Log("Physica loading done!");
+
+    // Asteroids
+    Logger::Log("Asteroida loading...");
+    if (!asteroida.Initialize(shaderManager))
+    {
+        return Constants::Status::BAD_ASTEROIDA;
+    }
 
     return Constants::Status::OK;
 }
@@ -252,6 +217,9 @@ Constants::Status AsteroidaGraphica::Run()
             }
         }
 
+        vmath::mat4 lookAtMatrix = physicsManager.shipOrientation.asMatrix() * vmath::translate(-physicsManager.shipPosition);
+        vmath::mat4 projectionMatrix = perspectiveMatrix * lookAtMatrix;
+
         // Render, only if non-paused.
         if (!paused)
         {
@@ -261,32 +229,8 @@ Constants::Status AsteroidaGraphica::Run()
             glClearBufferfv(GL_COLOR, 0, color);
             glClearBufferfv(GL_DEPTH, 0, &one);
             
-            // TEST CODE DRAWING
-            glUseProgram(flatShaderProgram);
-            glBindVertexArray(vao);
-            glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
-
-            // *physicsManager.shipOrientation;
-            lookAtMatrix = vmath::lookat(physicsManager.shipPosition, vmath::vec3(0, 0, 0), vmath::vec3(0, 1, 0));
-            vmath::mat4 quatMatrix = physicsManager.shipOrientation.asMatrix() * vmath::translate(-physicsManager.shipPosition);
-            vmath::mat4 result = perspectiveMatrix * quatMatrix; // lookAtMatrix;
-            glUniformMatrix4fv(proj_location, 1, GL_FALSE, result);
-
-            // Let's add a 5x5x5 grid of these things to help with debugging.
-            float separation = 7;
-            int scale = 4;
-            for (int i = 0; i < scale; i++)
-            {
-                for (int j = 0; j < scale; j++)
-                {
-                    for (int k = 0; k < scale; k++)
-                    {
-                        vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(i*separation, j*separation, k*separation));
-                        glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-                        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-                    }
-                }
-            }
+            // Draw the asteroids
+            asteroida.Render(projectionMatrix);
 
             // Draws our HUD
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
@@ -296,6 +240,7 @@ Constants::Status AsteroidaGraphica::Run()
             window.display();
         }
 
+        // Delay to run approximately at our maximum framerate.
         sf::Int64 sleepDelay = (1000000 / Constants::MAX_FRAMERATE) - clock.getElapsedTime().asMicroseconds() - clockStartTime.asMicroseconds();
         if (sleepDelay > 0)
         {
@@ -304,16 +249,11 @@ Constants::Status AsteroidaGraphica::Run()
         }
     }
 
-
     return Constants::Status::OK;
 }
 
 void AsteroidaGraphica::Deinitialize()
 {
-    // Application shutdown.
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &pointBuffer);
-
     Logger::Log("Music Thread Stopping...");
     musicManager.Stop();
 

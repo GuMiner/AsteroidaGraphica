@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <thread>
+#include "Asteroida.h"
 #include "ConfigManager.h"
 #include "FontManager.h"
 #include "ImageManager.h"
@@ -9,25 +10,21 @@
 #include "MusicManager.h"
 #include "Physica.h"
 #include "ShaderManager.h"
-#include "SoundManager.h"
 #include "ShipHud.h"
+#include "SoundManager.h"
 #include "Version.h"
 #include "vmath.hpp"
 
 // Handles startup and the base graphics rendering loop.
 class AsteroidaGraphica
 {
+    // Game Data
+    Asteroida asteroida;
     ShipHud shipHud;
-
     vmath::mat4 perspectiveMatrix;
-    GLuint flatShaderProgram;
-    GLint mv_location, proj_location;
-            
-    // TEST OBJECTS
-    vmath::mat4 lookAtMatrix;
-    GLuint vao;
-    GLuint pointBuffer;
-    GLsizei vertexCount;
+
+    Physica physicsManager;
+    sf::Thread physicaThread;
 
     // Managers
     ConfigManager configManager;
@@ -37,10 +34,7 @@ class AsteroidaGraphica
     FontManager fontManager;
     MusicManager musicManager;
     sf::Thread musicThread;
-
-    Physica physicsManager;
-    sf::Thread physicaThread;
-    
+        
     Constants::Status LoadFirstTimeGraphics();
     Constants::Status LoadAssets();
     void LogGraphicsSettings();

@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Asteroida.h" />
     <ClInclude Include="AsteroidaGraphica.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Constants.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="vmath.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Asteroida.cpp" />
     <ClCompile Include="AsteroidaGraphica.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Constants.cpp" />
@@ -165,10 +167,10 @@
     <None Include="shaders\fontRender.vs" />
     <None Include="shaders\mapRender.fs" />
     <None Include="shaders\mapRender.vs" />
-    <None Include="shaders\render.fs" />
-    <None Include="shaders\render.vs" />
-    <None Include="shaders\texRender.fs" />
-    <None Include="shaders\texRender.vs" />
+    <None Include="shaders\asteroidRender.fs" />
+    <None Include="shaders\asteroidRender.vs" />
+    <None Include="shaders\textureRender.fs" />
+    <None Include="shaders\textureRender.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config\config.txt" />
