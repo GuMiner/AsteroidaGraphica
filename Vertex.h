@@ -18,6 +18,24 @@ struct colorVertex
     static void TransferToOpenGl(colorVertex* vertices, GLsizei vertexCount);
 };
 
+struct colorBarycentricVertex
+{
+    float x;
+    float y;
+    float z;
+    float r;
+    float g;
+    float b;
+    float xb;
+    float yb;
+    float zb;
+
+    void Set(float x, float y, float z, float r, float g, float b, float xb, float yb, float zb);
+
+    // Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
+    static void TransferToOpenGl(colorBarycentricVertex* vertices, GLsizei vertexCount);
+};
+
 struct colorTextureVertex
 {
     float x;

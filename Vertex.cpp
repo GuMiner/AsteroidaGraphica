@@ -25,6 +25,33 @@ void colorVertex::TransferToOpenGl(colorVertex* vertices, GLsizei vertexCount)
     glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorVertex), vertices, GL_DYNAMIC_DRAW);
 }
 
+void colorBarycentricVertex::Set(float x, float y, float z, float r, float g, float b, float xb, float yb, float zb)
+{
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->r = r;
+    this->g = g;
+    this->b = b;
+    this->xb = xb;
+    this->yb = yb;
+    this->zb = zb;
+}
+
+void colorBarycentricVertex::TransferToOpenGl(colorBarycentricVertex* vertices, GLsizei vertexCount)
+{
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(colorBarycentricVertex), (GLvoid*)offsetof(colorBarycentricVertex, x));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(colorBarycentricVertex), (GLvoid*)offsetof(colorBarycentricVertex, r));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(colorBarycentricVertex), (GLvoid*)offsetof(colorBarycentricVertex, xb));
+    glEnableVertexAttribArray(2);
+
+    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorBarycentricVertex), vertices, GL_DYNAMIC_DRAW);
+}
+
 void colorTextureVertex::Set(float x, float y, float z, float r, float g, float b, float u, float v)
 {
     this->x = x;

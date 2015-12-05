@@ -19,31 +19,32 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     mvLocation = glGetUniformLocation(asteroidShaderProgram, "mv_matrix");
     projLocation = glGetUniformLocation(asteroidShaderProgram, "proj_matrix");
 
-    // TEST CODE TEST CODE
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    // Setup of vertex transfer (note we're using the "vertex" object in CodeGell)
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    // Send some random data to the GPU
-    // This was a reload operation, changes were performed that must be flushed to the GPU.
-    colorVertex *pVertices = new colorVertex[9];
-    pVertices[0].Set(0, 0, 0, 1, 1, 1);
-    pVertices[1].Set(0, 5, 0, 0, 1, 0);
-    pVertices[2].Set(5, 0, 0, 1, 0, 0);
+    // TODO there should be some nice way of randomly generating asteroids with consumption stats.
+    vertexCount = 12;
+    colorBarycentricVertex *pVertices = new colorBarycentricVertex[vertexCount];
+    pVertices[0].Set(0, 0, 0, 1, 1, 1, 0, 0, 1);
+    pVertices[1].Set(0, 5, 0, 0, 1, 0, 0, 1, 0);
+    pVertices[2].Set(5, 0, 0, 1, 0, 0, 1, 0, 0);
 
-    pVertices[3].Set(0, 5, 0, 0, 1, 0);
-    pVertices[4].Set(0, 0, 5, 0, 0, 1);
-    pVertices[5].Set(0, 0, 0, 1, 1, 1);
+    pVertices[3].Set(0, 5, 0, 0, 1, 0, 0, 0, 1);
+    pVertices[4].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
+    pVertices[5].Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
 
-    pVertices[6].Set(5, 0, 0, 1, 0, 0);
-    pVertices[7].Set(0, 0, 5, 0, 0, 1);
-    pVertices[8].Set(0, 0, 0, 1, 1, 1);
+    pVertices[6].Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
+    pVertices[7].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
+    pVertices[8].Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
 
-    vertexCount = 9;
-    colorVertex::TransferToOpenGl(pVertices, vertexCount);
+    pVertices[9].Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
+    pVertices[10].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
+    pVertices[11].Set(0, 5, 0, 0, 1, 0, 1, 0, 0);
+
+    colorBarycentricVertex::TransferToOpenGl(pVertices, vertexCount);
 
     delete[] pVertices;
 
