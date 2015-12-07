@@ -34,5 +34,5 @@ public:
     static bool ParseIntFromString(const std::string& stringToParse, int& value);
 
     // Attempts to parse a double from a string.
-    static bool ParseDoubleFromString(const std::string& stringToParse, double& value);
+    static bool ParseFloatFromString(const std::string& stringToParse, float& value);
 };

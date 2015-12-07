@@ -27,6 +27,28 @@ sf::Keyboard::Key ConfigManager::ToggleRotationDampeningKey;
 sf::Keyboard::Key ConfigManager::ToggleTranslationDampeningKey;
 sf::Keyboard::Key ConfigManager::PauseKey;
 
+float ConfigManager::SunSize;
+float ConfigManager::SunMaxPerPointDeformation;
+float ConfigManager::SunTriangleSize;
+
+float ConfigManager::SmallAsteroidSize;
+float ConfigManager::SmallAsteroidSizeMaxVariation;
+float ConfigManager::SmallAsteroidSizeMaxAxisDeformation;
+float ConfigManager::SmallAsteroidSizeMaxPerPointDeformation;
+float ConfigManager::SmallAsteroidTriangleSize;
+
+float ConfigManager::MediumAsteroidSize;
+float ConfigManager::MediumAsteroidSizeMaxVariation;
+float ConfigManager::MediumAsteroidSizeMaxAxisDeformation;
+float ConfigManager::MediumAsteroidSizeMaxPerPointDeformation;
+float ConfigManager::MediumAsteroidTriangleSize;
+
+float ConfigManager::LargeAsteroidSize;
+float ConfigManager::LargeAsteroidSizeMaxVariation;
+float ConfigManager::LargeAsteroidSizeMaxAxisDeformation;
+float ConfigManager::LargeAsteroidSizeMaxPerPointDeformation;
+float ConfigManager::LargeAsteroidTriangleSize;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -45,6 +67,13 @@ bool ConfigManager::LoadInt(std::string& line, int& integer)
 {
     std::string tempInput;
     return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseIntFromString(tempInput, integer));
+}
+
+// Loads in a floating-point configuration value.
+bool ConfigManager::LoadFloat(std::string& line, float& floatingPoint)
+{
+    std::string tempInput;
+    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseFloatFromString(tempInput, floatingPoint));
 }
 
 // Loads in an SFML keyboard key.
@@ -71,6 +100,14 @@ void ConfigManager::WriteInt(std::vector<std::string>& lines, const char* itemNa
 {
     std::stringstream tempOutput;
     tempOutput << itemName << StringUtils::Space << integer;
+    lines.push_back(tempOutput.str());
+}
+
+void ConfigManager::WriteFloat(std::vector<std::string>& lines, const char* itemName, float& floatingPoint)
+{
+    double tempValue = floatingPoint;
+    std::stringstream tempOutput;
+    tempOutput << itemName << StringUtils::Space << tempValue;
     lines.push_back(tempOutput.str());
 }
 
@@ -218,6 +255,132 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         return false;
     }
 
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SunSize))
+    {
+        Logger::Log("Error reading in the sun size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SunMaxPerPointDeformation))
+    {
+        Logger::Log("Error reading in the sun max per point deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SunTriangleSize))
+    {
+        Logger::Log("Error reading in the sun triangle size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSize))
+    {
+        Logger::Log("Error reading in the small asteroid size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxVariation))
+    {
+        Logger::Log("Error reading in the small asteroid size max variation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxAxisDeformation))
+    {
+        Logger::Log("Error reading in the small asteroid size max axis deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxPerPointDeformation))
+    {
+        Logger::Log("Error reading in the small asteroid size max per point deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidTriangleSize))
+    {
+        Logger::Log("Error reading in the small asteroid triangle size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSize))
+    {
+        Logger::Log("Error reading in the medium asteroid size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxVariation))
+    {
+        Logger::Log("Error reading in the medium asteroid size max variation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxAxisDeformation))
+    {
+        Logger::Log("Error reading in the medium asteroid size max axis deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxPerPointDeformation))
+    {
+        Logger::Log("Error reading in the medium asteroid size max per point deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidTriangleSize))
+    {
+        Logger::Log("Error reading in the medium asteroid triangle size!");
+        return false;
+    }
+    
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSize))
+    {
+        Logger::Log("Error reading in the large asteroid size!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxVariation))
+    {
+        Logger::Log("Error reading in the large asteroid size max variation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxPerPointDeformation))
+    {
+        Logger::Log("Error reading in the large asteroid size max axis deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxPerPointDeformation))
+    {
+        Logger::Log("Error reading in the large asteroid size max per point deformation!");
+        return false;
+    }
+
+    ++lineCounter;
+    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidTriangleSize))
+    {
+        Logger::Log("Error reading in the large asteroid triangle size!");
+        return false;
+    }
+
     return true;
 }
 
@@ -246,6 +409,28 @@ void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFil
     WriteKey(configFileLines, "ToggleRotationDampening", ToggleRotationDampeningKey);
     WriteKey(configFileLines, "ToggleTranslationDampening", ToggleTranslationDampeningKey);
     WriteKey(configFileLines, "Pause", PauseKey);
+
+    WriteFloat(configFileLines, "SunSize", SunSize);
+    WriteFloat(configFileLines, "SunMaxPerPointDeformation", SunMaxPerPointDeformation);
+    WriteFloat(configFileLines, "SunTriangleSize", SunTriangleSize);
+    
+    WriteFloat(configFileLines, "SmallAsteroidSize", SmallAsteroidSize);
+    WriteFloat(configFileLines, "SmallAsteroidSizeMaxVariation", SmallAsteroidSizeMaxVariation);
+    WriteFloat(configFileLines, "SmallAsteroidSizeMaxAxisDeformation", SmallAsteroidSizeMaxAxisDeformation);
+    WriteFloat(configFileLines, "SmallAsteroidSizeMaxPerPointDeformation", SmallAsteroidSizeMaxPerPointDeformation);
+    WriteFloat(configFileLines, "SmallAsteroidTriangleSize", SmallAsteroidTriangleSize);
+    
+    WriteFloat(configFileLines, "MediumAsteroidSize", MediumAsteroidSize);
+    WriteFloat(configFileLines, "MediumAsteroidSizeMaxVariation", MediumAsteroidSizeMaxVariation);
+    WriteFloat(configFileLines, "MediumAsteroidSizeMaxAxisDeformation", MediumAsteroidSizeMaxAxisDeformation);
+    WriteFloat(configFileLines, "MediumAsteroidSizeMaxPerPointDeformation", MediumAsteroidSizeMaxPerPointDeformation);
+    WriteFloat(configFileLines, "MediumAsteroidTriangleSize", MediumAsteroidTriangleSize);
+    
+    WriteFloat(configFileLines, "LargeAsteroidSize", LargeAsteroidSize);
+    WriteFloat(configFileLines, "LargeAsteroidSizeMaxVariation", LargeAsteroidSizeMaxVariation);
+    WriteFloat(configFileLines, "LargeAsteroidSizeMaxAxisDeformation", LargeAsteroidSizeMaxAxisDeformation);
+    WriteFloat(configFileLines, "LargeAsteroidSizeMaxPerPointDeformation", LargeAsteroidSizeMaxPerPointDeformation);
+    WriteFloat(configFileLines, "LargeAsteroidTriangleSize", LargeAsteroidTriangleSize);
 }
 
 // Reads in the configuration and sets up the variables listed

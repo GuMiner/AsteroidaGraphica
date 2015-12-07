@@ -15,10 +15,12 @@ class ConfigManager
 
     bool LoadBool(std::string& line, bool& boolean);
     bool LoadInt(std::string& line, int& integer);
+    bool LoadFloat(std::string& line, float& floatingPoint);
     bool LoadKey(std::string& line, sf::Keyboard::Key& key);
 
     void WriteBool(std::vector<std::string>& lines, const char* itemName, bool& boolean);
     void WriteInt(std::vector<std::string>& lines, const char* itemName, int& integer);
+    void WriteFloat(std::vector<std::string>& lines, const char* itemName, float& floatingPoint);
     void WriteKey(std::vector<std::string>& lines, const char* itemName, sf::Keyboard::Key& key);
 
     bool LoadConfigurationValues(std::vector<std::string>& lines);
@@ -27,10 +29,12 @@ class ConfigManager
 public:
     static int ConfigVersion;
 
+    // Graphics
     static bool IsFullscreen;
     static int ScreenWidth;
     static int ScreenHeight;
 
+    // Key bindings
     static sf::Keyboard::Key ThrustForwardsKey;
     static sf::Keyboard::Key ThrustReverseKey;
     static sf::Keyboard::Key ThrustLeftKey;
@@ -48,6 +52,29 @@ public:
     static sf::Keyboard::Key ToggleRotationDampeningKey;
     static sf::Keyboard::Key ToggleTranslationDampeningKey;
     static sf::Keyboard::Key PauseKey;
+
+    // World Generation
+    static float SunSize;
+    static float SunMaxPerPointDeformation;
+    static float SunTriangleSize;
+
+    static float SmallAsteroidSize;
+    static float SmallAsteroidSizeMaxVariation;
+    static float SmallAsteroidSizeMaxAxisDeformation;
+    static float SmallAsteroidSizeMaxPerPointDeformation;
+    static float SmallAsteroidTriangleSize;
+
+    static float MediumAsteroidSize;
+    static float MediumAsteroidSizeMaxVariation;
+    static float MediumAsteroidSizeMaxAxisDeformation;
+    static float MediumAsteroidSizeMaxPerPointDeformation;
+    static float MediumAsteroidTriangleSize;
+
+    static float LargeAsteroidSize;
+    static float LargeAsteroidSizeMaxVariation;
+    static float LargeAsteroidSizeMaxAxisDeformation;
+    static float LargeAsteroidSizeMaxPerPointDeformation;
+    static float LargeAsteroidTriangleSize;
 
     ConfigManager();
     bool ReadConfiguration();

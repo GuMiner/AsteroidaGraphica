@@ -112,8 +112,15 @@ bool StringUtils::ParseIntFromString(const std::string& stringToParse, int& valu
 }
 
 // Attempts to parse a double from a string.
-bool StringUtils::ParseDoubleFromString(const std::string& stringToParse, double& value)
+bool StringUtils::ParseFloatFromString(const std::string& stringToParse, float& value)
 {
+    double tempValue;
     std::istringstream inputStream(stringToParse);
-    return inputStream >> value ? true : false;
+    if (inputStream >> tempValue)
+    {
+        value = (float)tempValue;
+        return true;
+    }
+
+    return false;
 }

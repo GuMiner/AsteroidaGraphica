@@ -35,3 +35,28 @@ RotateCCW 17
 ToggleRotationDampening 3
 ToggleTranslationDampening 2
 Pause 70
+
+# World Generation Configuration
+# Deformation values randomly affect the spherical archetype that is generated for all objects.
+# Triangle sizes affect how coarse or fine-grained the object (and per-vertex deformation) is.
+SunSize 20.0
+SunMaxPerPointDeformation 4.0
+SunTriangleSize 0.1
+
+SmallAsteroidSize 0.1
+SmallAsteroidSizeMaxVariation 0.05
+SmallAsteroidSizeMaxAxisDeformation 0.05
+SmallAsteroidSizeMaxPerPointDeformation 0.01
+SmallAsteroidTriangleSize 0.01
+
+MediumAsteroidSize 0.4
+MediumAsteroidSizeMaxVariation 0.2
+MediumAsteroidSizeMaxAxisDeformation 0.1
+MediumAsteroidSizeMaxPerPointDeformation 0.1
+MediumAsteroidTriangleSize 0.04
+
+LargeAsteroidSize 1.0
+LargeAsteroidSizeMaxVariation 0.4
+LargeAsteroidSizeMaxAxisDeformation 0.4
+LargeAsteroidSizeMaxPerPointDeformation 0.2
+LargeAsteroidTriangleSize 0.08
