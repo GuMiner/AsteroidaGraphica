@@ -1,8 +1,14 @@
 #pragma once
+#include <random>
 
 // Holds data constant across the application.
 class Constants
 {
+    // Random number generation
+    static std::mt19937 mersenneTwiser;
+    static uint32_t seedValue;
+    static std::uniform_real_distribution<float> uniformDistribution;
+
 public:
     Constants()
     {
@@ -10,6 +16,8 @@ public:
         ASPECT = 1.77778f; // 16:9
         NEAR_PLANE = 0.10f;
         FAR_PLANE = 1000.0f;
+        seedValue = 321641658; // Numpad-bashing.
+        mersenneTwiser.seed(seedValue);
     }
 
     // Allowable return codes
@@ -27,5 +35,11 @@ public:
 
     // To support 144 Hz monitors.
     const static int MAX_FRAMERATE = 150;
+
+    // Gets the next random floating-point value from 0 to 1, inclusive.
+    static float Rand();
+
+    // Gets the next random floating-point value from (-range/2 to range/2)
+    static float Rand(float range);
 };
 
