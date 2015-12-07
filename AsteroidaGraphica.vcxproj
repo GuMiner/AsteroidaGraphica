@@ -129,6 +129,7 @@
     <ClInclude Include="AsteroidaGraphica.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="Logger.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="AsteroidaGraphica.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MusicManager.cpp" />
