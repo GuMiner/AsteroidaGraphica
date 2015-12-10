@@ -1,6 +1,7 @@
-#include "Asteroida.h"
+#include "Geometry.h"
 #include "Logger.h"
 #include "Vertex.h"
+#include "Asteroida.h"
 
 Asteroida::Asteroida()
 {
@@ -26,26 +27,16 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // TODO there should be some nice way of randomly generating asteroids with consumption stats.
-    vertexCount = 12;
+    std::vector<colorBarycentricVertex> vertices = Geometry::GenerateLargeAsteroid();
+    vertexCount = vertices.size();
     colorBarycentricVertex *pVertices = new colorBarycentricVertex[vertexCount];
-    pVertices[0].Set(0, 0, 0, 1, 1, 1, 0, 0, 1);
-    pVertices[1].Set(0, 5, 0, 0, 1, 0, 0, 1, 0);
-    pVertices[2].Set(5, 0, 0, 1, 0, 0, 1, 0, 0);
-
-    pVertices[3].Set(0, 5, 0, 0, 1, 0, 0, 0, 1);
-    pVertices[4].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    pVertices[5].Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
-
-    pVertices[6].Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
-    pVertices[7].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    pVertices[8].Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
-
-    pVertices[9].Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
-    pVertices[10].Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    pVertices[11].Set(0, 5, 0, 0, 1, 0, 1, 0, 0);
+    for (int i = 0; i < vertexCount; i++)
+    {
+        // TODO use a better copy mechanism.
+        pVertices[i] = vertices[i];
+    }
 
     colorBarycentricVertex::TransferToOpenGl(pVertices, vertexCount);
-
     delete[] pVertices;
 
     return true;
@@ -70,7 +61,7 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
         {
             for (int k = 0; k < scale; k++)
             {
-                vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(i*separation, j*separation, k*separation));
+                vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(i*separation, j*separation, k*separation)) * vmath::translate(-5, -5, -5);
                 glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
                 glDrawArrays(GL_TRIANGLES, 0, vertexCount);
             }
