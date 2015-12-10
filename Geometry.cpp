@@ -62,10 +62,10 @@ std::vector<vmath::vec3> Geometry::AddTriangleRing(float radius, float ringHeigh
     }
 
     // Add in the implicit triangle that will be forgotten if not pre-included.
-    // vmath::vec3 currentPoint = Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints);
-    // vmath::vec3 nextPoint = lastPoints[0];
-    // vmath::vec3 priorRingPoint = lastPoints[lastPoints.size() - 1];
-    // Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+    vmath::vec3 currentPoint = lastRingIteration ? lastRingPoints[0] : Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints);
+    vmath::vec3 nextPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints) : lastRingPoints[0];
+    vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, -1, ringPoints) : lastRingPoints[lastRingPoints.size() - 1];
+    Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
 
     // Iterate over the array with the larger number of points to not miss implicit triangles.
     float currentFractionValue = 0.001f;
@@ -92,7 +92,7 @@ std::vector<vmath::vec3> Geometry::AddTriangleRing(float radius, float ringHeigh
         vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, currentSmallerRingPoint, ringPoints) : lastRingPoints[currentSmallerRingPoint];
         Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
 
-        currentRingPoints.push_back(currentPoint);
+        currentRingPoints.push_back(lastRingIteration ? priorRingPoint : currentPoint);
         currentFractionValue += fraction;
     }
 
