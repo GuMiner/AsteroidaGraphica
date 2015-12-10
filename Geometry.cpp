@@ -24,24 +24,89 @@ vmath::vec3 Geometry::GetRingPointPosition(float radius, float ringHeight, int p
     return vmath::vec3(ringRadius * cos(angle), ringRadius * sin(angle), ringHeight);
 }
 
+// Adds a set of points with proper barycentric vertices to the point set, with test RGB coloration.
+void Geometry::AddPointSet(vmath::vec3 pointA, vmath::vec3 pointB, vmath::vec3 pointC, std::vector<colorBarycentricVertex>& vertices)
+{
+    colorBarycentricVertex point;
+    point.Set(pointA[0], pointA[1], pointA[2], 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+    vertices.push_back(point);
+
+    point.Set(pointB[0], pointB[1], pointB[2], 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    vertices.push_back(point);
+
+    point.Set(pointC[0], pointC[1], pointC[2], 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
+    vertices.push_back(point);
+}
+
+// Adds in a triangle fan connecting the arranged points to the center point.
+void Geometry::AddTriangleFan(std::vector<vmath::vec3> arrangedPoints, vmath::vec3 centerPoint, std::vector<colorBarycentricVertex>& vertices)
+{
+    for (unsigned int i = 0; i < arrangedPoints.size(); i++)
+    {
+        unsigned int nextPoint = (i == arrangedPoints.size() - 1) ? 0 : i + 1;
+        Geometry::AddPointSet(arrangedPoints[i], arrangedPoints[nextPoint], centerPoint, vertices);
+    }
+}
+
+// Adds in a ring of triangles, returning the added points used when forming the ring.
+std::vector<vmath::vec3> Geometry::AddTriangleRing(float radius, float ringHeight, int ringPoints, std::vector<vmath::vec3>& lastRingPoints, std::vector<colorBarycentricVertex>& vertices)
+{
+    std::vector<vmath::vec3> currentRingPoints;
+
+    bool lastRingIteration = false;
+    float fraction = (float)lastRingPoints.size() / (float)ringPoints;
+    if (lastRingPoints.size() > (unsigned int)ringPoints)
+    {
+        fraction = 1.0f / fraction;
+        lastRingIteration = true;
+    }
+
+    // Add in the implicit triangle that will be forgotten if not pre-included.
+    // vmath::vec3 currentPoint = Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints);
+    // vmath::vec3 nextPoint = lastPoints[0];
+    // vmath::vec3 priorRingPoint = lastPoints[lastPoints.size() - 1];
+    // Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+
+    // Iterate over the array with the larger number of points to not miss implicit triangles.
+    float currentFractionValue = 0.001f;
+    int currentSmallerRingPoint = 0;
+
+    int pointIterationCount = (lastRingIteration ? (int)lastRingPoints.size() : ringPoints);
+    for (int j = 0; j < pointIterationCount; j++)
+    {
+        int previousSmallerRingPoint = currentSmallerRingPoint;
+        currentSmallerRingPoint = (int)currentFractionValue;
+
+        vmath::vec3 currentPoint = lastRingIteration ? lastRingPoints[j] : Geometry::GetRingPointPosition(radius, ringHeight, j, ringPoints);
+        if (previousSmallerRingPoint != currentSmallerRingPoint)
+        {
+            // Generate an implicit triangle between the current point and other two ring points, because we skipped a step on the smaller ring.
+            vmath::vec3 nextPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, previousSmallerRingPoint, ringPoints) : lastRingPoints[previousSmallerRingPoint];
+            vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, currentSmallerRingPoint, ringPoints) : lastRingPoints[currentSmallerRingPoint];
+            Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+        }
+
+        // Generate a normal triangle given our current points.
+        int nextIndex = (j == pointIterationCount - 1) ? 0 : j + 1;
+        vmath::vec3 nextPoint = lastRingIteration ? lastRingPoints[nextIndex] : Geometry::GetRingPointPosition(radius, ringHeight, nextIndex, ringPoints);
+        vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, currentSmallerRingPoint, ringPoints) : lastRingPoints[currentSmallerRingPoint];
+        Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+
+        currentRingPoints.push_back(currentPoint);
+        currentFractionValue += fraction;
+    }
+
+    return currentRingPoints;
+}
+
 // Generates the trianges for a spherical shape with the specified major axis deformation, per-point deformation, and radius.
 std::vector<colorBarycentricVertex> Geometry::GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize)
 {
     int ringCount = (int)vmath::max(1.0f, 2.0f * radius / triangleSize);
     float stepSize = (2.0f * radius) / (float)ringCount;
 
-    std::vector<colorBarycentricVertex> vertices;
-    colorBarycentricVertex top;
-    top.Set(0, 0, radius, 0, 1.0f, 0, 0, 0, 1.0f);
-
-    colorBarycentricVertex bottom;
-    bottom.Set(0, 0, -radius, 0, 0, 1.0f, 0, 0, 1.0f);
-
-    // Add our first point, 
-    vertices.push_back(top);
-
+    std::vector<colorBarycentricVertex> vertices;  
     std::vector<vmath::vec3> lastRingPoints;
-    lastRingPoints.push_back(vmath::vec3(top.x, top.y, top.z));
 
     float ringHeight = radius - stepSize;
     for (int i = 0; i < ringCount; i++)
@@ -49,65 +114,33 @@ std::vector<colorBarycentricVertex> Geometry::GenerateSphericalArchetype(float r
         // Find the number of points that will go on this ring.
         float ringCircumference = Geometry::GetRingCircumference(radius, ringHeight);
         int ringPoints = (int)vmath::max(3.0f, ringCircumference / triangleSize);
-
-        for (int j = 0; j < ringPoints; j++)
+        
+        std::vector<vmath::vec3> lastPoints = lastRingPoints;
+        lastRingPoints.clear();
+        if (i == 0)
         {
-            if (i == 0)
+            // Special case -- this ring connects to the top point.
+            for (int j = 0; j < ringPoints; j++)
             {
-                // Special case -- this ring connects to the top point.
                 vmath::vec3 currentPoint = Geometry::GetRingPointPosition(radius, ringHeight, j, ringPoints);
-                vmath::vec3 nextPoint = Geometry::GetRingPointPosition(radius, ringHeight, j + 1, ringPoints);
-
-                // Form a triangle with the given points, given that the top point has a barycentric vertex of 1.0f;
-                colorBarycentricVertex point;
-                point.Set(currentPoint[0], currentPoint[1], currentPoint[2], 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-                vertices.push_back(point);
-                
-                point.Set(nextPoint[0], nextPoint[1], nextPoint[2], 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-                vertices.push_back(point);
-
-                vertices.push_back(top);
+                lastRingPoints.push_back(currentPoint);
             }
-            else
-            {
-                // Normal ring, connecting the points to the points in the last ring and replacing the set of points there.
-            }
+
+            vmath::vec3 top(0, 0, radius);
+            Geometry::AddTriangleFan(lastRingPoints, top, vertices);
+        }
+        else
+        {
+            // Normal ring, connecting the points to the points in the last ring and replacing the set of points there.
+            lastRingPoints = Geometry::AddTriangleRing(radius, ringHeight, ringPoints, lastPoints, vertices);
         }
 
         ringHeight -= stepSize;
     }
 
     // Connect the remaining point in the lastRingPoints array to the bottom point.
-
-    // vertices.push_back(bottom);
-
-    // TODO TEST CODE
-    //vertices.clear();
-    /*colorBarycentricVertex point;
-    point.Set(0, 0, 0, 1, 1, 1, 0, 0, 1);
-    vertices.push_back(point);
-    point.Set(0, 5, 0, 0, 1, 0, 0, 1, 0);
-    vertices.push_back(point);
-    point.Set(5, 0, 0, 1, 0, 0, 1, 0, 0);
-    vertices.push_back(point);
-    point.Set(0, 5, 0, 0, 1, 0, 0, 0, 1);
-    vertices.push_back(point);
-    point.Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    vertices.push_back(point);
-    point.Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
-    vertices.push_back(point);
-    point.Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
-    vertices.push_back(point);
-    point.Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    vertices.push_back(point);
-    point.Set(0, 0, 0, 1, 1, 1, 1, 0, 0);
-    vertices.push_back(point);
-    point.Set(5, 0, 0, 1, 0, 0, 0, 0, 1);
-    vertices.push_back(point);
-    point.Set(0, 0, 5, 0, 0, 1, 0, 1, 0);
-    vertices.push_back(point);
-    point.Set(0, 5, 0, 0, 1, 0, 1, 0, 0);
-    vertices.push_back(point);*/
+    vmath::vec3 bottom(0, 0, -radius);
+    Geometry::AddTriangleFan(lastRingPoints, bottom, vertices);
 
     // Perform major axis and per-point deformation.
     /* TODO reinstate deformation when we can do it correctly and have the drawing all correct.
