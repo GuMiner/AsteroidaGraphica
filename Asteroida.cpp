@@ -27,7 +27,8 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // TODO there should be some nice way of randomly generating asteroids with consumption stats.
-    std::vector<colorBarycentricVertex> vertices = Geometry::GenerateLargeAsteroid();
+    Geometry geometry;
+    std::vector<colorBarycentricVertex> vertices = geometry.GenerateLargeAsteroid();
     vertexCount = vertices.size();
     colorBarycentricVertex *pVertices = new colorBarycentricVertex[vertexCount];
     for (int i = 0; i < vertexCount; i++)

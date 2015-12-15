@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <vector>
 #include "Vertex.h"
 #include "vmath.hpp"
@@ -6,17 +7,33 @@
 // Generates in-game geometry so that asteroids are *always* different per game but *always* consistent once generated.
 class Geometry
 {
+    const static int TOP_ID = -1;
+    const static int BOTTOM_ID = -2;
+
+    // Ring -> Ring Point (angle) -> Point ID
+    std::map<int, std::map<int, int>> spherePointLookup;
+    int nextPointId;
+    
+    // Point IDs of the last ring.
+    std::vector<int> lastRingPoints;
+
+    // Point IDs making up the sphere.
+    std::vector<int> spherePoints;
+
     static float GetRingRadius(float radius, float ringHeight);
     static float GetRingCircumference(float radius, float ringHeight);
     static vmath::vec3 Geometry::GetRingPointPosition(float radius, float ringHeight, int pointIdx, int totalPoints);
-    static void AddPointSet(vmath::vec3 pointA, vmath::vec3 pointB, vmath::vec3 pointC, std::vector<colorBarycentricVertex>& vertices);
-    static void AddTriangleFan(std::vector<vmath::vec3> arrangedPoints, vmath::vec3 centerPoint, std::vector<colorBarycentricVertex>& vertices);
-    static std::vector<vmath::vec3> AddTriangleRing(float radius, float ringHeight, int ringPoints, std::vector<vmath::vec3>& lastRingPoints, std::vector<colorBarycentricVertex>& vertices);
+
+    void AddPointSet(int pointAId, int pointBId, int pointCId);
+    void AddTriangleFan(int centerPointId);
+    std::vector<int> AddTriangleRing(int ringId, int ringPointCount);
     
-    static std::vector<colorBarycentricVertex> GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize);
+    int GetPointId(int ring, int ringPoint);
+    void Reset();
+    std::vector<colorBarycentricVertex> GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize);
 public:
-    static std::vector<colorBarycentricVertex> GenerateSun();
-    static std::vector<colorBarycentricVertex> GenerateSmallAsteroid();
-    static std::vector<colorBarycentricVertex> GenerateMediumAsteroid();
-    static std::vector<colorBarycentricVertex> GenerateLargeAsteroid();
+    std::vector<colorBarycentricVertex> GenerateSun();
+    std::vector<colorBarycentricVertex> GenerateSmallAsteroid();
+    std::vector<colorBarycentricVertex> GenerateMediumAsteroid();
+    std::vector<colorBarycentricVertex> GenerateLargeAsteroid();
 };

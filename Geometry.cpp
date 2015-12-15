@@ -18,6 +18,15 @@ float Geometry::GetRingCircumference(float radius, float ringHeight)
 // Determines the position of a point on the ring in 3D space. Supports positive and negative indexing.
 vmath::vec3 Geometry::GetRingPointPosition(float radius, float ringHeight, int pointIdx, int totalPoints)
 {
+    if (pointIdx == TOP_ID)
+    {
+        return vmath::vec3(0, 0, radius);
+    }
+    else if (pointIdx == BOTTOM_ID)
+    {
+        return vmath::vec3(0, 0, -radius);
+    }
+
     // Points go CW when viewed top-down, so generate as-such.
     float ringRadius = Geometry::GetRingRadius(radius, ringHeight);
     float angle = pointIdx * ((2.0f * 3.14159f) / (float)totalPoints);
@@ -25,78 +34,99 @@ vmath::vec3 Geometry::GetRingPointPosition(float radius, float ringHeight, int p
 }
 
 // Adds a set of points with proper barycentric vertices to the point set, with test RGB coloration.
-void Geometry::AddPointSet(vmath::vec3 pointA, vmath::vec3 pointB, vmath::vec3 pointC, std::vector<colorBarycentricVertex>& vertices)
+void Geometry::AddPointSet(int pointAId, int pointBId, int pointCId)
 {
-    colorBarycentricVertex point;
-    point.Set(pointA[0], pointA[1], pointA[2], 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-    vertices.push_back(point);
-
-    point.Set(pointB[0], pointB[1], pointB[2], 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-    vertices.push_back(point);
-
-    point.Set(pointC[0], pointC[1], pointC[2], 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-    vertices.push_back(point);
+    spherePoints.push_back(pointAId);
+    spherePoints.push_back(pointBId);
+    spherePoints.push_back(pointCId);
 }
 
-// Adds in a triangle fan connecting the arranged points to the center point.
-void Geometry::AddTriangleFan(std::vector<vmath::vec3> arrangedPoints, vmath::vec3 centerPoint, std::vector<colorBarycentricVertex>& vertices)
+// Adds in a triangle fan connecting the last ring points to the given point.
+void Geometry::AddTriangleFan(int centerPointId)
 {
-    for (unsigned int i = 0; i < arrangedPoints.size(); i++)
+    for (unsigned int i = 0; i < lastRingPoints.size(); i++)
     {
-        unsigned int nextPoint = (i == arrangedPoints.size() - 1) ? 0 : i + 1;
-        Geometry::AddPointSet(arrangedPoints[i], arrangedPoints[nextPoint], centerPoint, vertices);
+        unsigned int nextPoint = (i == lastRingPoints.size() - 1) ? 0 : i + 1;
+        Geometry::AddPointSet(lastRingPoints[i], lastRingPoints[nextPoint], centerPointId);
     }
 }
 
 // Adds in a ring of triangles, returning the added points used when forming the ring.
-std::vector<vmath::vec3> Geometry::AddTriangleRing(float radius, float ringHeight, int ringPoints, std::vector<vmath::vec3>& lastRingPoints, std::vector<colorBarycentricVertex>& vertices)
+std::vector<int> Geometry::AddTriangleRing(int ringId, int ringPointCount)
 {
-    std::vector<vmath::vec3> currentRingPoints;
+    std::vector<int> currentRingPoints;
 
     bool lastRingIteration = false;
-    float fraction = (float)lastRingPoints.size() / (float)ringPoints;
-    if (lastRingPoints.size() > (unsigned int)ringPoints)
+    float fraction = (float)lastRingPoints.size() / (float)ringPointCount;
+    if (lastRingPoints.size() > (unsigned int)ringPointCount)
     {
         fraction = 1.0f / fraction;
         lastRingIteration = true;
     }
 
     // Add in the implicit triangle that will be forgotten if not pre-included.
-    vmath::vec3 currentPoint = lastRingIteration ? lastRingPoints[0] : Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints);
-    vmath::vec3 nextPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, 0, ringPoints) : lastRingPoints[0];
-    vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, -1, ringPoints) : lastRingPoints[lastRingPoints.size() - 1];
-    Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+    int currentPointId = lastRingIteration ? lastRingPoints[0] : GetPointId(ringId, 0);
+    int nextPointId = lastRingIteration ? GetPointId(ringId, 0) : lastRingPoints[0];
+    int priorRingPointId = lastRingIteration ? GetPointId(ringId, ringPointCount - 1) : lastRingPoints[lastRingPoints.size() - 1];
+    Geometry::AddPointSet(currentPointId, nextPointId, priorRingPointId);
 
     // Iterate over the array with the larger number of points to not miss implicit triangles.
     float currentFractionValue = 0.001f;
     int currentSmallerRingPoint = 0;
 
-    int pointIterationCount = (lastRingIteration ? (int)lastRingPoints.size() : ringPoints);
+    int pointIterationCount = (lastRingIteration ? (int)lastRingPoints.size() : ringPointCount);
     for (int j = 0; j < pointIterationCount; j++)
     {
         int previousSmallerRingPoint = currentSmallerRingPoint;
         currentSmallerRingPoint = (int)currentFractionValue;
 
-        vmath::vec3 currentPoint = lastRingIteration ? lastRingPoints[j] : Geometry::GetRingPointPosition(radius, ringHeight, j, ringPoints);
+        int currentPointId = lastRingIteration ? lastRingPoints[j] : GetPointId(ringId, j);
         if (previousSmallerRingPoint != currentSmallerRingPoint)
         {
             // Generate an implicit triangle between the current point and other two ring points, because we skipped a step on the smaller ring.
-            vmath::vec3 nextPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, previousSmallerRingPoint, ringPoints) : lastRingPoints[previousSmallerRingPoint];
-            vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, currentSmallerRingPoint, ringPoints) : lastRingPoints[currentSmallerRingPoint];
-            Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+            int nextPointId = lastRingIteration ? GetPointId(ringId, previousSmallerRingPoint) : lastRingPoints[previousSmallerRingPoint];
+            int priorRingPointId = lastRingIteration ? GetPointId(ringId, currentSmallerRingPoint) : lastRingPoints[currentSmallerRingPoint];
+            Geometry::AddPointSet(currentPointId, nextPointId, priorRingPointId);
         }
 
         // Generate a normal triangle given our current points.
         int nextIndex = (j == pointIterationCount - 1) ? 0 : j + 1;
-        vmath::vec3 nextPoint = lastRingIteration ? lastRingPoints[nextIndex] : Geometry::GetRingPointPosition(radius, ringHeight, nextIndex, ringPoints);
-        vmath::vec3 priorRingPoint = lastRingIteration ? Geometry::GetRingPointPosition(radius, ringHeight, currentSmallerRingPoint, ringPoints) : lastRingPoints[currentSmallerRingPoint];
-        Geometry::AddPointSet(currentPoint, nextPoint, priorRingPoint, vertices);
+        int nextPointId = lastRingIteration ? lastRingPoints[nextIndex] : GetPointId(ringId, nextIndex);
+        int priorRingPointId = lastRingIteration ? GetPointId(ringId, currentSmallerRingPoint) : lastRingPoints[currentSmallerRingPoint];
+        Geometry::AddPointSet(currentPointId, nextPointId, priorRingPointId);
 
-        currentRingPoints.push_back(lastRingIteration ? priorRingPoint : currentPoint);
+        currentRingPoints.push_back(lastRingIteration ? priorRingPointId : currentPointId);
         currentFractionValue += fraction;
     }
 
     return currentRingPoints;
+}
+
+// Retrieves the ID of a point on the ring, creating a new one if it doesn't exist.
+int Geometry::GetPointId(int ring, int ringPoint)
+{
+    if (spherePointLookup.count(ring) == 0)
+    {
+        // No points for this ring at all
+        spherePointLookup[ring] = std::map<int, int>();
+    }
+
+    if (spherePointLookup[ring].count(ringPoint) == 0)
+    {
+        spherePointLookup[ring][ringPoint] = nextPointId;
+        ++nextPointId;
+    }
+
+    return spherePointLookup[ring][ringPoint];
+}
+
+// Resets the class variables to generate a new spherical archetype.
+void Geometry::Reset()
+{
+    nextPointId = 0;
+    spherePointLookup.clear();
+    lastRingPoints.clear();
+    spherePoints.clear();
 }
 
 // Generates the trianges for a spherical shape with the specified major axis deformation, per-point deformation, and radius.
@@ -104,60 +134,85 @@ std::vector<colorBarycentricVertex> Geometry::GenerateSphericalArchetype(float r
 {
     int ringCount = (int)vmath::max(1.0f, 2.0f * radius / triangleSize);
     float stepSize = (2.0f * radius) / (float)ringCount;
-
-    std::vector<colorBarycentricVertex> vertices;  
-    std::vector<vmath::vec3> lastRingPoints;
+    
+    int topId = GetPointId(TOP_ID, TOP_ID);
+    int bottomId = GetPointId(BOTTOM_ID, BOTTOM_ID);
 
     float ringHeight = radius - stepSize;
-    for (int i = 0; i < ringCount; i++)
+    for (int i = 0; i < ringCount - 1; i++)
     {
         // Find the number of points that will go on this ring.
         float ringCircumference = Geometry::GetRingCircumference(radius, ringHeight);
-        int ringPoints = (int)vmath::max(3.0f, ringCircumference / triangleSize);
+        int ringPointCount = (int)vmath::max(3.0f, ringCircumference / triangleSize);
         
-        std::vector<vmath::vec3> lastPoints = lastRingPoints;
-        lastRingPoints.clear();
         if (i == 0)
         {
             // Special case -- this ring connects to the top point.
-            for (int j = 0; j < ringPoints; j++)
+            for (int j = 0; j < ringPointCount; j++)
             {
-                vmath::vec3 currentPoint = Geometry::GetRingPointPosition(radius, ringHeight, j, ringPoints);
-                lastRingPoints.push_back(currentPoint);
+                lastRingPoints.push_back(GetPointId(i + 1, j));
             }
 
-            vmath::vec3 top(0, 0, radius);
-            Geometry::AddTriangleFan(lastRingPoints, top, vertices);
+            AddTriangleFan(topId);
         }
         else
         {
             // Normal ring, connecting the points to the points in the last ring and replacing the set of points there.
-            lastRingPoints = Geometry::AddTriangleRing(radius, ringHeight, ringPoints, lastPoints, vertices);
+            lastRingPoints = Geometry::AddTriangleRing(i + 1, ringPointCount);
         }
 
         ringHeight -= stepSize;
     }
 
     // Connect the remaining point in the lastRingPoints array to the bottom point.
-    vmath::vec3 bottom(0, 0, -radius);
-    Geometry::AddTriangleFan(lastRingPoints, bottom, vertices);
+    AddTriangleFan(bottomId);
 
-    // Perform major axis and per-point deformation.
-    /* TODO reinstate deformation when we can do it correctly and have the drawing all correct.
-    
-    float deformationAmount = 1.0f + (majorAxisDeformation / radius);
+    // Generate a map of points for all our point IDs.
+    // Note that the structure is Ring -> Ring Point -> Point ID.
+    std::map<int, vmath::vec3> vertices;
+    for (std::map<int, std::map<int, int>>::iterator iter = spherePointLookup.begin(); iter != spherePointLookup.end(); iter++)
+    {
+        for (std::map<int, int>::iterator innerIter = iter->second.begin(); innerIter != iter->second.end(); innerIter++)
+        {
+            ringHeight = radius - (stepSize * (float)iter->first);
+            float ringCircumference = Geometry::GetRingCircumference(radius, ringHeight);
+            int ringPoints = (int)vmath::max(3.0f, ringCircumference / triangleSize);
+
+            // [PointId] = current point position.
+            vertices[innerIter->second] = Geometry::GetRingPointPosition(radius, ringHeight, innerIter->first, ringPoints);
+        }
+    }
+
+    // Perform major axis and per-point deformation on the map of points.
+    float axisDeformationAmount = 1.0f + (majorAxisDeformation / radius);
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
         // Note that the per-point deformation is passed in pre-randomized to filter the overall randomness, and this makes the randomness diverse overall.
         float xDeformation = Constants::Rand(perPointDeformation);
         float yDeformation = Constants::Rand(perPointDeformation);
         float zDeformation = Constants::Rand(perPointDeformation);
+        
+        vertices[i] = vmath::vec3(vertices[i][0] + xDeformation, vertices[i][1] + yDeformation, vertices[i][2] * axisDeformationAmount + zDeformation);
+    }
 
-        vertices[i].Set(vertices[i].x + xDeformation, vertices[i].y + yDeformation, vertices[i].z * deformationAmount + zDeformation,
-            vertices[i].r, vertices[i].g, vertices[i].b, vertices[i].xb, vertices[i].yb, vertices[i].zb);
-    }*/
+    // Given our map of points and our large list of point IDs, write out the data in the expected vertex format.
+    int barycentricCounter = 0;
+    std::vector<colorBarycentricVertex> actualVertices;
+    colorBarycentricVertex vertex;
+    for (unsigned int i = 0; i < spherePoints.size(); i++)
+    {
+        vmath::vec3 point = vertices[spherePoints[i]];
+
+        float xAmount = barycentricCounter % 3 == 0 ? 1.0f : 0.0f;
+        float yAmount = barycentricCounter % 3 == 1 ? 1.0f : 0.0f;
+        float zAmount = barycentricCounter % 3 == 2 ? 1.0f : 0.0f;
+        vertex.Set(point[0], point[1], point[2], xAmount, yAmount, zAmount, xAmount, yAmount, zAmount);
+        actualVertices.push_back(vertex);
+
+        ++barycentricCounter;
+    }
     
-    return vertices;
+    return actualVertices;
 }
 
 // Generates the sun, which is large.
