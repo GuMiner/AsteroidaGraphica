@@ -1,17 +1,18 @@
 # AsteroidaGraphica
 ## About
 --------------------
+![Status1214.png][status]
+[status]:./Status1214.png
+*12/14 Status Update*
 
-AsteroidaGraphica is (being created) to be an infinite-world, futuristic, adventure and role-playing asteroid mining simulator.
+AsteroidaGraphica is (being created) to be a essentially-infinite-world, futuristic, adventure and role-playing asteroid mining simulator.
 *This project is in progress; more details will be added when closer to completion*
 
 ## Status
 -------------------
 ### ACTIVE 
 
-####Delays
-* Transitioning http://helium24.net to Digital Ocean (cuts hosting bill in half).
-* **Total days impacted:** 4
+I'm attempting to submit a change a day, unless I'm busy with work or website work on http://helium24.net.
 
 ## Build
 --------
