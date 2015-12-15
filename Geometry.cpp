@@ -184,7 +184,7 @@ std::vector<colorBarycentricVertex> Geometry::GenerateSphericalArchetype(float r
     }
 
     // Perform major axis and per-point deformation on the map of points.
-    float axisDeformationAmount = 1.0f + (majorAxisDeformation / radius);
+    float axisDeformationAmount = 1.0f + majorAxisDeformation;
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
         // Note that the per-point deformation is passed in pre-randomized to filter the overall randomness, and this makes the randomness diverse overall.

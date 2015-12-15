@@ -16,7 +16,7 @@ public:
         ASPECT = 1.77778f; // 16:9
         NEAR_PLANE = 0.10f;
         FAR_PLANE = 1000.0f;
-        seedValue = 321641658; // Numpad-bashing.
+        seedValue = 3213258; // Numpad-bashing.
         mersenneTwiser.seed(seedValue);
     }
 
