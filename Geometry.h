@@ -30,10 +30,10 @@ class Geometry
     
     int GetPointId(int ring, int ringPoint);
     void Reset();
-    std::vector<colorBarycentricVertex> GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize);
+    std::vector<barycentricVertex> GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize);
 public:
-    std::vector<colorBarycentricVertex> GenerateSun();
-    std::vector<colorBarycentricVertex> GenerateSmallAsteroid();
-    std::vector<colorBarycentricVertex> GenerateMediumAsteroid();
-    std::vector<colorBarycentricVertex> GenerateLargeAsteroid();
+    std::vector<barycentricVertex> GenerateSun();
+    std::vector<barycentricVertex> GenerateSmallAsteroid();
+    std::vector<barycentricVertex> GenerateMediumAsteroid();
+    std::vector<barycentricVertex> GenerateLargeAsteroid();
 };
