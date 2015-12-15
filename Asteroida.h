@@ -11,6 +11,7 @@ class Asteroida
     GLuint vao;
     GLuint vbo;
     GLsizei vertexCount;
+    GLuint asteroidIdBuffer;
 
 public:
     Asteroida();

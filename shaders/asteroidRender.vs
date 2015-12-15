@@ -3,6 +3,8 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 barycentricPosition;
 
+layout (location = 7) in uint asteroidId;
+
 out VS_OUT
 {
     vec4 color;
