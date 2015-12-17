@@ -49,3 +49,11 @@ struct colorTextureVertex
     // Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
     static void TransferToOpenGl(colorTextureVertex* vertices, GLsizei vertexCount);
 };
+
+struct DrawArraysIndirectCommand
+{
+    GLuint vertexCount;
+    GLuint instanceCount;
+    GLuint firstVertexOffset;
+    GLuint baseInstance;
+};

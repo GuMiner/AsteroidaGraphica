@@ -61,3 +61,8 @@ LargeAsteroidSizeMaxVariation 0.4
 LargeAsteroidSizeMaxAxisDeformation 0.90
 LargeAsteroidSizeMaxPerPointDeformation 0.5
 LargeAsteroidTriangleSize 0.20
+
+# The number of archetypes for each asteroid to generate.
+SmallAsteroidTypes 1000
+MediumAsteroidTypes 500
+LargeAsteroidTypes 100

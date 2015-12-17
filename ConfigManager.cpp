@@ -49,6 +49,10 @@ float ConfigManager::LargeAsteroidSizeMaxAxisDeformation;
 float ConfigManager::LargeAsteroidSizeMaxPerPointDeformation;
 float ConfigManager::LargeAsteroidTriangleSize;
 
+int ConfigManager::SmallAsteroidTypes;
+int ConfigManager::MediumAsteroidTypes;
+int ConfigManager::LargeAsteroidTypes;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -381,6 +385,24 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         return false;
     }
 
+    if (!LoadInt(configFileLines[lineCounter], SmallAsteroidTypes))
+    {
+        Logger::Log("Error decoding the small asteroid type count!");
+        return false;
+    }
+
+    if (!LoadInt(configFileLines[lineCounter], MediumAsteroidTypes))
+    {
+        Logger::Log("Error decoding the medium asteroid type count!");
+        return false;
+    }
+
+    if (!LoadInt(configFileLines[lineCounter], LargeAsteroidTypes))
+    {
+        Logger::Log("Error decoding the large asteroid type count!");
+        return false;
+    }
+
     return true;
 }
 
@@ -431,6 +453,10 @@ void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFil
     WriteFloat(configFileLines, "LargeAsteroidSizeMaxAxisDeformation", LargeAsteroidSizeMaxAxisDeformation);
     WriteFloat(configFileLines, "LargeAsteroidSizeMaxPerPointDeformation", LargeAsteroidSizeMaxPerPointDeformation);
     WriteFloat(configFileLines, "LargeAsteroidTriangleSize", LargeAsteroidTriangleSize);
+
+    WriteInt(configFileLines, "SmallAsteroidTypes", SmallAsteroidTypes);
+    WriteInt(configFileLines, "MediumAsteroidTypes", MediumAsteroidTypes);
+    WriteInt(configFileLines, "LargeAsteroidTypes", LargeAsteroidTypes);
 }
 
 // Reads in the configuration and sets up the variables listed

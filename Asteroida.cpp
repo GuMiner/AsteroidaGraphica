@@ -1,3 +1,4 @@
+#include "ConfigManager.h"
 #include "Geometry.h"
 #include "Logger.h"
 #include "Vertex.h"
@@ -27,6 +28,10 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // Asteroid random generation with resource statistics.
+    smallAsteroidVertexCounts = new GLuint[ConfigManager::SmallAsteroidTypes];
+    mediumAsteroidVertexCounts = new GLuint[ConfigManager::MediumAsteroidTypes];
+    largeAsteroidVertexCounts = new GLuint[ConfigManager::LargeAsteroidTypes];
+    
     glGenBuffers(1, &asteroidIdBuffer);
 
     Geometry geometry;
@@ -74,6 +79,10 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 
 Asteroida::~Asteroida()
 {
+    delete[] smallAsteroidVertexCounts;
+    delete[] mediumAsteroidVertexCounts;
+    delete[] largeAsteroidVertexCounts;
+
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
 

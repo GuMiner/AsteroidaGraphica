@@ -76,6 +76,10 @@ public:
     static float LargeAsteroidSizeMaxPerPointDeformation;
     static float LargeAsteroidTriangleSize;
 
+    static int SmallAsteroidTypes;
+    static int MediumAsteroidTypes;
+    static int LargeAsteroidTypes;
+
     ConfigManager();
     bool ReadConfiguration();
     bool WriteConfiguration();
