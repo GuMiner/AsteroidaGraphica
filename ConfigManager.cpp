@@ -385,18 +385,21 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         return false;
     }
 
+    ++lineCounter;
     if (!LoadInt(configFileLines[lineCounter], SmallAsteroidTypes))
     {
         Logger::Log("Error decoding the small asteroid type count!");
         return false;
     }
 
+    ++lineCounter;
     if (!LoadInt(configFileLines[lineCounter], MediumAsteroidTypes))
     {
         Logger::Log("Error decoding the medium asteroid type count!");
         return false;
     }
 
+    ++lineCounter;
     if (!LoadInt(configFileLines[lineCounter], LargeAsteroidTypes))
     {
         Logger::Log("Error decoding the large asteroid type count!");

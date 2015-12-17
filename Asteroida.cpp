@@ -32,9 +32,30 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     mediumAsteroidVertexCounts = new GLuint[ConfigManager::MediumAsteroidTypes];
     largeAsteroidVertexCounts = new GLuint[ConfigManager::LargeAsteroidTypes];
     
+    Geometry geometry;
+    GLuint totalVertexCount = 0;
+    std::vector<std::vector<barycentricVertex>> smallAsteroids;
+    std::vector<std::vector<barycentricVertex>> mediumAsteroids;
+    std::vector<std::vector<barycentricVertex>> largeAsteroids;
+    
+    for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
+    {
+        smallAsteroids.push_back(geometry.GenerateSmallAsteroid());
+    }
+
+    for (int i = 0; i < ConfigManager::MediumAsteroidTypes; i++)
+    {
+        mediumAsteroids.push_back(geometry.GenerateMediumAsteroid());
+    }
+
+    for (int i = 0; i < ConfigManager::LargeAsteroidTypes; i++)
+    {
+        largeAsteroids.push_back(geometry.GenerateLargeAsteroid());
+    }
+
     glGenBuffers(1, &asteroidIdBuffer);
 
-    Geometry geometry;
+    
     std::vector<barycentricVertex> vertices = geometry.GenerateLargeAsteroid();
     vertexCount = vertices.size();
     barycentricVertex *pVertices = new barycentricVertex[vertexCount];
