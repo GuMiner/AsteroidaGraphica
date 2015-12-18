@@ -48,13 +48,13 @@ SmallAsteroidSize 0.1
 SmallAsteroidSizeMaxVariation 0.05
 SmallAsteroidSizeMaxAxisDeformation 0.60
 SmallAsteroidSizeMaxPerPointDeformation 0.01
-SmallAsteroidTriangleSize 0.01
+SmallAsteroidTriangleSize 0.02
 
 MediumAsteroidSize 0.4
 MediumAsteroidSizeMaxVariation 0.2
 MediumAsteroidSizeMaxAxisDeformation 0.60
 MediumAsteroidSizeMaxPerPointDeformation 0.1
-MediumAsteroidTriangleSize 0.04
+MediumAsteroidTriangleSize 0.08
 
 LargeAsteroidSize 1.0
 LargeAsteroidSizeMaxVariation 0.4

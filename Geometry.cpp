@@ -132,6 +132,8 @@ void Geometry::Reset()
 // Generates the trianges for a spherical shape with the specified major axis deformation, per-point deformation, and radius.
 std::vector<barycentricVertex> Geometry::GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize)
 {
+    Reset();
+
     int ringCount = (int)vmath::max(1.0f, 2.0f * radius / triangleSize);
     float stepSize = (2.0f * radius) / (float)ringCount;
     
