@@ -46,23 +46,23 @@ SunTriangleSize 0.1
 
 SmallAsteroidSize 0.1
 SmallAsteroidSizeMaxVariation 0.05
-SmallAsteroidSizeMaxAxisDeformation 0.60
-SmallAsteroidSizeMaxPerPointDeformation 0.01
-SmallAsteroidTriangleSize 0.02
+SmallAsteroidSizeMaxAxisDeformation 0.80
+SmallAsteroidSizeMaxPerPointDeformation 0.08
+SmallAsteroidTriangleSize 0.04
 
 MediumAsteroidSize 0.4
 MediumAsteroidSizeMaxVariation 0.2
-MediumAsteroidSizeMaxAxisDeformation 0.60
-MediumAsteroidSizeMaxPerPointDeformation 0.1
-MediumAsteroidTriangleSize 0.08
+MediumAsteroidSizeMaxAxisDeformation 2.00
+MediumAsteroidSizeMaxPerPointDeformation 0.6
+MediumAsteroidTriangleSize 0.09
 
 LargeAsteroidSize 1.0
 LargeAsteroidSizeMaxVariation 0.4
 LargeAsteroidSizeMaxAxisDeformation 0.90
-LargeAsteroidSizeMaxPerPointDeformation 0.5
-LargeAsteroidTriangleSize 0.20
+LargeAsteroidSizeMaxPerPointDeformation 0.9
+LargeAsteroidTriangleSize 0.30
 
 # The number of archetypes for each asteroid to generate.
-SmallAsteroidTypes 3
-MediumAsteroidTypes 3
-LargeAsteroidTypes 3
+SmallAsteroidTypes 100
+MediumAsteroidTypes 100
+LargeAsteroidTypes 100

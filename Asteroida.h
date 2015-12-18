@@ -17,6 +17,9 @@ class Asteroida
     GLuint* smallAsteroidVertexCounts;
     GLuint* mediumAsteroidVertexCounts;
     GLuint* largeAsteroidVertexCounts;
+    GLuint* smallAsteroidOffsets;
+    GLuint* mediumAsteroidOffsets;
+    GLuint* largeAsteroidOffsets;
 
 public:
     Asteroida();

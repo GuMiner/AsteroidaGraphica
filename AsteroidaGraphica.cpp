@@ -21,6 +21,8 @@
 #endif
 
 const char* Version::NAME;
+Version AsteroidaGraphica::Version;
+Constants AsteroidaGraphica::Constant;
 
 AsteroidaGraphica::AsteroidaGraphica()
     : physicsManager(), physicaThread(&Physica::Run, &physicsManager), musicThread(&MusicManager::Run, &musicManager)
