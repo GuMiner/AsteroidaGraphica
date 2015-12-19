@@ -66,3 +66,7 @@ LargeAsteroidTriangleSize 0.30
 SmallAsteroidTypes 100
 MediumAsteroidTypes 100
 LargeAsteroidTypes 100
+
+# Number of texels in the asteroid sampler. The total number of asteroids is <this number>^2.
+# Your graphics hardware may only support powers-of-two values for this parameter.
+AsteroidCount 1024

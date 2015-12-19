@@ -56,4 +56,6 @@ struct DrawArraysIndirectCommand
     GLuint instanceCount;
     GLuint firstVertexOffset;
     GLuint baseInstance;
+
+    void Set(GLuint vertexCount, GLuint instanceCount, GLuint firstVertexOffset, GLuint baseInstance);
 };

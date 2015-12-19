@@ -11,7 +11,9 @@ class Asteroida
     GLuint vao;
     GLuint vbo;
     GLsizei vertexCount;
-    GLuint asteroidIdBuffer;
+
+    GLuint indirectDrawBuffer;
+    GLuint asteroidPositionTexture;
 
     // Note that asteroids are stored in the VBO in small-medium-large order.
     GLuint* smallAsteroidVertexCounts;
@@ -20,7 +22,6 @@ class Asteroida
     GLuint* smallAsteroidOffsets;
     GLuint* mediumAsteroidOffsets;
     GLuint* largeAsteroidOffsets;
-
 public:
     Asteroida();
     bool Initialize(ShaderManager& shaderManager);

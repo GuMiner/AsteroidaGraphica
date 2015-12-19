@@ -74,3 +74,11 @@ void colorTextureVertex::TransferToOpenGl(colorTextureVertex* vertices, GLsizei 
     // Send the data to OpenGL
     glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorTextureVertex), vertices, GL_DYNAMIC_DRAW);
 }
+
+void DrawArraysIndirectCommand::Set(GLuint vertexCount, GLuint instanceCount, GLuint firstVertexOffset, GLuint baseInstance)
+{
+    this->vertexCount = vertexCount;
+    this->instanceCount = instanceCount;
+    this->firstVertexOffset = firstVertexOffset;
+    this->baseInstance = baseInstance;
+}

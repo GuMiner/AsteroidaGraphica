@@ -39,6 +39,9 @@ public:
     // Gets the next random floating-point value from 0 to 1, inclusive.
     static float Rand();
 
+    // Gets the next random integer value from min(inclusive) to max(exclusive)
+    static int Rand(int min, int max);
+
     // Gets the next random floating-point value from (-range/2 to range/2)
     static float Rand(float range);
 };

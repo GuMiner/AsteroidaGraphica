@@ -80,6 +80,8 @@ public:
     static int MediumAsteroidTypes;
     static int LargeAsteroidTypes;
 
+    static int AsteroidCount;
+
     ConfigManager();
     bool ReadConfiguration();
     bool WriteConfiguration();

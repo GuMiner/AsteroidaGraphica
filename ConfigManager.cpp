@@ -53,6 +53,8 @@ int ConfigManager::SmallAsteroidTypes;
 int ConfigManager::MediumAsteroidTypes;
 int ConfigManager::LargeAsteroidTypes;
 
+int ConfigManager::AsteroidCount;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -406,6 +408,13 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         return false;
     }
 
+    ++lineCounter;
+    if (!LoadInt(configFileLines[lineCounter], AsteroidCount))
+    {
+        Logger::Log("Error decoding the asteroid count!");
+        return false;
+    }
+
     return true;
 }
 
@@ -460,6 +469,8 @@ void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFil
     WriteInt(configFileLines, "SmallAsteroidTypes", SmallAsteroidTypes);
     WriteInt(configFileLines, "MediumAsteroidTypes", MediumAsteroidTypes);
     WriteInt(configFileLines, "LargeAsteroidTypes", LargeAsteroidTypes);
+
+    WriteInt(configFileLines, "AsteroidCount", AsteroidCount);
 }
 
 // Reads in the configuration and sets up the variables listed
