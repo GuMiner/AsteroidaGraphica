@@ -24,7 +24,9 @@ class ShipHud
     GLint mvLocation;
 
     GLuint compassVao;
-    GLuint compassVertexBuffer;
+    GLuint compassPositionBuffer;
+    GLuint compassColorBuffer;
+    GLuint compassUvBuffer;
     GLuint compassTexture;
 
     // XYZ compass text information.
@@ -59,7 +61,7 @@ class ShipHud
     float positionIndicatorSize;
     vmath::mat4 shipMapMatrix;
 
-    GLsizei shipMapVertexCount;
+    GLsizei shipMapVertexCount; // Also the vertical map vertex count.
 
     GLuint shipMapShaderProgram;
     GLint shipMapProjLocation;
@@ -71,15 +73,17 @@ class ShipHud
     GLuint shipMapTexture;
 
     GLuint shipMapVao;
-    GLuint shipMapVertexBuffer;
+    GLuint shipMapPositionBuffer;
+    GLuint shipMapColorBuffer;
+    GLuint shipMapUvBuffer;
 
     // The vertical map indicator (which is just the ship map indicator, but squashed)
     vmath::mat4 verticalMapMatrix;
 
-    GLsizei verticalMapVertexCount;
-
     GLuint verticalMapVao;
-    GLuint verticalMapVertexBuffer;
+    GLuint verticalMapPositionBuffer;
+    GLuint verticalMapColorBuffer;
+    GLuint verticalMapUvBuffer;
 
     // Ship Map information
     float mapBorderWidth;
@@ -89,7 +93,9 @@ class ShipHud
     vmath::vec3 verticalIndicatorPosSize;
     vmath::vec3 verticalIndicatorColor;
 
-    void LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax);
+    void InitializeCompasses();
+    void InitializeShipMaps();
+    void LoadCompassIndicator(universalVertices& vertices, vmath::vec3 colorMax);
 public:
     ShipHud();
     bool Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager);

@@ -41,7 +41,9 @@ struct TextInfo
 struct SentenceInfo
 {
     GLuint vao;
-    GLuint vertexBuffer;
+    GLuint positionBuffer;
+    GLuint colorBuffer;
+    GLuint uvBuffer;
 
     GLsizei characterCount;
     GLint *characterStartIndices;

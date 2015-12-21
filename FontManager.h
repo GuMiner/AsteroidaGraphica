@@ -39,7 +39,7 @@ class FontManager
     std::map<int, SentenceInfo> sentences;
     
     int GetSentenceVertexCount(std::string& sentence);
-    colorTextureVertex* AllocateSentenceVertices(std::string& sentence, int pixelHeight, vmath::vec3 textColor);
+    universalVertices AllocateSentenceVertices(std::string& sentence, int pixelHeight, vmath::vec3 textColor);
 
 public:
     FontManager();

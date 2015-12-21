@@ -41,10 +41,65 @@ ShipHud::ShipHud()
     verticalIndicatorColor = vmath::vec3(0.0f, 1.0f, 1.0f);
 }
 
+void ShipHud::InitializeCompasses()
+{
+    glGenVertexArrays(1, &compassVao);
+    glBindVertexArray(compassVao);
+
+    glGenBuffers(1, &compassPositionBuffer);
+    glGenBuffers(1, &compassColorBuffer);
+    glGenBuffers(1, &compassUvBuffer);
+
+    // Add in the xy, yz, and zx compass data
+    universalVertices vertices;
+    xyCompassOffset = vertices.positions.size();
+    LoadCompassIndicator(vertices, vmath::vec3(1.0f, 0, 0));
+    compassVertexCount = vertices.positions.size();
+
+    zxCompassOffset = vertices.positions.size();
+    LoadCompassIndicator(vertices, vmath::vec3(0, 1.0f, 0));
+
+    yzCompassOffset = vertices.positions.size();
+    LoadCompassIndicator(vertices, vmath::vec3(0, 0, 1.0f));
+    universalVertices::TransferToOpenGl(vertices, compassPositionBuffer, compassColorBuffer, 0, compassUvBuffer, 0);
+}
+
+void ShipHud::InitializeShipMaps()
+{
+    // Load in the ship map vertex data.
+    universalVertices shipMapVertices;
+
+    shipMapVertices.AddColorTextureVertex(vmath::vec3(0, 0, 0), vmath::vec3(0, 1.0f, 0), vmath::vec2(0, 1));
+    shipMapVertices.AddColorTextureVertex(vmath::vec3(mapSize, 0, 0), vmath::vec3(1.0f, 0.0f, 0.0f), vmath::vec2(1, 1));
+    shipMapVertices.AddColorTextureVertex(vmath::vec3(mapSize, mapSize, 0), vmath::vec3(0, 0, 1.0f), vmath::vec2(1, 0));
+    shipMapVertices.AddColorTextureVertex(vmath::vec3(0, mapSize, 0), vmath::vec3(1.0f, 1.0f, 1.0f), vmath::vec2(0, 0));
+    shipMapVertexCount = shipMapVertices.positions.size();
+
+    glGenVertexArrays(1, &shipMapVao);
+    glBindVertexArray(shipMapVao);
+
+    glGenBuffers(1, &shipMapPositionBuffer);
+    glGenBuffers(1, &shipMapColorBuffer);
+    glGenBuffers(1, &shipMapUvBuffer);
+    
+    universalVertices::TransferToOpenGl(shipMapVertices, shipMapPositionBuffer, shipMapColorBuffer, 0, shipMapUvBuffer, 0);
+
+    // Load in the ship map vertex data for the vertical map.
+    glGenVertexArrays(1, &verticalMapVao);
+    glBindVertexArray(verticalMapVao);
+
+    glGenBuffers(1, &verticalMapPositionBuffer);
+    glGenBuffers(1, &verticalMapColorBuffer);
+    glGenBuffers(1, &verticalMapUvBuffer);
+
+    universalVertices::TransferToOpenGl(shipMapVertices, verticalMapPositionBuffer, verticalMapColorBuffer, 0, verticalMapUvBuffer, 0);
+}
+
 bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)
 {
     this->fontManager = fontManager;
 
+    // Load the shaders and textures.
     Logger::Log("Loading in the ship map shader program...");
     if (!shaderManager->CreateShaderProgram("mapRender", &shipMapShaderProgram))
     {
@@ -67,35 +122,6 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
 
     Logger::Log("Ship map texture loading done!");
 
-    // Load in the ship map vertex data.
-    shipMapVertexCount = 4;
-
-    glGenVertexArrays(1, &shipMapVao);
-    glBindVertexArray(shipMapVao);
-
-    glGenBuffers(1, &shipMapVertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
-
-    colorTextureVertex *shipVertices = new colorTextureVertex[shipMapVertexCount];
-    shipVertices[0].Set(0, 0, 0, 0, 1.0f, 0, 0, 1);
-    shipVertices[1].Set(mapSize, 0, 0, 1.0f, 0.0f, 0.0f, 1, 1);
-    shipVertices[2].Set(mapSize, mapSize, 0, 0, 0, 1.0f, 1, 0);
-    shipVertices[3].Set(0, mapSize, 0, 1.0f, 1.0f, 1.0f, 0, 0);
-
-    colorTextureVertex::TransferToOpenGl(shipVertices, shipMapVertexCount);
-
-    // Load in the ship map vertex data for the vertical map.
-    verticalMapVertexCount = 4;
-
-    glGenVertexArrays(1, &verticalMapVao);
-    glBindVertexArray(verticalMapVao);
-
-    glGenBuffers(1, &verticalMapVertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, verticalMapVertexBuffer);
-
-    colorTextureVertex::TransferToOpenGl(shipVertices, verticalMapVertexCount);
-    delete[] shipVertices;
-
     Logger::Log("Loading compass texture shader program...");
     if (!shaderManager->CreateShaderProgram("textureRender", &compassTextureProgram))
     {
@@ -115,33 +141,11 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
 
     Logger::Log("Compass texture image loading done!");
 
-    // Create our general compass information
-    compassVertexCount = 6;
-
-    glGenVertexArrays(1, &compassVao);
-    glBindVertexArray(compassVao);
+    // Load the ship map and compass.
+    InitializeCompasses();
+    InitializeShipMaps();
     
-    glGenBuffers(1, &compassVertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
-
-    GLsizei totalVertexCount = 18;
-    colorTextureVertex *pVertices = new colorTextureVertex[totalVertexCount];
-
-    // Add in the xy compass data
-    xyCompassOffset = 0;
-    LoadCompassIndicator(pVertices, xyCompassOffset, vmath::vec3(1.0f, 0, 0));
-
-    // Add in the yz compass data
-    yzCompassOffset = compassVertexCount;
-    LoadCompassIndicator(pVertices, yzCompassOffset, vmath::vec3(0, 1.0f, 0));
-
-    // Add in the zx compass data
-    zxCompassOffset = compassVertexCount * 2;
-    LoadCompassIndicator(pVertices, zxCompassOffset, vmath::vec3(0, 0, 1.0f));
-
-    colorTextureVertex::TransferToOpenGl(pVertices, totalVertexCount);
-    delete[] pVertices;
-
+    // Load the position and rotation text.
     xSentence = fontManager->CreateNewSentence();
     ySentence = fontManager->CreateNewSentence();
     zSentence = fontManager->CreateNewSentence();
@@ -154,15 +158,15 @@ bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager,
 }
 
 // Loads in a compass indicator into the currently-active vertex buffer.
-void ShipHud::LoadCompassIndicator(colorTextureVertex *pVertices, GLsizei offset, vmath::vec3 colorMax)
+void ShipHud::LoadCompassIndicator(universalVertices& vertices, vmath::vec3 colorMax)
 {
-    pVertices[0 + offset].Set(-compassSize / 2, -compassSize / 2, 0, 0, 0, 0, 0, 1);
-    pVertices[1 + offset].Set(-compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 0, 0);
-    pVertices[2 + offset].Set(-compassSize / 2 + compassSize, -compassSize / 2, 0, 0, 0, 0, 1, 1);
+    vertices.AddColorTextureVertex(vmath::vec3(-compassSize / 2, -compassSize / 2, 0), vmath::vec3(0, 0, 0), vmath::vec2(0, 1));
+    vertices.AddColorTextureVertex(vmath::vec3(-compassSize / 2, compassSize / 2, 0), colorMax, vmath::vec2(0, 0));
+    vertices.AddColorTextureVertex(vmath::vec3(-compassSize / 2 + compassSize, -compassSize / 2, 0), vmath::vec3(0, 0, 0), vmath::vec2(1, 1));
 
-    pVertices[3 + offset].Set(compassSize / 2, -compassSize / 2, 0, 0, 0, 0, 1, 1);
-    pVertices[4 + offset].Set(-compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 0, 0);
-    pVertices[5 + offset].Set(compassSize / 2, compassSize / 2, 0, colorMax[0], colorMax[1], colorMax[2], 1, 0);
+    vertices.AddColorTextureVertex(vmath::vec3(compassSize / 2, -compassSize / 2, 0), vmath::vec3(0, 0, 0), vmath::vec2(1, 1));
+    vertices.AddColorTextureVertex(vmath::vec3(-compassSize / 2, compassSize / 2, 0), colorMax, vmath::vec2(0, 0));
+    vertices.AddColorTextureVertex(vmath::vec3(compassSize / 2, compassSize / 2, 0), colorMax, vmath::vec2(1, 0));
 }
 
 // Updates the compass rotations; expects rotations in radians.
@@ -232,20 +236,14 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
 
     // Draw the XY compass.
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, xyCompassMatrix * vmath::rotate(xyzCompassRotations[0], vmath::vec3(0, 0, -1)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, xyCompassOffset, compassVertexCount);
 
     // YZ compass
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, yzCompassMatrix * vmath::rotate(xyzCompassRotations[1], vmath::vec3(0, 0, -1)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, yzCompassOffset, compassVertexCount);
 
     // ZX compass
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, zxCompassMatrix * vmath::rotate(xyzCompassRotations[2], vmath::vec3(0, 0, -1)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, compassVertexBuffer);
     glDrawArrays(GL_TRIANGLES, zxCompassOffset, compassVertexCount);
 
     // Draw the map
@@ -262,10 +260,9 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glUniform2f(indicatorSizeLocation, indicatorPosSize[2], indicatorPosSize[2]);
     glUniform3f(indicatorColorLocation, indicatorColor[0], indicatorColor[1], indicatorColor[2]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, shipMapVertexBuffer);
     glDrawArrays(GL_TRIANGLE_FAN, 0, shipMapVertexCount);
 
-    // Draw the vertical map. TODO perhaps I should limit the shader cross-coupling?
+    // Draw the vertical map.
     glBindVertexArray(verticalMapVao);
     glUniformMatrix4fv(shipMapMvLocation, 1, GL_FALSE, verticalMapMatrix);
 
@@ -273,8 +270,8 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
     glUniform2f(indicatorSizeLocation, (1.0f - 2.0f * mapBorderWidth) / 2.0f, verticalIndicatorPosSize[2]);
     glUniform3f(indicatorColorLocation, verticalIndicatorColor[0], verticalIndicatorColor[1], verticalIndicatorColor[2]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, verticalMapVertexBuffer);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, verticalMapVertexCount);
+    // TODO shader cross-coupling removal, if ever needed.
+    glDrawArrays(GL_TRIANGLE_FAN, 0, shipMapVertexCount);
 
     // Draw our sentences
     fontManager->RenderSentence(xSentence, perspectiveMatrix, xTextMatrix);
@@ -290,11 +287,17 @@ ShipHud::~ShipHud()
 {
     // Free up the ship HUD VAO and VBO
     glDeleteVertexArrays(1, &compassVao);
-    glDeleteBuffers(1, &compassVertexBuffer);
+    glDeleteBuffers(1, &compassPositionBuffer);
+    glDeleteBuffers(1, &compassColorBuffer);
+    glDeleteBuffers(1, &compassUvBuffer);
 
     glDeleteVertexArrays(1, &shipMapVao);
-    glDeleteBuffers(1, &shipMapVertexBuffer);
+    glDeleteBuffers(1, &shipMapPositionBuffer);
+    glDeleteBuffers(1, &shipMapColorBuffer);
+    glDeleteBuffers(1, &shipMapUvBuffer);
 
     glDeleteVertexArrays(1, &verticalMapVao);
-    glDeleteBuffers(1, &verticalMapVertexBuffer);
+    glDeleteBuffers(1, &verticalMapPositionBuffer);
+    glDeleteBuffers(1, &verticalMapColorBuffer);
+    glDeleteBuffers(1, &verticalMapUvBuffer);
 }

@@ -142,10 +142,8 @@ int FontManager::GetSentenceVertexCount(std::string& sentence)
 
 // Given a sentence, allocates the vertexes corresponding to the sentence.
 // The vertexes start at (0, 0, 0) and go in the X-direction, with 1 unit == pixelHeight.
-colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence, int pixelHeight, vmath::vec3 textColor)
+universalVertices FontManager::AllocateSentenceVertices(std::string& sentence, int pixelHeight, vmath::vec3 textColor)
 {
-    colorTextureVertex *vertices = new colorTextureVertex[GetSentenceVertexCount(sentence)];
-
     float lastZPos = 0.0f;
     float lastYPos = 0.0f;
     float lastXPos = 0.0f;
@@ -170,6 +168,7 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
     }
     
     // Render out all our characters
+    universalVertices vertices;
     for (int i = 0; i < (int)sentence.size(); i++)
     {
         CharInfo& charInfo = GetCharacterInfo(pixelHeight, sentence[i]);
@@ -192,10 +191,10 @@ colorTextureVertex* FontManager::AllocateSentenceVertices(std::string& sentence,
         float textureYEnd = (float)(charInfo.textureY + charInfo.height) / (float)height;
 
         // Triangle fan. First position is at start, then +x, +x+y, +y
-        vertices[i*verticesPerChar + 0].Set(xStart, -yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureY);
-        vertices[i*verticesPerChar + 1].Set(xStart, -yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureX, textureYEnd);
-        vertices[i*verticesPerChar + 2].Set(xDepth, -yDepth, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureYEnd);
-        vertices[i*verticesPerChar + 3].Set(xDepth, -yStart, lastZPos, textColor[0], textColor[1], textColor[2], textureXEnd, textureY);
+        vertices.AddColorTextureVertex(vmath::vec3(xStart, -yStart, lastZPos), vmath::vec3(textColor[0], textColor[1], textColor[2]), vmath::vec2(textureX, textureY));
+        vertices.AddColorTextureVertex(vmath::vec3(xStart, -yDepth, lastZPos), vmath::vec3(textColor[0], textColor[1], textColor[2]), vmath::vec2(textureX, textureYEnd));
+        vertices.AddColorTextureVertex(vmath::vec3(xDepth, -yDepth, lastZPos), vmath::vec3(textColor[0], textColor[1], textColor[2]), vmath::vec2(textureXEnd, textureYEnd));
+        vertices.AddColorTextureVertex(vmath::vec3(xDepth, -yStart, lastZPos), vmath::vec3(textColor[0], textColor[1], textColor[2]), vmath::vec2(textureXEnd, textureY));
 
         lastXPos += advanceWidth;
     }
@@ -211,8 +210,9 @@ int FontManager::CreateNewSentence()
     glGenVertexArrays(1, &sentenceInfo.vao);
     glBindVertexArray(sentenceInfo.vao);
 
-    glGenBuffers(1, &sentenceInfo.vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
+    glGenBuffers(1, &sentenceInfo.positionBuffer);
+    glGenBuffers(1, &sentenceInfo.colorBuffer);
+    glGenBuffers(1, &sentenceInfo.uvBuffer);
 
     sentenceInfo.characterCount = 0;
     sentenceInfo.characterStartIndices = nullptr;
@@ -230,14 +230,11 @@ void FontManager::UpdateSentence(int sentenceId, std::string& sentence, int pixe
 
     // Parse our the text textures
     sentenceInfo.characterCount = sentence.size();
-    colorTextureVertex *vertices = AllocateSentenceVertices(sentence, pixelHeight, textColor);
+    universalVertices vertices = AllocateSentenceVertices(sentence, pixelHeight, textColor);
 
     // Send that data to OpenGL
     glBindVertexArray(sentenceInfo.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
-
-    colorTextureVertex::TransferToOpenGl(vertices, GetSentenceVertexCount(sentence));
-    delete[] vertices;
+    universalVertices::TransferToOpenGl(vertices, sentenceInfo.positionBuffer, sentenceInfo.colorBuffer, 0, sentenceInfo.uvBuffer, 0);
 
     // Update our character indices and vertex counts so we can do a multi-element drawing scheme.
     if (sentenceInfo.characterStartIndices != nullptr)
@@ -284,7 +281,6 @@ void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath:
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mvMatrix);
 
     // Draw the text
-    glBindBuffer(GL_ARRAY_BUFFER, sentenceInfo.vertexBuffer);
     glMultiDrawArrays(GL_TRIANGLE_FAN, sentenceInfo.characterStartIndices, sentenceInfo.characterVertexCounts, sentenceInfo.characterCount);
 }
 
@@ -294,7 +290,9 @@ FontManager::~FontManager()
     for (std::map<int, SentenceInfo>::iterator iterator = sentences.begin(); iterator != sentences.end(); iterator++)
     {
         glDeleteVertexArrays(1, &iterator->second.vao);
-        glDeleteBuffers(1, &iterator->second.vertexBuffer);
+        glDeleteBuffers(1, &iterator->second.positionBuffer);
+        glDeleteBuffers(1, &iterator->second.colorBuffer);
+        glDeleteBuffers(1, &iterator->second.uvBuffer);
 
         if (iterator->second.characterStartIndices != nullptr)
         {

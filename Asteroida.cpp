@@ -160,8 +160,8 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
     
     glMultiDrawArraysIndirect(GL_TRIANGLES, nullptr, 2, 0);
-    /*
     
+    /*
     for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
     {
         float angle = (float)i*2.0f*3.16159f / (float)ConfigManager::SmallAsteroidTypes;

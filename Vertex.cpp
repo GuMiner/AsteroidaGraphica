@@ -1,28 +1,49 @@
 #include "Vertex.h"
 #include <stddef.h>
 
-void colorVertex::Set(float x, float y, float z, float r, float g, float b)
+template<typename T>
+void universalVertices::SendToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint itemCount, const std::vector<T>& data)
 {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->r = r;
-    this->g = g;
-    this->b = b;
+    glEnableVertexAttribArray(shaderIdx);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glVertexAttribPointer(shaderIdx, itemCount, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(T), &data[0], GL_STATIC_DRAW);
 }
 
-// Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
-void colorVertex::TransferToOpenGl(colorVertex* vertices, GLsizei vertexCount)
+void universalVertices::AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv)
 {
-    // Setup of how the GPU will understand our data we send to it.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, x));
-    glEnableVertexAttribArray(0);
+    positions.push_back(position);
+    colors.push_back(color);
+    uvs.push_back(uv);
+}
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(colorVertex), (GLvoid*)offsetof(colorVertex, r));
-    glEnableVertexAttribArray(1);
+void universalVertices::TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer, GLuint barycentricBuffer, GLuint uvBuffer, GLuint idBuffer)
+{
+    if (vertices.positions.size() != 0)
+    {
+        universalVertices::SendToOpenGl(positionBuffer, 0, 3, vertices.positions);
+    }
 
-    // Send the data to OpenGL
-    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorVertex), vertices, GL_DYNAMIC_DRAW);
+    if (vertices.colors.size() != 0)
+    {
+        universalVertices::SendToOpenGl(colorBuffer, 1, 3, vertices.colors);
+    }
+
+    if (vertices.barycentrics.size() != 0)
+    {
+        universalVertices::SendToOpenGl(barycentricBuffer, 2, 3, vertices.barycentrics);
+    }
+
+    if (vertices.uvs.size() != 0)
+    {
+        universalVertices::SendToOpenGl(uvBuffer, 3, 2, vertices.uvs);
+    }
+
+    if (vertices.ids.size() != 0)
+    {
+        universalVertices::SendToOpenGl(idBuffer, 4, 1, vertices.ids);
+    }
 }
 
 void barycentricVertex::Set(float x, float y, float z, float xb, float yb, float zb)
@@ -44,35 +65,6 @@ void barycentricVertex::TransferToOpenGl(barycentricVertex* vertices, GLsizei ve
     glEnableVertexAttribArray(1);
 
     glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(barycentricVertex), vertices, GL_DYNAMIC_DRAW);
-}
-
-void colorTextureVertex::Set(float x, float y, float z, float r, float g, float b, float u, float v)
-{
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->r = r;
-    this->g = g;
-    this->b = b;
-    this->u = u;
-    this->v = v;
-}
-
-// Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
-void colorTextureVertex::TransferToOpenGl(colorTextureVertex* vertices, GLsizei vertexCount)
-{
-    // Setup of how the GPU will understand our data we send to it.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(colorTextureVertex), (GLvoid*)offsetof(colorTextureVertex, x));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(colorTextureVertex), (GLvoid*)offsetof(colorTextureVertex, r));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(colorTextureVertex), (GLvoid*)offsetof(colorTextureVertex, u));
-    glEnableVertexAttribArray(2);
-
-    // Send the data to OpenGL
-    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(colorTextureVertex), vertices, GL_DYNAMIC_DRAW);
 }
 
 void DrawArraysIndirectCommand::Set(GLuint vertexCount, GLuint instanceCount, GLuint firstVertexOffset, GLuint baseInstance)

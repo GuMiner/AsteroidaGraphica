@@ -179,6 +179,25 @@ namespace vmath
         }
     };
 
+    class vec2 : public vecN<2>
+    {
+    public:
+        typedef vecN<2> base;
+
+        // Uninitialized variable
+        inline vec2() {}
+
+        // Copy constructor
+        inline vec2(const base& v) : base(v) {}
+
+        // vec2(x, y);
+        inline vec2(float x, float y)
+        {
+            base::data[0] = x;
+            base::data[1] = y;
+        }
+    };
+
     class vec3 : public vecN<3>
     {
     public:
