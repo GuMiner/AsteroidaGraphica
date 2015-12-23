@@ -13,5 +13,6 @@ in VS_OUT
 void main(void)
 {
     // Scale each color of the provided object by the given color.
-    color = fs_in.color * texture(imageTex, fs_in.texPos);
+    vec4 texColor = texture(imageTex, fs_in.texPos);
+    color = vec4(fs_in.color.r, fs_in.color.g, fs_in.color.b * texColor.b, fs_in.color.a);// * 
 }

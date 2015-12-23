@@ -22,6 +22,7 @@ class ShipHud
     GLuint compassTextureProgram;
     GLint projLocation;
     GLint mvLocation;
+    GLuint compassTexLocation;
 
     GLuint compassVao;
     GLuint compassPositionBuffer;
@@ -66,6 +67,7 @@ class ShipHud
     GLuint shipMapShaderProgram;
     GLint shipMapProjLocation;
     GLint shipMapMvLocation;
+    GLint shipMapTexLocation;
     GLint indicatorSizeLocation;
     GLint indicatorPosLocation;
     GLint indicatorColorLocation;
