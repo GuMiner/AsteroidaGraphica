@@ -172,7 +172,7 @@ Constants::Status AsteroidaGraphica::Run()
 {
     // 24 depth bits, 8 stencil bits, 8x AA, major version 3.
     Logger::Log("Graphics Initializing...");
-    sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 3, 0, 0);
+    sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 4, 0, 0);
 
     sf::Uint32 style = ConfigManager::IsFullscreen ? sf::Style::Fullscreen : sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close;
     sf::Window window(sf::VideoMode(ConfigManager::ScreenWidth, ConfigManager::ScreenHeight), Version::NAME, style, contextSettings);

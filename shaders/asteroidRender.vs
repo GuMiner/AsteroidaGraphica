@@ -1,9 +1,9 @@
-#version 430 core
+#version 400 core
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 barycentricPosition;
 
-layout (location = 0) uniform sampler1D asteroidPositions;
+uniform sampler1D asteroidPositions;
 
 out VS_OUT
 {

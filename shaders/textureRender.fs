@@ -1,6 +1,6 @@
-#version 430 core 
+#version 400 core 
 
-layout (binding = 0) uniform sampler2D imageTex;
+uniform sampler2D imageTex;
 
 out vec4 color;
 
