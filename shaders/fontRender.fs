@@ -13,5 +13,5 @@ in VS_OUT
 void main(void)
 {
     // Scale each color of the provided object by the given color.
-    color = vec4(0.5f, (fs_in.color * texture2D(fontimage, fs_in.texPos)).gb, 1.0f);
+    color = fs_in.color * texture2D(fontimage, fs_in.texPos);
 }

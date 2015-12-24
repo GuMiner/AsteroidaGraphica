@@ -1,7 +1,9 @@
 #pragma once
 #include <map>
 #include <glbinding/gl/gl.h>
-#include <stb\stb_truetype.h>
+#include <stb/stb_truetype.h>
+#include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
 #include "ShaderManager.h"
 #include "TextInfo.h"
 #include "Vertex.h"

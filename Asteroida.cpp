@@ -96,8 +96,8 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
-    glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F, ConfigManager::AsteroidCount);
-
+    glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA, ConfigManager::AsteroidCount);
+	/*
     // TODO Randomly position the asteroids in the appropriate zones.
     float separation = 2.0f;
     float* positions = new float[4 * ConfigManager::AsteroidCount];
@@ -113,7 +113,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     }
 
     glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGB, GL_FLOAT, positions);
-    delete[] positions;
+    delete[] positions;*/
 
     // TODO randomly set asteroid data so we know *which* asteroid type is at which index
     glGenBuffers(1, &indirectDrawBuffer);

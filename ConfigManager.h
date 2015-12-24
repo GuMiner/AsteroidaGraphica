@@ -34,6 +34,8 @@ public:
     static int ScreenWidth;
     static int ScreenHeight;
 
+	static int TextImageSize;
+
     // Key bindings
     static sf::Keyboard::Key ThrustForwardsKey;
     static sf::Keyboard::Key ThrustReverseKey;

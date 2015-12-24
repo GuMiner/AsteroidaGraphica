@@ -9,6 +9,8 @@ bool ConfigManager::IsFullscreen;
 int ConfigManager::ScreenWidth;
 int ConfigManager::ScreenHeight;
 
+int ConfigManager::TextImageSize;
+
 sf::Keyboard::Key ConfigManager::ThrustForwardsKey;
 sf::Keyboard::Key ConfigManager::ThrustReverseKey;
 sf::Keyboard::Key ConfigManager::ThrustLeftKey;
@@ -155,6 +157,13 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         Logger::Log("Error reading in the screen height!");
         return false;
     }
+
+	++lineCounter;
+	if (!LoadInt(configFileLines[lineCounter], TextImageSize))
+	{
+		Logger::Log("Error reading in the text image size!");
+		return false;
+	}
 
     ++lineCounter;
     if (!LoadKey(configFileLines[lineCounter], ThrustForwardsKey))
@@ -425,6 +434,8 @@ void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFil
     WriteBool(configFileLines, "FullScreen", IsFullscreen);
     WriteInt(configFileLines, "ScreenWidth", ScreenWidth);
     WriteInt(configFileLines, "ScreenHeight", ScreenHeight);
+
+	WriteInt(configFileLines, "TextImageSize", TextImageSize);
 
     WriteKey(configFileLines, "ThrustForwards", ThrustForwardsKey);
     WriteKey(configFileLines, "ThrustReverse", ThrustReverseKey);

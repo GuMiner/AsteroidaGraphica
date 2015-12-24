@@ -33,33 +33,10 @@ GLuint ImageManager::AddImage(const char* filename)
         glGenTextures(1, &newTextureId);
         
         // Bind the texture and send in image data
-
-        //glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-        //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        GLenum error = glGetError();
-        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
         glBindTexture(GL_TEXTURE_2D, newTextureId);
-        error = glGetError();
-        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
-        // Wrap around if we have excessive UVs
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        error = glGetError();
-        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        error = glGetError();
-        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
-        //glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
-        for (int i = 0; i < width*height * 4; i++)
-        {
-            imageData[i] = 200;
-        }
-        glTexImage2D(GL_TEXTURE_2D, 0, (int)GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &imageData[0]);
-        //glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-        error = glGetError();
-        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);     
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
         
-        
-
         imageTextures[newTextureId] = ImageTexture(newTextureId, imageData, width, height);
         return newTextureId;
     }

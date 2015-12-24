@@ -15,6 +15,10 @@ FullScreen false
 ScreenWidth 1280
 ScreenHeight 720
 
+# Maximum size of the text image.
+# Text will fail to be displayed if this is too small, but certain GPUs won't support their reported maximum texture size.
+TextImageSize 1024
+
 # Key Bindings
 # These are using SFML's key constants. These *may* change, but if so, that'll be reflected in 
 #  a config version change, which means AsteroidaGraphica can auto-update the values later on.
