@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <GL\glew.h>
+#include <glbinding/gl/gl.h>
 #include <stb\stb_truetype.h>
 #include "ShaderManager.h"
 #include "TextInfo.h"
@@ -23,8 +23,8 @@ class FontManager
     int lastMaxHeight;
 
     // Holds our font shader information.
-    GLuint fontShader;
-    GLint projLocation, mvLocation;
+    gl::GLuint fontShader;
+    gl::GLint projLocation, mvLocation;
 
     // Holds STB font info for loading in new font data as necessary
     stbtt_fontinfo fontInfo;

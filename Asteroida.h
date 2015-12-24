@@ -1,6 +1,9 @@
 #pragma once
+#include <glbinding/gl/gl.h>
 #include "ShaderManager.h"
 #include "vmath.hpp"
+
+using namespace gl;
 
 // Manages the asteroids that are part of this game.
 class Asteroida

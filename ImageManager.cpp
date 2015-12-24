@@ -1,8 +1,12 @@
 #include <string>
 #include <sstream>
+#include <glbinding/gl/gl.h>
 #include "ImageManager.h"
-#include <iostream>
 #include "Logger.h"
+
+#include <iostream>
+
+using namespace gl;
 
 ImageManager::ImageManager()
 {
@@ -33,26 +37,26 @@ GLuint ImageManager::AddImage(const char* filename)
         //glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
         //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         GLenum error = glGetError();
-        std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
         glBindTexture(GL_TEXTURE_2D, newTextureId);
         error = glGetError();
-        std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
         // Wrap around if we have excessive UVs
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         error = glGetError();
-        std::cout << error << " " << glewGetErrorString(error) << std::endl;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         error = glGetError();
-        std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
         //glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
         for (int i = 0; i < width*height * 4; i++)
         {
             imageData[i] = 200;
         }
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &imageData[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, (int)GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &imageData[0]);
         //glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
         error = glGetError();
-        std::cout << error << " " << glewGetErrorString(error) << std::endl;
+        //std::cout << error << " " << glewGetErrorString(error) << std::endl;
         
         
 

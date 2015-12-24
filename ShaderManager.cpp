@@ -3,28 +3,31 @@
 #include "StringUtils.h"
 #include "ShaderManager.h"
 
+using namespace gl;
+
 ShaderManager::ShaderManager()
     : shaderPrograms()
 {
 }
 
 // Creates and compiles a new shader of the specified type; returns true on success.
-bool ShaderManager::CreateShader(GLenum shaderType, const char *shaderSource, GLuint *shaderId)
+bool ShaderManager::CreateShader(gl::GLenum shaderType, const char *shaderSource, gl::GLuint *shaderId)
 {
-    GLint compileStatus;
-
-    GLuint shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &shaderSource, NULL);
+	GLint compileStatus;
+	GLuint shader = gl::glCreateShader(shaderType);
+	glShaderSource(shader, 1, &shaderSource, NULL);
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
     if (!compileStatus)
     {
-        char buffer[1024];
-        GLint len;
+		GLint logLength;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+        
+		char *shaderLog = new char[logLength];
         std::stringstream logStream;
         
-        glGetShaderInfoLog(shader, 1024, &len, buffer);
-        logStream << "Error: " << glewGetErrorString(glGetError()) << " " << buffer;
+        glGetShaderInfoLog(shader, logLength, &logLength, &shaderLog[0]);
+		logStream << "GLSL compilation error: " << shaderLog << ".";
         Logger::LogError(logStream.str().c_str());
         return false;
     }
@@ -34,11 +37,11 @@ bool ShaderManager::CreateShader(GLenum shaderType, const char *shaderSource, GL
 }
 
 // Creates a shader program and adds it to the list of programs that will be deleted at the end of program operation
-bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
+bool ShaderManager::CreateShaderProgram(const char *rootName, gl::GLuint *programId)
 {
-    GLuint program;
-    GLuint vertexShader;
-    GLuint fragmentShader;
+    gl::GLuint program;
+    gl::GLuint vertexShader;
+    gl::GLuint fragmentShader;
 
     std::string vsShader, fsShader;
     std::stringstream logStream;
@@ -60,20 +63,20 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
         return false;
     }
 
-    bool result = CreateShader(GL_VERTEX_SHADER, vsShader.c_str(), &vertexShader);
+    bool result = CreateShader(gl::GL_VERTEX_SHADER, vsShader.c_str(), &vertexShader);
     if (!result)
     {
         return false;
     }
 
-    result = CreateShader(GL_FRAGMENT_SHADER, fsShader.c_str(), &fragmentShader);
+    result = CreateShader(gl::GL_FRAGMENT_SHADER, fsShader.c_str(), &fragmentShader);
     if (!result)
     {
         return false;
     }
 
     // Create the program
-    GLint compileStatus;
+	gl::GLint compileStatus;
     program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
@@ -84,7 +87,8 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, GLuint *programId)
         char buffer[1024];
         GLint len;
         glGetProgramInfoLog(program, 1024, &len, buffer);
-        logStream << glewGetErrorString(glGetError()) << " " << buffer;
+        //logStream << glewGetErrorString(glGetError()) << " " << buffer;
+
         Logger::LogError(logStream.str().c_str());
         return false;
     }

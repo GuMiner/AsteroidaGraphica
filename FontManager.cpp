@@ -1,8 +1,14 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include <glbinding/gl/gl.h>
 #include "Constants.h"
 #include "FontManager.h"
+#include "Logger.h"
+#include <iostream>
+
+#include <sstream>
+#include <string>
 
 FontManager::FontManager()
 {
@@ -18,6 +24,7 @@ bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
     /// Load in our shader for the font.
     if (!shaderManager->CreateShaderProgram("fontRender", &fontShader))
     {
+		Logger::LogError("Bad font shader!");
         return false;
     }
 
@@ -28,6 +35,7 @@ bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
     std::ifstream file(fontName, std::ios::binary | std::ios::ate);
     if (!file)
     {
+		Logger::LogError("Couldn't read the font file!");
         return false;
     }
 
@@ -58,11 +66,19 @@ bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
     width = maxTextureSize;
     height = maxTextureSize;
 
-    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
+	if (true)
+	{
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA, width, height);
+		std::cout << "YES" << std::endl;
+	}
+	else
+	{
+		std::cout << "NO" << std::endl;
+	}
    
     // Wrap around if we have excessive UVs
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl::GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl::GL_REPEAT);
 
     return true;
 }
@@ -270,12 +286,25 @@ void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath:
     }
 
     glUseProgram(fontShader);
-
+	glUniform1i(glGetUniformLocation(fontShader, "fontimage"), 0);
+	
     // Bind in the texture and vertices we're using.
     glBindVertexArray(sentenceInfo.vao);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
+	
+	GLint activeUniforms;
+	glGetProgramiv(fontShader, GL_ACTIVE_UNIFORMS, &activeUniforms);
+	
+	char data[2048];
+	GLsizei written;
+	GLint uSize;
+	GLenum uType;
+	glGetActiveUniform(fontShader, activeUniforms - 1, 2048, &written, &uSize, &uType, data);
+	std::stringstream dataS;
+	dataS << data << written << uSize << uType;
+	Logger::Log(dataS.str().c_str());
 
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, perpective);
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mvMatrix);

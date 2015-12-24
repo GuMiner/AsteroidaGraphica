@@ -1,6 +1,6 @@
-#version 400 core 
+#version 400 core
 
-uniform sampler2D imageTex;
+uniform sampler2D fontimage;
 
 out vec4 color;
 
@@ -13,5 +13,5 @@ in VS_OUT
 void main(void)
 {
     // Scale each color of the provided object by the given color.
-    color = fs_in.color * texture(imageTex, fs_in.texPos);
+    color = vec4(0.5f, (fs_in.color * texture2D(fontimage, fs_in.texPos)).gb, 1.0f);
 }

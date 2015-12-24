@@ -21,6 +21,6 @@ This project requires the listed **Referenced Libraries** below, in addition to 
 ## Referenced Libraries
 ---------------------
 *Full attribution details to be included when this project is made publicly available*
-* GLEW
+* glBinding
 * SFML
 * STB

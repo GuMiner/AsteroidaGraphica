@@ -1,9 +1,11 @@
 #pragma once
 
 // List of vertex types that are sendable to OpenGL
-#include <GL\glew.h>
 #include <vector>
+#include <glbinding/gl/gl.h>
 #include "vmath.hpp"
+
+using namespace gl;
 
 struct universalVertices
 {

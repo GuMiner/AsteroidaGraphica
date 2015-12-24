@@ -3,7 +3,6 @@
 #include <ctime>
 #include <fstream>
 #include <SFML\System.hpp>
-
 #include "Constants.h"
 
 // A simple class for logging program events out to a file.
@@ -11,10 +10,9 @@ class Logger : sf::NonCopyable
 {
 public:
     enum LogType { DEBUG, INFO, WARN, ERR };
+	static Logger *LogInstance;
 
 private:
-    static Logger *LogInstance;
-
     std::ofstream logFile;
 
     // Logs the current time out to the log file.

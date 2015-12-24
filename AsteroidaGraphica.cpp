@@ -1,7 +1,10 @@
 #include <string>
 #include <sstream>
-#include <GL/glew.h>
-#include <SFML/OpenGL.hpp>
+#include <glbinding/gl/gl.h>
+#include <glbinding/Binding.h>
+#include <glbinding/callbacks.h>
+
+//#include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include "AsteroidaGraphica.h"
 #include "Vertex.h"
@@ -9,16 +12,19 @@
 #pragma comment(lib, "opengl32")
 
 #ifndef _DEBUG
-#pragma comment(lib, "lib/glew32.lib")
+#pragma comment(lib, "lib/glbinding.lib")
 #pragma comment(lib, "lib/sfml-audio")
 #pragma comment(lib, "lib/sfml-system")
 #pragma comment(lib, "lib/sfml-window")
 #else
-#pragma comment(lib, "lib/glew32d.lib")
+#pragma comment(lib, "lib/glbindingd.lib")
 #pragma comment(lib, "lib/sfml-audio-d")
 #pragma comment(lib, "lib/sfml-system-d")
 #pragma comment(lib, "lib/sfml-window-d")
 #endif
+
+using namespace gl;
+using namespace glbinding;
 
 const char* Version::NAME;
 Version AsteroidaGraphica::Version;
@@ -52,14 +58,12 @@ void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int heigh
     {
         // Letterbox the left and the right so that the aspect ratio is met.
         float widthDelta = ((float)width - necessaryWidth) / 2.0f;
-        glViewport((int)widthDelta, 0, (GLsizei)necessaryWidth, (GLsizei)height);
+        glViewport((GLint)widthDelta, (GLint)0, (GLsizei)necessaryWidth, (GLsizei)height);
     }
 }
 
 Constants::Status AsteroidaGraphica::Initialize()
 {
-    glewExperimental = TRUE;
-
     if (!configManager.ReadConfiguration())
     {
         return Constants::Status::BAD_CONFIG;
@@ -78,14 +82,50 @@ Constants::Status AsteroidaGraphica::Initialize()
 Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 {
     // GLEW
-    GLenum err = glewInit();
-    if (err != GLEW_OK)
-    {
-        Logger::LogErrorCode("GLEW startup failure", err);
-        return Constants::Status::BAD_GLEW;
-    }
+    glbinding::Binding::initialize();
+	setCallbackMaskExcept(CallbackMask::After, { "glGetError" });
+	setAfterCallback([](const FunctionCall &)
+	{
+		gl::GLenum error = gl::glGetError();
+		if (error != gl::GL_NO_ERROR && Logger::LogInstance != nullptr)
+		{
+			std::stringstream errorStream;
+			errorStream << "glGetError: " << error;
+			Logger::Log(errorStream.str().c_str());
+		}
+	});
+	/*
+	setCallbackMask(CallbackMask::After | CallbackMask::ParametersAndReturnValue);
+	glbinding::setAfterCallback([](const glbinding::FunctionCall & call)
+	{
+		if (Logger::LogInstance != nullptr)
+		{
+			std::stringstream callbackData;
+			callbackData << call.function->name() << "(";
 
+			for (unsigned i = 0; i < call.parameters.size(); ++i)
+			{
+				callbackData << call.parameters[i]->asString();
+				if (i < call.parameters.size() - 1)
+				{
+					callbackData << ", ";
+				}
+			}
+
+			callbackData << ")";
+
+			if (call.returnValue)
+			{
+				callbackData << " -> " << call.returnValue->asString();
+			}
+
+			Logger::Log(callbackData.str().c_str());
+		}
+	});
+	*/
     LogGraphicsSettings();
+	Logger::Log((const char *)glGetString(GL_EXTENSIONS));
+
 
     // Basic OpenGL runtime settings
     glEnable(GL_TEXTURE_2D); // Legacy support.
@@ -171,7 +211,7 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 
 Constants::Status AsteroidaGraphica::Run()
 {
-    // 24 depth bits, 8 stencil bits, 8x AA, major version 3.
+    // 24 depth bits, 8 stencil bits, 8x AA, major version 4.
     Logger::Log("Graphics Initializing...");
     sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 4, 0, 0);
 

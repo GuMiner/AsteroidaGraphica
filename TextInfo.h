@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <glbinding/gl/gl.h>
 
 // Holds all of the bitmap data necessary for a character in the font.
 struct CharInfo
@@ -40,12 +41,12 @@ struct TextInfo
 // Holds all the OpenGL information necessary to render a sentence
 struct SentenceInfo
 {
-    GLuint vao;
-    GLuint positionBuffer;
-    GLuint colorBuffer;
-    GLuint uvBuffer;
+    gl::GLuint vao;
+    gl::GLuint positionBuffer;
+    gl::GLuint colorBuffer;
+    gl::GLuint uvBuffer;
 
-    GLsizei characterCount;
-    GLint *characterStartIndices;
-    GLsizei *characterVertexCounts;
+    gl::GLsizei characterCount;
+    gl::GLint *characterStartIndices;
+    gl::GLsizei *characterVertexCounts;
 };

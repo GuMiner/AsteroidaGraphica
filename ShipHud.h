@@ -1,6 +1,6 @@
 #pragma once
+#include <glbinding/gl/gl.h>
 #include <SFML\System.hpp>
-#include <GL/glew.h>
 #include "ImageManager.h"
 #include "FontManager.h"
 #include "Vertex.h"
@@ -10,25 +10,25 @@ class ShipHud
 {
     // Compass data
     float compassSize;
-    GLsizei compassVertexCount;
+    gl::GLsizei compassVertexCount;
 
-    GLuint xyCompassOffset;
-    GLuint yzCompassOffset;
-    GLuint zxCompassOffset;
+    gl::GLuint xyCompassOffset;
+    gl::GLuint yzCompassOffset;
+    gl::GLuint zxCompassOffset;
     vmath::mat4 xyCompassMatrix;
     vmath::mat4 yzCompassMatrix;
     vmath::mat4 zxCompassMatrix;
 
-    GLuint compassTextureProgram;
-    GLint projLocation;
-    GLint mvLocation;
-    GLuint compassTexLocation;
+    gl::GLuint compassTextureProgram;
+    gl::GLint projLocation;
+    gl::GLint mvLocation;
+    gl::GLuint compassTexLocation;
 
-    GLuint compassVao;
-    GLuint compassPositionBuffer;
-    GLuint compassColorBuffer;
-    GLuint compassUvBuffer;
-    GLuint compassTexture;
+    gl::GLuint compassVao;
+    gl::GLuint compassPositionBuffer;
+    gl::GLuint compassColorBuffer;
+    gl::GLuint compassUvBuffer;
+    gl::GLuint compassTexture;
 
     // XYZ compass text information.
     vmath::mat4 textScale;
@@ -62,30 +62,30 @@ class ShipHud
     float positionIndicatorSize;
     vmath::mat4 shipMapMatrix;
 
-    GLsizei shipMapVertexCount; // Also the vertical map vertex count.
+    gl::GLsizei shipMapVertexCount; // Also the vertical map vertex count.
 
-    GLuint shipMapShaderProgram;
-    GLint shipMapProjLocation;
-    GLint shipMapMvLocation;
-    GLint shipMapTexLocation;
-    GLint indicatorSizeLocation;
-    GLint indicatorPosLocation;
-    GLint indicatorColorLocation;
+    gl::GLuint shipMapShaderProgram;
+    gl::GLint shipMapProjLocation;
+    gl::GLint shipMapMvLocation;
+    gl::GLint shipMapTexLocation;
+    gl::GLint indicatorSizeLocation;
+    gl::GLint indicatorPosLocation;
+    gl::GLint indicatorColorLocation;
 
-    GLuint shipMapTexture;
+    gl::GLuint shipMapTexture;
 
-    GLuint shipMapVao;
-    GLuint shipMapPositionBuffer;
-    GLuint shipMapColorBuffer;
-    GLuint shipMapUvBuffer;
+    gl::GLuint shipMapVao;
+    gl::GLuint shipMapPositionBuffer;
+    gl::GLuint shipMapColorBuffer;
+    gl::GLuint shipMapUvBuffer;
 
     // The vertical map indicator (which is just the ship map indicator, but squashed)
     vmath::mat4 verticalMapMatrix;
 
-    GLuint verticalMapVao;
-    GLuint verticalMapPositionBuffer;
-    GLuint verticalMapColorBuffer;
-    GLuint verticalMapUvBuffer;
+    gl::GLuint verticalMapVao;
+    gl::GLuint verticalMapPositionBuffer;
+    gl::GLuint verticalMapColorBuffer;
+    gl::GLuint verticalMapUvBuffer;
 
     // Ship Map information
     float mapBorderWidth;
