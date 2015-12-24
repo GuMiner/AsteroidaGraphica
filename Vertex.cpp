@@ -11,6 +11,20 @@ void universalVertices::SendToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint ite
     glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(T), &data[0], GL_STATIC_DRAW);
 }
 
+void universalVertices::SendIndexToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint itemCount, const std::vector<unsigned int>& data)
+{
+	glEnableVertexAttribArray(shaderIdx);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+	// Note this is glVertexAttrib*I*Pointer in comparison to the other call above.
+	glVertexAttribIPointer(shaderIdx, itemCount, GL_UNSIGNED_INT, 0, nullptr);
+	
+	// Updates once per instance.
+	glVertexAttribDivisor(shaderIdx, 1); 
+
+	glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(unsigned int), &data[0], GL_STATIC_DRAW);
+}
+
 void universalVertices::AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv)
 {
     positions.push_back(position);
@@ -42,29 +56,8 @@ void universalVertices::TransferToOpenGl(const universalVertices& vertices, GLui
 
     if (vertices.ids.size() != 0)
     {
-        universalVertices::SendToOpenGl(idBuffer, 4, 1, vertices.ids);
+        universalVertices::SendIndexToOpenGl(idBuffer, 4, 1, vertices.ids);
     }
-}
-
-void barycentricVertex::Set(float x, float y, float z, float xb, float yb, float zb)
-{
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->xb = xb;
-    this->yb = yb;
-    this->zb = zb;
-}
-
-void barycentricVertex::TransferToOpenGl(barycentricVertex* vertices, GLsizei vertexCount)
-{
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(barycentricVertex), (GLvoid*)offsetof(barycentricVertex, x));
-    glEnableVertexAttribArray(0);
-    
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(barycentricVertex), (GLvoid*)offsetof(barycentricVertex, xb));
-    glEnableVertexAttribArray(1);
-
-    glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(barycentricVertex), vertices, GL_DYNAMIC_DRAW);
 }
 
 void DrawArraysIndirectCommand::Set(GLuint vertexCount, GLuint instanceCount, GLuint firstVertexOffset, GLuint baseInstance)

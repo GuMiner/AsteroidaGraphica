@@ -10,15 +10,19 @@ using namespace gl;
 struct universalVertices
 {
 private:
+	// Sends floating-point vec2/3/4 data to OpenGL
     template<typename T>
     static void SendToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint itemCount, const std::vector<T>& data);
+
+	// Sends indexed unsigned integer index data to OpenGL
+	static void SendIndexToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint itemCount, const std::vector<unsigned int>& data);
 
 public:
     std::vector<vmath::vec3> positions;
     std::vector<vmath::vec3> colors;
     std::vector<vmath::vec3> barycentrics;
     std::vector<vmath::vec2> uvs;
-    std::vector<float> ids;
+    std::vector<unsigned int> ids;
 
     // Adds a position, color, UV vertex.
     void AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv);
@@ -26,21 +30,7 @@ public:
     // Transfers the vertex data for any non-zero filled array into OpenGL.
     // Note that buffer layout is 1 == position, 2 == color, and so on and so forth.
     static void TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer, GLuint barycentricBuffer, GLuint uvBuffer, GLuint idBuffer);
-};
 
-struct barycentricVertex
-{
-    float x;
-    float y;
-    float z;
-    float xb;
-    float yb;
-    float zb;
-
-    void Set(float x, float y, float z, float xb, float yb, float zb);
-
-    // Transfers the specified amount of vertices, in the correct format, to the GL_ARRAY_BUFFER
-    static void TransferToOpenGl(barycentricVertex* vertices, GLsizei vertexCount);
 };
 
 struct DrawArraysIndirectCommand

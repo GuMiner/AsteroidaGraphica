@@ -12,7 +12,9 @@ class Asteroida
     GLuint mvLocation, projLocation;
 
     GLuint vao;
-    GLuint vbo;
+    GLuint positionBuffer;
+	GLuint barycentricBuffer;
+	GLuint idBuffer;
     GLsizei vertexCount;
 
     GLuint indirectDrawBuffer;

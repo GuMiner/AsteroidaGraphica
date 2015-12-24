@@ -23,12 +23,13 @@ bool ShaderManager::CreateShader(gl::GLenum shaderType, const char *shaderSource
 		GLint logLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
         
-		char *shaderLog = new char[logLength];
         std::stringstream logStream;
-        
+		char *shaderLog = new char[logLength];
         glGetShaderInfoLog(shader, logLength, &logLength, &shaderLog[0]);
 		logStream << "GLSL compilation error: " << shaderLog << ".";
         Logger::LogError(logStream.str().c_str());
+		delete[] shaderLog;
+
         return false;
     }
 
@@ -84,12 +85,16 @@ bool ShaderManager::CreateShaderProgram(const char *rootName, gl::GLuint *progra
     glGetProgramiv(program, GL_LINK_STATUS, &compileStatus);
     if (!compileStatus)
     {
-        char buffer[1024];
-        GLint len;
-        glGetProgramInfoLog(program, 1024, &len, buffer);
-        //logStream << glewGetErrorString(glGetError()) << " " << buffer;
+		GLint logLength;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 
-        Logger::LogError(logStream.str().c_str());
+		std::stringstream logStream;
+		char* buffer = new char[logLength];
+        glGetProgramInfoLog(program, logLength, &logLength, buffer);
+		logStream << "GLSL program compilation error: " << buffer;
+		Logger::LogError(logStream.str().c_str());
+		delete[] buffer;
+
         return false;
     }
 

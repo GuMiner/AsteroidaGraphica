@@ -130,7 +130,8 @@ void Geometry::Reset()
 }
 
 // Generates the trianges for a spherical shape with the specified major axis deformation, per-point deformation, and radius.
-std::vector<barycentricVertex> Geometry::GenerateSphericalArchetype(float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize)
+// Returns the number of new vertices added to the universal vertices list.
+unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVertices, float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize)
 {
     Reset();
 
@@ -199,8 +200,6 @@ std::vector<barycentricVertex> Geometry::GenerateSphericalArchetype(float radius
 
     // Given our map of points and our large list of point IDs, write out the data in the expected vertex format.
     int barycentricCounter = 0;
-    std::vector<barycentricVertex> actualVertices;
-    barycentricVertex vertex;
     for (unsigned int i = 0; i < spherePoints.size(); i++)
     {
         vmath::vec3 point = vertices[spherePoints[i]];
@@ -208,19 +207,20 @@ std::vector<barycentricVertex> Geometry::GenerateSphericalArchetype(float radius
         float xAmount = barycentricCounter % 3 == 0 ? 1.0f : 0.0f;
         float yAmount = barycentricCounter % 3 == 1 ? 1.0f : 0.0f;
         float zAmount = barycentricCounter % 3 == 2 ? 1.0f : 0.0f;
-        vertex.Set(point[0], point[1], point[2], xAmount, yAmount, zAmount);
-        actualVertices.push_back(vertex);
+		universalVertices.positions.push_back(point);
+		universalVertices.barycentrics.push_back(vmath::vec3(xAmount, yAmount, zAmount));
 
         ++barycentricCounter;
     }
     
-    return actualVertices;
+    return spherePoints.size();
 }
 
 // Generates the sun, which is large.
-std::vector<barycentricVertex> Geometry::GenerateSun()
+unsigned int Geometry::GenerateSun(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
+		vertices,
         ConfigManager::SunSize,
         0.0f,
         Constants::Rand(ConfigManager::SunMaxPerPointDeformation),
@@ -228,9 +228,10 @@ std::vector<barycentricVertex> Geometry::GenerateSun()
 }
 
 // Generates a small asteroid, which means it is less than a grid size
-std::vector<barycentricVertex> Geometry::GenerateSmallAsteroid()
+unsigned int Geometry::GenerateSmallAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
+		vertices,
         ConfigManager::SmallAsteroidSize + Constants::Rand(ConfigManager::SmallAsteroidSizeMaxVariation),
         Constants::Rand(ConfigManager::SmallAsteroidSizeMaxAxisDeformation),
         Constants::Rand(ConfigManager::SmallAsteroidSizeMaxPerPointDeformation),
@@ -238,9 +239,10 @@ std::vector<barycentricVertex> Geometry::GenerateSmallAsteroid()
 }
 
 // Generates a medium asteroid, which means it is about 40% of a grid size.
-std::vector<barycentricVertex> Geometry::GenerateMediumAsteroid()
+unsigned int Geometry::GenerateMediumAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
+		vertices,
         ConfigManager::MediumAsteroidSize + Constants::Rand(ConfigManager::MediumAsteroidSizeMaxVariation),
         Constants::Rand(ConfigManager::MediumAsteroidSizeMaxAxisDeformation),
         Constants::Rand(ConfigManager::MediumAsteroidSizeMaxPerPointDeformation),
@@ -248,9 +250,10 @@ std::vector<barycentricVertex> Geometry::GenerateMediumAsteroid()
 }
 
 // Generates a large asteroid, which means it is about the size of the grid.
-std::vector<barycentricVertex> Geometry::GenerateLargeAsteroid()
+unsigned int Geometry::GenerateLargeAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
+		vertices,
         ConfigManager::LargeAsteroidSize + Constants::Rand(ConfigManager::LargeAsteroidSizeMaxVariation),
         Constants::Rand(ConfigManager::LargeAsteroidSizeMaxAxisDeformation),
         Constants::Rand(ConfigManager::LargeAsteroidSizeMaxPerPointDeformation),
