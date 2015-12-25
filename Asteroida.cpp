@@ -100,8 +100,8 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 
     // TODO randomly set asteroid data so we know *which* asteroid type is at which index
     glGenBuffers(1, &indirectDrawBuffer);
-    DrawArraysIndirectCommand* draws = new DrawArraysIndirectCommand[ConfigManager::AsteroidCount];
-    for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+    DrawArraysIndirectCommand* draws = new DrawArraysIndirectCommand[ConfigManager::AsteroidCount * 2];
+    for (int i = 0; i < ConfigManager::AsteroidCount * 2; i++)
     {
         int asteroidType = Constants::Rand(0, 3);
         if (asteroidType == 0)
@@ -125,7 +125,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     }
 
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectDrawBuffer);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, ConfigManager::AsteroidCount * sizeof(DrawArraysIndirectCommand), draws, GL_STATIC_DRAW);
+    glBufferData(GL_DRAW_INDIRECT_BUFFER, 2 * ConfigManager::AsteroidCount * sizeof(DrawArraysIndirectCommand), draws, GL_STATIC_DRAW);
     delete[] draws;
 
     return true;
@@ -136,12 +136,13 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 {
     glUseProgram(asteroidShaderProgram);
     glBindVertexArray(vao);
-
+	
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
     vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
     
     glMultiDrawArraysIndirect(GL_TRIANGLES, nullptr, ConfigManager::AsteroidCount, 0);
+	// glMultiDrawArraysIndirect(GL_TRIANGLES, (const void*)((ConfigManager::AsteroidCount + 20) * sizeof(DrawArraysIndirectCommand)), 5, 0);
 }
 
 Asteroida::~Asteroida()

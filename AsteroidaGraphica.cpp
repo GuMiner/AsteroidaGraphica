@@ -35,11 +35,31 @@ AsteroidaGraphica::AsteroidaGraphica()
 {
 }
 
+// Logs graphics settings to (eventually) determine if the computer can run this application.
 void AsteroidaGraphica::LogGraphicsSettings()
 {
     std::stringstream graphicsSettings;
     graphicsSettings << "OpenGL vendor: " << glGetString(GL_VENDOR) << ", version " << glGetString(GL_VERSION) << ", renderer " << glGetString(GL_RENDERER);
     Logger::Log(graphicsSettings.str().c_str());
+
+	graphicsSettings.str("");
+	graphicsSettings << "OpenGL extensions: " << glGetString(GL_EXTENSIONS);
+	Logger::Log(graphicsSettings.str().c_str());
+		
+	GLint maxTextureUnits, maxUniformBlockSize;
+	GLint maxVertexUniformBlocks, maxFragmentUniformBlocks;
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &maxTextureUnits);
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertexUniformBlocks);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &maxFragmentUniformBlocks);
+	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
+	
+	graphicsSettings.str("");
+	graphicsSettings << "Max Texture Units: " << maxTextureUnits << ", Max Uniform Size: " << (maxUniformBlockSize/1024) << " kB";
+	Logger::Log(graphicsSettings.str().c_str());
+
+	graphicsSettings.str("");
+	graphicsSettings << "Max Vertex Uniform Blocks: " << maxVertexUniformBlocks << ", Max Fragment Uniform Blocks: " << maxFragmentUniformBlocks;
+	Logger::Log(graphicsSettings.str().c_str());
 }
 
 // Ensures our viewport letterboxes when it doesn't match the 16:9 aspect ratio.
@@ -124,8 +144,6 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 	});
 	*/
     LogGraphicsSettings();
-	Logger::Log((const char *)glGetString(GL_EXTENSIONS));
-
 
     // Basic OpenGL runtime settings
     glEnable(GL_TEXTURE_2D); // Legacy support.
