@@ -67,10 +67,9 @@ LargeAsteroidSizeMaxPerPointDeformation 0.9
 LargeAsteroidTriangleSize 0.30
 
 # The number of archetypes for each asteroid to generate.
-SmallAsteroidTypes 100
-MediumAsteroidTypes 100
-LargeAsteroidTypes 100
+SmallAsteroidTypes 200
+MediumAsteroidTypes 200
+LargeAsteroidTypes 200
 
-# Number of texels in the asteroid sampler. The total number of asteroids is this number (1D sampler)
-# Your graphics hardware may only support powers-of-two values for this parameter.
+# Total number of asteroids. 
 AsteroidCount 600

@@ -61,7 +61,7 @@ void ShipHud::InitializeCompasses()
 
     yzCompassOffset = vertices.positions.size();
     LoadCompassIndicator(vertices, vmath::vec3(0, 0, 1.0f));
-    universalVertices::TransferToOpenGl(vertices, compassPositionBuffer, compassColorBuffer, 0, compassUvBuffer, 0);
+    universalVertices::TransferToOpenGl(vertices, compassPositionBuffer, compassColorBuffer, 0, compassUvBuffer, 0, 0);
 }
 
 void ShipHud::InitializeShipMaps()
@@ -82,7 +82,7 @@ void ShipHud::InitializeShipMaps()
     glGenBuffers(1, &shipMapColorBuffer);
     glGenBuffers(1, &shipMapUvBuffer);
     
-    universalVertices::TransferToOpenGl(shipMapVertices, shipMapPositionBuffer, shipMapColorBuffer, 0, shipMapUvBuffer, 0);
+    universalVertices::TransferToOpenGl(shipMapVertices, shipMapPositionBuffer, shipMapColorBuffer, 0, shipMapUvBuffer, 0, 0);
 
     // Load in the ship map vertex data for the vertical map.
     glGenVertexArrays(1, &verticalMapVao);
@@ -92,7 +92,7 @@ void ShipHud::InitializeShipMaps()
     glGenBuffers(1, &verticalMapColorBuffer);
     glGenBuffers(1, &verticalMapUvBuffer);
 
-    universalVertices::TransferToOpenGl(shipMapVertices, verticalMapPositionBuffer, verticalMapColorBuffer, 0, verticalMapUvBuffer, 0);
+    universalVertices::TransferToOpenGl(shipMapVertices, verticalMapPositionBuffer, verticalMapColorBuffer, 0, verticalMapUvBuffer, 0, 0);
 }
 
 bool ShipHud::Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager)

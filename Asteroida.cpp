@@ -65,16 +65,8 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
         vertexCount += largeAsteroidVertexCounts[i];
     }
     
-	Logger::Log("Adding ID field for asteroids");
-	for (unsigned int i = 0; i < (unsigned int)ConfigManager::AsteroidCount; i++)
-	{
-		allAsteroids.ids.push_back(i);
-	}
-
-    Logger::Log("Sending asteroid data to the GPU...");
-	universalVertices::TransferToOpenGl(allAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer);
-
     // TODO texture and indirect drawing setup.
+	Logger::Log("Sending asteroid customization data to the GPU...");
     glGenTextures(1, &asteroidPositionTexture);
 
     glActiveTexture(GL_TEXTURE0);
@@ -99,34 +91,46 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     delete[] positions;
 
     // TODO randomly set asteroid data so we know *which* asteroid type is at which index
-    glGenBuffers(1, &indirectDrawBuffer);
-    DrawArraysIndirectCommand* draws = new DrawArraysIndirectCommand[ConfigManager::AsteroidCount * 2];
-    for (int i = 0; i < ConfigManager::AsteroidCount * 2; i++)
+	Logger::Log("Forming asteroids into a vertex buffer for bulk drawing...");
+	glGenBuffers(1, &indirectDrawBuffer);
+    DrawArraysIndirectCommand* draws = new DrawArraysIndirectCommand[ConfigManager::AsteroidCount];
+    for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
-        int asteroidType = Constants::Rand(0, 3);
-        if (asteroidType == 0)
+		if (i < ConfigManager::SmallAsteroidTypes)
         {
             // Small asteroid
-            int archeType = Constants::Rand(0, ConfigManager::SmallAsteroidTypes);
-            draws[i].Set(smallAsteroidVertexCounts[archeType], 1, smallAsteroidOffsets[archeType], i);
+            draws[i].Set(smallAsteroidVertexCounts[i], 1, smallAsteroidOffsets[i], i);
         }
-        else if (asteroidType == 1)
+        else if (i < ConfigManager::MediumAsteroidTypes + ConfigManager::SmallAsteroidTypes)
         {
             // Medium asteroid
-            int archeType = Constants::Rand(0, ConfigManager::MediumAsteroidTypes);
-            draws[i].Set(mediumAsteroidVertexCounts[archeType], 1, mediumAsteroidOffsets[archeType], i);
+            draws[i].Set(mediumAsteroidVertexCounts[i - 200], 1, mediumAsteroidOffsets[i - 200], i);
         }
         else
         {
             // Large asteroid
-            int archeType = Constants::Rand(0, ConfigManager::LargeAsteroidTypes);
-            draws[i].Set(largeAsteroidVertexCounts[archeType], 1, largeAsteroidOffsets[archeType], i);
+            draws[i].Set(largeAsteroidVertexCounts[i - 400], 1, largeAsteroidOffsets[i - 400], i);
         }
     }
 
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectDrawBuffer);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, 2 * ConfigManager::AsteroidCount * sizeof(DrawArraysIndirectCommand), draws, GL_STATIC_DRAW);
-    delete[] draws;
+	Logger::Log("Adding ID field for asteroids");
+	for (unsigned int i = 0; i < (unsigned int)ConfigManager::AsteroidCount; i++)
+	{
+		for (unsigned int j = 0; j < draws[i].vertexCount; j++)
+		{
+			allAsteroids.ids.push_back(i);
+		}
+	}
+
+	// TODO delete this step when I move away from indirect drawing.
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectDrawBuffer);
+	glBufferData(GL_DRAW_INDIRECT_BUFFER, ConfigManager::AsteroidCount * sizeof(DrawArraysIndirectCommand), draws, GL_STATIC_DRAW);
+	delete[] draws;
+
+
+	Logger::Log("Sending asteroid data to the GPU...");
+	universalVertices::TransferToOpenGl(allAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer, 0);
+
 
     return true;
 }
@@ -142,7 +146,6 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
     
     glMultiDrawArraysIndirect(GL_TRIANGLES, nullptr, ConfigManager::AsteroidCount, 0);
-	// glMultiDrawArraysIndirect(GL_TRIANGLES, (const void*)((ConfigManager::AsteroidCount + 20) * sizeof(DrawArraysIndirectCommand)), 5, 0);
 }
 
 Asteroida::~Asteroida()

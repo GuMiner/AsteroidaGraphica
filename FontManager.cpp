@@ -232,7 +232,7 @@ void FontManager::UpdateSentence(int sentenceId, std::string& sentence, int pixe
 
     // Send that data to OpenGL
     glBindVertexArray(sentenceInfo.vao);
-    universalVertices::TransferToOpenGl(vertices, sentenceInfo.positionBuffer, sentenceInfo.colorBuffer, 0, sentenceInfo.uvBuffer, 0);
+    universalVertices::TransferToOpenGl(vertices, sentenceInfo.positionBuffer, sentenceInfo.colorBuffer, 0, sentenceInfo.uvBuffer, 0, 0);
 
     // Update our character indices and vertex counts so we can do a multi-element drawing scheme.
     if (sentenceInfo.characterStartIndices != nullptr)
