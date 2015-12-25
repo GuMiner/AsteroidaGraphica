@@ -66,13 +66,12 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
         vertexCount += largeAsteroidVertexCounts[i];
     }
     
-    // TODO texture and indirect drawing setup.
-	Logger::Log("Sending asteroid customization data to the GPU...");
+    Logger::Log("Sending asteroid customization data to the GPU...");
     glGenTextures(1, &asteroidPositionTexture);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
-    glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA, ConfigManager::AsteroidCount);
+    glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
 	
     // TODO Randomly position the asteroids in the appropriate zones.
     float separation = 2.0f;
@@ -82,7 +81,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
         int texelIndex = 4 * i;
-        positions[texelIndex] = 1.0f;
+        positions[texelIndex] = 0.0f;
         positions[texelIndex + 1] = (i / fracAsteroidCount) * separation;
         positions[texelIndex + 2] = (i % fracAsteroidCount) * separation;
         positions[texelIndex + 3] = 0.0f;
