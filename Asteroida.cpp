@@ -27,9 +27,9 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glGenBuffers(1, &positionBuffer);
 	glGenBuffers(1, &barycentricBuffer);
 	glGenBuffers(1, &idBuffer);
+	glGenBuffers(1, &indicesBuffer);
 
     // Asteroid random generation with resource statistics.
-    vertexCount = 0;
     smallAsteroidVertexCounts = new GLuint[ConfigManager::SmallAsteroidTypes];
     mediumAsteroidVertexCounts = new GLuint[ConfigManager::MediumAsteroidTypes];
     largeAsteroidVertexCounts = new GLuint[ConfigManager::LargeAsteroidTypes];
@@ -42,6 +42,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 	universalVertices allAsteroids;
     
     Logger::Log("Generating small asteroid types...");
+	GLuint vertexCount = 0;
     for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
     {
 		smallAsteroidVertexCounts[i] = geometry.GenerateSmallAsteroid(allAsteroids);
@@ -90,47 +91,34 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, positions);
     delete[] positions;
 
-    // TODO randomly set asteroid data so we know *which* asteroid type is at which index
-	Logger::Log("Forming asteroids into a vertex buffer for bulk drawing...");
-	glGenBuffers(1, &indirectDrawBuffer);
-    DrawArraysIndirectCommand* draws = new DrawArraysIndirectCommand[ConfigManager::AsteroidCount];
-    for (int i = 0; i < ConfigManager::AsteroidCount; i++)
-    {
-		if (i < ConfigManager::SmallAsteroidTypes)
-        {
-            // Small asteroid
-            draws[i].Set(smallAsteroidVertexCounts[i], 1, smallAsteroidOffsets[i], i);
-        }
-        else if (i < ConfigManager::MediumAsteroidTypes + ConfigManager::SmallAsteroidTypes)
-        {
-            // Medium asteroid
-            draws[i].Set(mediumAsteroidVertexCounts[i - 200], 1, mediumAsteroidOffsets[i - 200], i);
-        }
-        else
-        {
-            // Large asteroid
-            draws[i].Set(largeAsteroidVertexCounts[i - 400], 1, largeAsteroidOffsets[i - 400], i);
-        }
-    }
-
 	Logger::Log("Adding ID field for asteroids");
-	for (unsigned int i = 0; i < (unsigned int)ConfigManager::AsteroidCount; i++)
+	for (unsigned int i = 0; i < (unsigned int)ConfigManager::SmallAsteroidTypes; i++)
 	{
-		for (unsigned int j = 0; j < draws[i].vertexCount; j++)
+		for (unsigned int j = 0; j < smallAsteroidVertexCounts[i]; j++)
 		{
 			allAsteroids.ids.push_back(i);
 		}
 	}
 
-	// TODO delete this step when I move away from indirect drawing.
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectDrawBuffer);
-	glBufferData(GL_DRAW_INDIRECT_BUFFER, ConfigManager::AsteroidCount * sizeof(DrawArraysIndirectCommand), draws, GL_STATIC_DRAW);
-	delete[] draws;
+	for (unsigned int i = 0; i < (unsigned int)ConfigManager::MediumAsteroidTypes; i++)
+	{
+		for (unsigned int j = 0; j < mediumAsteroidVertexCounts[i]; j++)
+		{
+			allAsteroids.ids.push_back(i + 200);
+		}
+	}
 
+	for (unsigned int i = 0; i < (unsigned int)ConfigManager::LargeAsteroidTypes; i++)
+	{
+		for (unsigned int j = 0; j < largeAsteroidVertexCounts[i]; j++)
+		{
+			allAsteroids.ids.push_back(i + 400);
+		}
+	}
 
 	Logger::Log("Sending asteroid data to the GPU...");
-	universalVertices::TransferToOpenGl(allAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer, 0);
-
+	universalVertices::TransferToOpenGl(allAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer, indicesBuffer);
+	asteroidIndexCount = allAsteroids.indices.size();
 
     return true;
 }
@@ -145,7 +133,7 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
     vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
     
-    glMultiDrawArraysIndirect(GL_TRIANGLES, nullptr, ConfigManager::AsteroidCount, 0);
+	glDrawElements(GL_TRIANGLES, asteroidIndexCount, GL_UNSIGNED_INT, nullptr);
 }
 
 Asteroida::~Asteroida()
@@ -158,8 +146,7 @@ Asteroida::~Asteroida()
     glDeleteBuffers(1, &positionBuffer);
 	glDeleteBuffers(1, &barycentricBuffer);
 	glDeleteBuffers(1, &idBuffer);
-
-    glDeleteBuffers(1, &indirectDrawBuffer);
+	glDeleteBuffers(1, &indicesBuffer);
 
     glDeleteTextures(1, &asteroidPositionTexture);
 

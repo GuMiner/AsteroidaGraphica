@@ -15,10 +15,11 @@ class Asteroida
     GLuint positionBuffer;
 	GLuint barycentricBuffer;
 	GLuint idBuffer;
-    GLsizei vertexCount;
+	GLuint indicesBuffer;
 
-    GLuint indirectDrawBuffer;
     GLuint asteroidPositionTexture;
+
+	GLuint asteroidIndexCount;
 
     // Note that asteroids are stored in the VBO in small-medium-large order.
     GLuint* smallAsteroidVertexCounts;

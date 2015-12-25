@@ -198,11 +198,12 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
         vertices[i] = vmath::vec3(vertices[i][0] + xDeformation, vertices[i][1] + yDeformation, vertices[i][2] * axisDeformationAmount + zDeformation);
     }
 
-    // Given our map of points and our large list of point IDs, write out the data in the expected vertex format.
+    // Given our map of points and our large list of point IDs, write out the data in vertex-index format.
     int barycentricCounter = 0;
-    for (unsigned int i = 0; i < spherePoints.size(); i++)
+	int positionOffset = universalVertices.positions.size();
+    for (unsigned int i = 0; i < vertices.size(); i++)
     {
-        vmath::vec3 point = vertices[spherePoints[i]];
+        vmath::vec3 point = vertices[i];
 
         float xAmount = barycentricCounter % 3 == 0 ? 1.0f : 0.0f;
         float yAmount = barycentricCounter % 3 == 1 ? 1.0f : 0.0f;
@@ -212,8 +213,14 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
 
         ++barycentricCounter;
     }
+
+	for (unsigned int i = 0; i < spherePoints.size(); i++)
+	{
+		// Note that there may already be vertices in the list of vertices, so we add in the indices with a position offset.
+		universalVertices.indices.push_back(spherePoints[i] + positionOffset);
+	}
     
-    return spherePoints.size();
+	return vertices.size();
 }
 
 // Generates the sun, which is large.
