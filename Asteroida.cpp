@@ -78,13 +78,22 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     float* positions = new float[4 * ConfigManager::AsteroidCount];
 
     int fracAsteroidCount = (int)sqrt(ConfigManager::AsteroidCount);
+	int xP = 0;
+	int yP = 0;
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
         int texelIndex = 4 * i;
-        positions[texelIndex] = 0.0f;
-        positions[texelIndex + 1] = (i / fracAsteroidCount) * separation;
-        positions[texelIndex + 2] = (i % fracAsteroidCount) * separation;
+        positions[texelIndex] = xP * separation;
+        positions[texelIndex + 1] = yP * separation;
+		positions[texelIndex + 2] = 0.0f; // xP * yP * separation;
         positions[texelIndex + 3] = 0.0f;
+
+		++xP;
+		if (xP == 100)
+		{
+			xP = 0;
+			++yP;
+		}
     }
 
     glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, positions);
@@ -103,7 +112,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 	{
 		for (unsigned int j = 0; j < mediumAsteroidVertexCounts[i]; j++)
 		{
-			allAsteroids.ids.push_back(i + 200);
+			allAsteroids.ids.push_back(i + ConfigManager::SmallAsteroidTypes);
 		}
 	}
 
@@ -111,7 +120,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 	{
 		for (unsigned int j = 0; j < largeAsteroidVertexCounts[i]; j++)
 		{
-			allAsteroids.ids.push_back(i + 400);
+			allAsteroids.ids.push_back(i + ConfigManager::SmallAsteroidTypes + ConfigManager::MediumAsteroidTypes);
 		}
 	}
 
@@ -148,6 +157,4 @@ Asteroida::~Asteroida()
 	glDeleteBuffers(1, &indicesBuffer);
 
     glDeleteTextures(1, &asteroidPositionTexture);
-
-
 }

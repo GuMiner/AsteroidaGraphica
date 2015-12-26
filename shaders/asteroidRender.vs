@@ -22,5 +22,5 @@ void main(void)
     vs_out.barycentricPosition = barycentricPosition;
 
     vec4 asteroidPosition = texelFetch(asteroidPositions, int(drawId), 0);
-    gl_Position = proj_matrix * mv_matrix * (vec4(position, 0) + vec4(drawId*2.0f, 0, 0, 1) + asteroidPosition);
+    gl_Position = proj_matrix * mv_matrix * (vec4(position, 1) + asteroidPosition);
 }
