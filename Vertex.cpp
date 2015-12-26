@@ -49,7 +49,7 @@ void universalVertices::TransferToOpenGl(const universalVertices& vertices, GLui
 
     if (vertices.barycentrics.size() != 0)
     {
-        universalVertices::SendToOpenGl(barycentricBuffer, 2, 3, vertices.barycentrics);
+        universalVertices::SendToOpenGl(barycentricBuffer, 2, 4, vertices.barycentrics);
     }
 
     if (vertices.uvs.size() != 0)

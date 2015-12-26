@@ -23,7 +23,7 @@ private:
 public:
     std::vector<vmath::vec3> positions;
     std::vector<vmath::vec3> colors;
-    std::vector<vmath::vec3> barycentrics;
+    std::vector<vmath::vec4> barycentrics;
     std::vector<vmath::vec2> uvs;
     std::vector<unsigned int> ids;
 

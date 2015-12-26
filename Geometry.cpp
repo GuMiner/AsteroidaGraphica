@@ -205,7 +205,7 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
     int barycentricCounter = 0;
 	int barycentricIndex = 0;
 	int positionOffset = universalVertices.positions.size();
-	int currentBarycentricSet = 0;
+	bool barycentricLayer = false;
 	bool firstToggle = true;
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
@@ -215,88 +215,58 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
 		if (i == 0)
 		{
 			// First point is a Z.
-			universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+			universalVertices.barycentrics.push_back(vmath::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 		}
 		else if (i == vertices.size() - 1)
 		{
-			// Last point is Z (on set == 0), Y (on set == 1), or X (on set == 2)
-			if (currentBarycentricSet == 0)
+			// True == XY. False == ZA
+			if (barycentricLayer)
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
-			}
-			else if (currentBarycentricSet == 1)
-			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 			}
 			else
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 		}
-		else if (currentBarycentricSet == 0)
+		else if (barycentricLayer)
 		{
-			// If on set 0, we do an XY toggle.
 			if (firstToggle)
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(1.0f, 0.0f, 0.0f, 0.0f));
 			}
 			else
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			}
 
 			firstToggle = !firstToggle;
 			++barycentricCounter;
 			if (barycentricCounter == ringCounts[barycentricIndex])
 			{
-				barycentricCounter = 0;
 				++barycentricIndex;
-				++currentBarycentricSet;
-				firstToggle = true;
-			}
-		}
-		else if (currentBarycentricSet == 1)
-		{
-			// If on set 1, we do a ZX toggle.
-			if (firstToggle)
-			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
-			}
-			else
-			{
-				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
-			}
-
-			firstToggle = !firstToggle;
-			++barycentricCounter;
-			if (barycentricCounter == ringCounts[barycentricIndex])
-			{
 				barycentricCounter = 0;
-				++barycentricIndex;
-				++currentBarycentricSet;
-				firstToggle = true;
+				barycentricLayer = !barycentricLayer;
 			}
 		}
 		else
 		{
-			// If on set 2, we do a YZ toggle.
 			if (firstToggle)
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 			}
 			else
 			{
-				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+				universalVertices.barycentrics.push_back(vmath::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 			}
 
 			firstToggle = !firstToggle;
 			++barycentricCounter;
 			if (barycentricCounter == ringCounts[barycentricIndex])
 			{
-				barycentricCounter = 0;
 				++barycentricIndex;
-				currentBarycentricSet = 0;
-				firstToggle = true;
+				barycentricCounter = 0;
+				barycentricLayer = !barycentricLayer;
 			}
 		}
 

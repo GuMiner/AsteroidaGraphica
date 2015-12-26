@@ -5,7 +5,7 @@ out vec4 color;
 in VS_OUT
 {
     vec4 color;
-    vec3 barycentricPosition;
+    vec4 barycentricPosition;
 } fs_in;
 
 void main(void)

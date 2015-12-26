@@ -1,7 +1,7 @@
 #version 400 core
 
 layout (location = 0) in vec3 position;
-layout (location = 2) in vec3 barycentricPosition;
+layout (location = 2) in vec4 barycentricPosition;
 layout (location = 4) in uint drawId;
 
 uniform sampler1D asteroidPositions;
@@ -9,7 +9,7 @@ uniform sampler1D asteroidPositions;
 out VS_OUT
 {
     vec4 color;
-    vec3 barycentricPosition;
+    vec4 barycentricPosition;
 } vs_out;
 
 uniform mat4 mv_matrix;
