@@ -60,6 +60,32 @@ int ConfigManager::AsteroidCount;
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;
 
+vmath::vec3 ConfigManager::WaterOreColor;
+vmath::vec3 ConfigManager::FeOreColor;
+vmath::vec3 ConfigManager::SiOreColor;
+vmath::vec3 ConfigManager::CuOreColor;
+vmath::vec3 ConfigManager::UOreColor;
+vmath::vec3 ConfigManager::AuOreColor;
+vmath::vec3 ConfigManager::PtOreColor;
+vmath::vec3 ConfigManager::ImpOreColor;
+
+float ConfigManager::BaseWaterOre;
+float ConfigManager::MaxWaterOre;
+float ConfigManager::BaseFeOre;
+float ConfigManager::MaxFeOre;
+float ConfigManager::BaseSiOre;
+float ConfigManager::MaxSiOre;
+float ConfigManager::BaseCuOre;
+float ConfigManager::MaxCuOre;
+float ConfigManager::BaseUOre;
+float ConfigManager::MaxUOre;
+float ConfigManager::BaseAuOre;
+float ConfigManager::MaxAuOre;
+float ConfigManager::BasePtOre;
+float ConfigManager::MaxPtOre;
+float ConfigManager::BaseImpOre;
+float ConfigManager::MaxImpOre;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -474,6 +500,174 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 		return false;
 	}
 
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(WaterOreColor))
+	{
+		Logger::Log("Error decoding the water ore color!");
+		return false;
+	}
+	
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(FeOreColor))
+	{
+		Logger::Log("Error decoding the iron ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(SiOreColor))
+	{
+		Logger::Log("Error decoding the silicon ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(CuOreColor))
+	{
+		Logger::Log("Error decoding the copper ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(UOreColor))
+	{
+		Logger::Log("Error decoding the uranium ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(AuOreColor))
+	{
+		Logger::Log("Error decoding the gold ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(PtOreColor))
+	{
+		Logger::Log("Error decoding the platinum ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(ImpOreColor))
+	{
+		Logger::Log("Error decoding the impurity ore color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseWaterOre))
+	{
+		Logger::Log("Error decoding the base water ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxWaterOre))
+	{
+		Logger::Log("Error decoding the max water ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseFeOre))
+	{
+		Logger::Log("Error decoding the base iron ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxFeOre))
+	{
+		Logger::Log("Error decoding the max iron ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseSiOre))
+	{
+		Logger::Log("Error decoding the base silicon ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxSiOre))
+	{
+		Logger::Log("Error decoding the max silicon ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseCuOre))
+	{
+		Logger::Log("Error decoding the base copper ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxCuOre))
+	{
+		Logger::Log("Error decoding the max copper ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseUOre))
+	{
+		Logger::Log("Error decoding the base uranium ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxUOre))
+	{
+		Logger::Log("Error decoding the max uranium ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseAuOre))
+	{
+		Logger::Log("Error decoding the base gold ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxAuOre))
+	{
+		Logger::Log("Error decoding the max gold ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BasePtOre))
+	{
+		Logger::Log("Error decoding the base platinum ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxPtOre))
+	{
+		Logger::Log("Error decoding the max platinum ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseImpOre))
+	{
+		Logger::Log("Error decoding the base impurities ore amount!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MaxImpOre))
+	{
+		Logger::Log("Error decoding the max imputiries ore amount!");
+		return false;
+	}
+
     return true;
 }
 
@@ -535,6 +729,32 @@ void ConfigManager::WriteConfigurationValues()
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);
+
+	WriteVector("WaterOreColor", WaterOreColor);
+	WriteVector("FeOreColor", FeOreColor);
+	WriteVector("SiOreColor", SiOreColor);
+	WriteVector("CuOreColor", CuOreColor);
+	WriteVector("UOreColor", UOreColor);
+	WriteVector("AuOreColor", AuOreColor);
+	WriteVector("PtOreColor", PtOreColor);
+	WriteVector("ImpOreColor", ImpOreColor);
+
+	WriteFloat("BaseWaterOre", BaseWaterOre);
+	WriteFloat("MaxWaterOre", MaxWaterOre);
+	WriteFloat("BaseFeOre", BaseFeOre);
+	WriteFloat("MaxFeOre", MaxFeOre);
+	WriteFloat("BaseSiOre", BaseSiOre);
+	WriteFloat("MaxSiOre", MaxSiOre);
+	WriteFloat("BaseCuOre", BaseCuOre);
+	WriteFloat("MaxCuOre", MaxCuOre);
+	WriteFloat("BaseUOre", BaseUOre);
+	WriteFloat("MaxUOre", MaxUOre);
+	WriteFloat("BaseAuOre", BaseAuOre);
+	WriteFloat("MaxAuOre", MaxAuOre);
+	WriteFloat("BasePtOre", BasePtOre);
+	WriteFloat("MaxPtOre", MaxPtOre);
+	WriteFloat("BaseImpOre",BaseImpOre);
+	WriteFloat("MaxImpOre", MaxImpOre);
 }
 
 // Reads in the configuration and sets up the variables listed
