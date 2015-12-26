@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML\System.hpp>
 #include <glbinding/gl/gl.h>
 #include "ShaderManager.h"
 #include "vmath.hpp"
@@ -17,6 +18,7 @@ class Asteroida
 	GLuint idBuffer;
 	GLuint indicesBuffer;
 
+	sf::Mutex updateMutex;
 	bool updatedAsteroidPosition;
     GLuint asteroidPositionTexture;
 	std::vector<vmath::vec4> positions;

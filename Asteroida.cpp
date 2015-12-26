@@ -131,10 +131,12 @@ void Asteroida::Update()
 	for (unsigned int i = 0; i < positions.size(); i++)
 	{
 		// TODO use the physica-correct motion algorithms.
+		updateMutex.lock();
 		positions[i][0] += velocities[i][0];
 		positions[i][1] += velocities[i][1];
 		positions[i][2] += velocities[i][2];
-		
+		updateMutex.unlock();
+
 		// Note that we're storing custom data in the 4th spot, so simple addition fails.
 		updatedAsteroidPosition = true;
 	}
@@ -146,7 +148,10 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 	if (updatedAsteroidPosition)
 	{
 		glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
+
+		updateMutex.lock();
 		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, &positions[0]);
+		updateMutex.unlock();
 		updatedAsteroidPosition = false;
 	}
 
