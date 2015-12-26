@@ -69,24 +69,19 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     Logger::Log("Sending asteroid customization data to the GPU...");
     glGenTextures(1, &asteroidPositionTexture);
 
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
     glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
 	
     // TODO Randomly position the asteroids in the appropriate zones.
     float separation = 2.0f;
-    float* positions = new float[4 * ConfigManager::AsteroidCount];
-
+    
     int fracAsteroidCount = (int)sqrt(ConfigManager::AsteroidCount);
 	int xP = 0;
 	int yP = 0;
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
-        int texelIndex = 4 * i;
-        positions[texelIndex] = xP * separation;
-        positions[texelIndex + 1] = yP * separation;
-		positions[texelIndex + 2] = 0.0f; // xP * yP * separation;
-        positions[texelIndex + 3] = 0.0f;
+		positions.push_back(vmath::vec4(xP * separation, yP * separation, 0.0f, 0.0f));
+		velocities.push_back(vmath::vec3(Constants::Rand(0.33f), Constants::Rand(0.33f), Constants::Rand(0.33f)));
 
 		++xP;
 		if (xP == 100)
@@ -96,8 +91,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 		}
     }
 
-    glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, positions);
-    delete[] positions;
+	updatedAsteroidPosition = true;
 
 	Logger::Log("Adding ID field for asteroids");
 	for (unsigned int i = 0; i < (unsigned int)ConfigManager::SmallAsteroidTypes; i++)
@@ -131,11 +125,35 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     return true;
 }
 
+// Updates the asteroids. Note that this runs on the physics thread, so no GPU calls can be done here.
+void Asteroida::Update()
+{
+	for (unsigned int i = 0; i < positions.size(); i++)
+	{
+		// TODO use the physica-correct motion algorithms.
+		positions[i][0] += velocities[i][0];
+		positions[i][1] += velocities[i][1];
+		positions[i][2] += velocities[i][2];
+		
+		// Note that we're storing custom data in the 4th spot, so simple addition fails.
+		updatedAsteroidPosition = true;
+	}
+}
+
 // Renders the asteroids with the given perspective/look-at projection matrix.
 void Asteroida::Render(vmath::mat4& projectionMatrix)
 {
+	if (updatedAsteroidPosition)
+	{
+		glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
+		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, &positions[0]);
+		updatedAsteroidPosition = false;
+	}
+
     glUseProgram(asteroidShaderProgram);
     glBindVertexArray(vao);
+
+	glActiveTexture(GL_TEXTURE0);
 	
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
     vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(0.0f, 0.0f, 0.0f));

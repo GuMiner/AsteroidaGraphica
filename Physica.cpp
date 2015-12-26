@@ -70,9 +70,10 @@ void Physica::BarrelRoll(bool clockwise)
     shipRotation[2] += clockwise ? shipBarrelRollSpeed : -shipBarrelRollSpeed;
 }
 
-void Physica::Initialize(SoundManager *soundManager)
+void Physica::Initialize(SoundManager *soundManager, Asteroida *asteroida)
 {
     this->soundManager = soundManager;
+	this->asteroida = asteroida;
     initialized = true;
 }
 
@@ -88,7 +89,10 @@ void Physica::Run()
             HandleShipControls();
             HandleShipMotion();
 
-            // TODO manage asteroid and game physics.
+			// Manage the asteroids
+			asteroida->Update();
+
+            // TODO manage game physics.
         }
 
         // The physics thread runs at a constant 30 updates-per-second. We attempt to ensure we don't wait too long here.

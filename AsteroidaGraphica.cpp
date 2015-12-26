@@ -212,18 +212,18 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 
     musicManager.Pause(); // TODO temp code (annoying when developing)
 
+	// Asteroids
+	Logger::Log("Asteroida loading...");
+	if (!asteroida.Initialize(shaderManager))
+	{
+		return Constants::Status::BAD_ASTEROIDA;
+	}
+
     // Physica
     Logger::Log("Physica loading...");
-    physicsManager.Initialize(&soundManager);
+    physicsManager.Initialize(&soundManager, &asteroida);
     Logger::Log("Physica loading done!");
-
-    // Asteroids
-    Logger::Log("Asteroida loading...");
-    if (!asteroida.Initialize(shaderManager))
-    {
-        return Constants::Status::BAD_ASTEROIDA;
-    }
-
+	
     return Constants::Status::OK;
 }
 

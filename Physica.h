@@ -1,5 +1,8 @@
 #pragma once
+#include <functional>
 #include <memory>
+#include <vector>
+#include "Asteroida.h"
 #include "SoundManager.h"
 #include "vmath.hpp"
 
@@ -7,6 +10,7 @@
 class Physica
 {
     SoundManager *soundManager;
+	Asteroida *asteroida;
 
     // Ship physical constants
     vmath::vec3 shipVelocity;
@@ -52,7 +56,7 @@ public:
     vmath::quaternion shipOrientation;
 
     Physica();
-    void Initialize(SoundManager *soundManager);
+    void Initialize(SoundManager *soundManager, Asteroida* asteroida);
     void Run();
 
     void Pause()

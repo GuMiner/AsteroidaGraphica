@@ -17,7 +17,10 @@ class Asteroida
 	GLuint idBuffer;
 	GLuint indicesBuffer;
 
+	bool updatedAsteroidPosition;
     GLuint asteroidPositionTexture;
+	std::vector<vmath::vec4> positions;
+	std::vector<vmath::vec3> velocities;
 
 	GLuint asteroidIndexCount;
 
@@ -31,6 +34,7 @@ class Asteroida
 public:
     Asteroida();
     bool Initialize(ShaderManager& shaderManager);
+	void Update();
     void Render(vmath::mat4& projectionMatrix);
     ~Asteroida();
 };
