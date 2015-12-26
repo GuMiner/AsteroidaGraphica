@@ -22,7 +22,7 @@ public:
 
     // Allowable return codes
     enum Status { OK = 0, 
-        BAD_SETUP = 1, BAD_GLBINDING = 2, BAD_SHADERS = 3, 
+        BAD_SETUP = 1, BAD_STELLARIA = 2, BAD_SHADERS = 3, 
         BAD_FONT = 4, BAD_IMAGES = 5, BAD_SOUND = 6, 
         BAD_MUSIC = 7, BAD_HUD = 8, BAD_CONFIG = 9,
         BAD_ASTEROIDA = 10 };

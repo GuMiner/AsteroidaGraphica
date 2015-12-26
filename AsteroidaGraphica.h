@@ -12,6 +12,7 @@
 #include "ShaderManager.h"
 #include "ShipHud.h"
 #include "SoundManager.h"
+#include "Stellaria.h"
 #include "Version.h"
 #include "vmath.hpp"
 
@@ -20,6 +21,7 @@ class AsteroidaGraphica
 {
     // Game Data
     Asteroida asteroida;
+	Stellaria stellaria;
     ShipHud shipHud;
     vmath::mat4 perspectiveMatrix;
 

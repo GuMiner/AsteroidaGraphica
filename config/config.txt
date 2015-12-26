@@ -44,9 +44,11 @@ Pause 70
 # Deformation values randomly affect the spherical archetype that is generated for all objects.
 # Note that axis deformation is a percent (20% = 0.20) value, whereas per-point deformation is absolute.
 # Triangle sizes affect how coarse or fine-grained the object (and per-vertex deformation) is.
-SunSize 20.0
+
+# Note that the sun base color is set from within sunRender.fs.
+SunSize 60.0
 SunMaxPerPointDeformation 4.0
-SunTriangleSize 0.1
+SunTriangleSize 10.0
 
 SmallAsteroidSize 0.1
 SmallAsteroidSizeMaxVariation 0.05

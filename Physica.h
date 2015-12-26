@@ -4,6 +4,7 @@
 #include <vector>
 #include "Asteroida.h"
 #include "SoundManager.h"
+#include "Stellaria.h"
 #include "vmath.hpp"
 
 // Manages object physics.
@@ -11,6 +12,7 @@ class Physica
 {
     SoundManager *soundManager;
 	Asteroida *asteroida;
+	Stellaria *stellaria;
 
     // Ship physical constants
     vmath::vec3 shipVelocity;
@@ -56,7 +58,7 @@ public:
     vmath::quaternion shipOrientation;
 
     Physica();
-    void Initialize(SoundManager *soundManager, Asteroida* asteroida);
+    void Initialize(SoundManager *soundManager, Asteroida* asteroida, Stellaria* stellaria);
     void Run();
 
     void Pause()

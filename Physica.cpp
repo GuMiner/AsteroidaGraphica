@@ -10,7 +10,7 @@ Physica::Physica()
     isPaused = false;
     initialized = false;
 
-    shipPosition = vmath::vec3(0, 0, 8);
+    shipPosition = vmath::vec3(0, 0, 80);
     shipOrientation = vmath::quaternion(0, 0, 0, 1);
     
     shipVelocity = vmath::vec3(0, 0, 0);
@@ -70,10 +70,11 @@ void Physica::BarrelRoll(bool clockwise)
     shipRotation[2] += clockwise ? shipBarrelRollSpeed : -shipBarrelRollSpeed;
 }
 
-void Physica::Initialize(SoundManager *soundManager, Asteroida *asteroida)
+void Physica::Initialize(SoundManager *soundManager, Asteroida *asteroida, Stellaria *stellaria)
 {
     this->soundManager = soundManager;
 	this->asteroida = asteroida;
+	this->stellaria = stellaria;
     initialized = true;
 }
 
@@ -91,6 +92,9 @@ void Physica::Run()
 
 			// Manage the asteroids
 			asteroida->Update();
+
+			// Manage the sun
+			stellaria->Update();
 
             // TODO manage game physics.
         }

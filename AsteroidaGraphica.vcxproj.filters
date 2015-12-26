@@ -92,6 +92,9 @@
     <ClInclude Include="Elementa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Stellaria.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -148,6 +151,9 @@
     <ClCompile Include="Elementa.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Stellaria.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -175,6 +181,12 @@
       <Filter>Content\Shaders</Filter>
     </None>
     <None Include="shaders\asteroidRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\sunRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\sunRender.vs">
       <Filter>Content\Shaders</Filter>
     </None>
   </ItemGroup>

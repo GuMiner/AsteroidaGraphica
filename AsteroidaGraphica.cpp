@@ -3,8 +3,6 @@
 #include <glbinding/gl/gl.h>
 #include <glbinding/Binding.h>
 #include <glbinding/callbacks.h>
-
-//#include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include "AsteroidaGraphica.h"
 #include "Vertex.h"
@@ -219,9 +217,16 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 		return Constants::Status::BAD_ASTEROIDA;
 	}
 
+	// Sun
+	Logger::Log("Stellaria loading...");
+	if (!stellaria.Initialize(shaderManager))
+	{
+		return Constants::Status::BAD_STELLARIA;
+	}
+
     // Physica
     Logger::Log("Physica loading...");
-    physicsManager.Initialize(&soundManager, &asteroida);
+    physicsManager.Initialize(&soundManager, &asteroida, &stellaria);
     Logger::Log("Physica loading done!");
 	
     return Constants::Status::OK;
@@ -292,6 +297,7 @@ Constants::Status AsteroidaGraphica::Run()
             
             // Draw the asteroids
             asteroida.Render(projectionMatrix);
+			stellaria.Render(projectionMatrix);
 
             // Draws our HUD
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());

@@ -143,6 +143,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
     <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="Stellaria.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="TextInfo.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="stb_implementations.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="Stellaria.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
@@ -178,6 +180,8 @@
     <None Include="shaders\mapRender.vs" />
     <None Include="shaders\asteroidRender.fs" />
     <None Include="shaders\asteroidRender.vs" />
+    <None Include="shaders\sunRender.fs" />
+    <None Include="shaders\sunRender.vs" />
     <None Include="shaders\textureRender.fs" />
     <None Include="shaders\textureRender.vs" />
   </ItemGroup>
