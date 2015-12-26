@@ -142,12 +142,14 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
     int bottomId = GetPointId(BOTTOM_ID, BOTTOM_ID);
 
     float ringHeight = radius - stepSize;
+	std::vector<int> ringCounts;
     for (int i = 0; i < ringCount - 1; i++)
     {
         // Find the number of points that will go on this ring.
         float ringCircumference = Geometry::GetRingCircumference(radius, ringHeight);
         int ringPointCount = (int)vmath::max(3.0f, ringCircumference / triangleSize);
-        
+		ringCounts.push_back(ringPointCount);
+
         if (i == 0)
         {
             // Special case -- this ring connects to the top point.
@@ -162,6 +164,7 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
         {
             // Normal ring, connecting the points to the points in the last ring and replacing the set of points there.
             lastRingPoints = Geometry::AddTriangleRing(i + 1, ringPointCount);
+
         }
 
         ringHeight -= stepSize;
@@ -200,18 +203,104 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
 
     // Given our map of points and our large list of point IDs, write out the data in vertex-index format.
     int barycentricCounter = 0;
+	int barycentricIndex = 0;
 	int positionOffset = universalVertices.positions.size();
+	int currentBarycentricSet = 0;
+	bool firstToggle = true;
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
         vmath::vec3 point = vertices[i];
 
-        float xAmount = barycentricCounter % 3 == 0 ? 1.0f : 0.0f;
-        float yAmount = barycentricCounter % 3 == 1 ? 1.0f : 0.0f;
-        float zAmount = barycentricCounter % 3 == 2 ? 1.0f : 0.0f;
-		universalVertices.positions.push_back(point);
-		universalVertices.barycentrics.push_back(vmath::vec3(xAmount, yAmount, zAmount));
+		// Generating the barycentric coordinates is rather tricky with indexed primitives. 
+		if (i == 0)
+		{
+			// First point is a Z.
+			universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (i == vertices.size() - 1)
+		{
+			// Last point is Z (on set == 0), Y (on set == 1), or X (on set == 2)
+			if (currentBarycentricSet == 0)
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+			}
+			else if (currentBarycentricSet == 1)
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+			}
+			else
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
+			}
+		}
+		else if (currentBarycentricSet == 0)
+		{
+			// If on set 0, we do an XY toggle.
+			if (firstToggle)
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
+			}
+			else
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+			}
 
-        ++barycentricCounter;
+			firstToggle = !firstToggle;
+			++barycentricCounter;
+			if (barycentricCounter == ringCounts[barycentricIndex])
+			{
+				barycentricCounter = 0;
+				++barycentricIndex;
+				++currentBarycentricSet;
+				firstToggle = true;
+			}
+		}
+		else if (currentBarycentricSet == 1)
+		{
+			// If on set 1, we do a ZX toggle.
+			if (firstToggle)
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+			}
+			else
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(1.0f, 0.0f, 0.0f));
+			}
+
+			firstToggle = !firstToggle;
+			++barycentricCounter;
+			if (barycentricCounter == ringCounts[barycentricIndex])
+			{
+				barycentricCounter = 0;
+				++barycentricIndex;
+				++currentBarycentricSet;
+				firstToggle = true;
+			}
+		}
+		else
+		{
+			// If on set 2, we do a YZ toggle.
+			if (firstToggle)
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 1.0f, 0.0f));
+			}
+			else
+			{
+				universalVertices.barycentrics.push_back(vmath::vec3(0.0f, 0.0f, 1.0f));
+			}
+
+			firstToggle = !firstToggle;
+			++barycentricCounter;
+			if (barycentricCounter == ringCounts[barycentricIndex])
+			{
+				barycentricCounter = 0;
+				++barycentricIndex;
+				currentBarycentricSet = 0;
+				firstToggle = true;
+			}
+		}
+
+		universalVertices.positions.push_back(point);
     }
 
 	for (unsigned int i = 0; i < spherePoints.size(); i++)
