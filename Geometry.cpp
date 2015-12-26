@@ -219,8 +219,8 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
 		}
 		else if (i == vertices.size() - 1)
 		{
-			// True == XY. False == ZA
-			if (barycentricLayer)
+			// True == XY. False == ZA. However, because we *just* swapped a layer, we use the old positioning.
+			if (!barycentricLayer)
 			{
 				universalVertices.barycentrics.push_back(vmath::vec4(0.0f, 0.0f, 1.0f, 0.0f));
 			}

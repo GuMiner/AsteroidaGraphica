@@ -1,6 +1,7 @@
 #include "ConfigManager.h"
 #include "Geometry.h"
 #include "Logger.h"
+#include "Paletta.h"
 #include "Vertex.h"
 #include "Asteroida.h"
 
@@ -68,7 +69,21 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     
     Logger::Log("Sending asteroid customization data to the GPU...");
     glGenTextures(1, &asteroidPositionTexture);
+	glGenTextures(1, &asteroidColorTexture);
 
+	Logger::Log("Customizing colors...");
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_1D, asteroidColorTexture);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGB32F_ARB, ConfigManager::AsteroidCount);
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		colors.push_back(Paletta::GetRandomAsteroidColor());
+	}
+
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGB, GL_FLOAT, &colors[0]);
+
+	Logger::Log("Customizing positions...");
+	glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
     glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
 	
@@ -138,7 +153,7 @@ void Asteroida::Update()
 		updateMutex.unlock();
 
 		// Note that we're storing custom data in the 4th spot, so simple addition fails.
-		updatedAsteroidPosition = true;
+		//updatedAsteroidPosition = true;
 	}
 }
 
@@ -147,6 +162,7 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 {
 	if (updatedAsteroidPosition)
 	{
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
 
 		updateMutex.lock();
@@ -156,10 +172,11 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 	}
 
     glUseProgram(asteroidShaderProgram);
-    glBindVertexArray(vao);
+	glUniform1i(glGetUniformLocation(asteroidShaderProgram, "asteroidPositions"), 0);
+	glUniform1i(glGetUniformLocation(asteroidShaderProgram, "asteroidColors"), 1);
 
-	glActiveTexture(GL_TEXTURE0);
-	
+    glBindVertexArray(vao);
+		
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
     vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
@@ -180,4 +197,5 @@ Asteroida::~Asteroida()
 	glDeleteBuffers(1, &indicesBuffer);
 
     glDeleteTextures(1, &asteroidPositionTexture);
+	glDeleteTextures(1, &asteroidColorTexture);
 }

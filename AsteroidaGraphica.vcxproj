@@ -137,6 +137,7 @@
     <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="MusicManager.h" />
+    <ClInclude Include="Paletta.h" />
     <ClInclude Include="Physica.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MusicManager.cpp" />
+    <ClCompile Include="Paletta.cpp" />
     <ClCompile Include="Physica.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShipHud.cpp" />

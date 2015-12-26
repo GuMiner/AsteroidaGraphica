@@ -6,7 +6,7 @@
 # Gustave Granroth 11/22/2015
 
 # General Settings
-ConfigVersion 1
+ConfigVersion 2
 
 # Graphics Settings
 # This program is limited to a 16:9 screen resolution and 
@@ -71,5 +71,9 @@ SmallAsteroidTypes 500
 MediumAsteroidTypes 500
 LargeAsteroidTypes 500
 
-# Total number of asteroids. 
+# Total number of asteroids per displayable block. Note that there *will* be 1024*1024 total consumable asteroids.
 AsteroidCount 1500
+
+# Asteroid palette coloration.
+AsteroidGradientStartColor 0.85 0.42 0
+AsteroidGradientEndColor 0.44 0.44 0.24

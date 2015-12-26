@@ -57,6 +57,9 @@ int ConfigManager::LargeAsteroidTypes;
 
 int ConfigManager::AsteroidCount;
 
+vmath::vec3 ConfigManager::AsteroidGradientStartColor;
+vmath::vec3 ConfigManager::AsteroidGradientEndColor;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -64,31 +67,31 @@ ConfigManager::ConfigManager()
 }
 
 // Loads in a boolean configuration value.
-bool ConfigManager::LoadBool(std::string& line, bool& boolean)
+bool ConfigManager::LoadBool(bool& boolean)
 {
     std::string tempInput;
-    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseBoolFromString(tempInput, boolean));
+    return !(!StringUtils::SplitAndGrabSecondary(currentLine, tempInput) || !StringUtils::ParseBoolFromString(tempInput, boolean));
 }
 
 // Loads in an integer configuration value.
-bool ConfigManager::LoadInt(std::string& line, int& integer)
+bool ConfigManager::LoadInt(int& integer)
 {
     std::string tempInput;
-    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseIntFromString(tempInput, integer));
+    return !(!StringUtils::SplitAndGrabSecondary(currentLine, tempInput) || !StringUtils::ParseIntFromString(tempInput, integer));
 }
 
 // Loads in a floating-point configuration value.
-bool ConfigManager::LoadFloat(std::string& line, float& floatingPoint)
+bool ConfigManager::LoadFloat(float& floatingPoint)
 {
     std::string tempInput;
-    return !(!StringUtils::SplitAndGrabSecondary(line, tempInput) || !StringUtils::ParseFloatFromString(tempInput, floatingPoint));
+    return !(!StringUtils::SplitAndGrabSecondary(currentLine, tempInput) || !StringUtils::ParseFloatFromString(tempInput, floatingPoint));
 }
 
 // Loads in an SFML keyboard key.
-bool ConfigManager::LoadKey(std::string& line, sf::Keyboard::Key& key)
+bool ConfigManager::LoadKey(sf::Keyboard::Key& key)
 {
     int keyInt;
-    if (!LoadInt(line, keyInt))
+    if (!LoadInt(keyInt))
     {
         return false;
     }
@@ -97,33 +100,65 @@ bool ConfigManager::LoadKey(std::string& line, sf::Keyboard::Key& key)
     return true;
 }
 
-void ConfigManager::WriteBool(std::vector<std::string>& lines, const char* itemName, bool& boolean)
+// Loads in a 3-valued floating point vector.
+bool ConfigManager::LoadVector(vmath::vec3& vector)
+{
+	std::vector<std::string> stringParts;
+	StringUtils::Split(currentLine, StringUtils::Space, true, stringParts);
+
+	if (stringParts.size() != 4)
+	{
+		return false;
+	}
+
+	if (!StringUtils::ParseFloatFromString(stringParts[1], vector[0]) ||
+		!StringUtils::ParseFloatFromString(stringParts[2], vector[1]) ||
+		!StringUtils::ParseFloatFromString(stringParts[3], vector[2]))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ConfigManager::WriteBool(const char* itemName, bool& boolean)
 {
     std::stringstream tempOutput;
     tempOutput << itemName << StringUtils::Space << std::boolalpha << boolean;
-    lines.push_back(tempOutput.str());
+    outputLines.push_back(tempOutput.str());
 }
 
-void ConfigManager::WriteInt(std::vector<std::string>& lines, const char* itemName, int& integer)
+void ConfigManager::WriteInt(const char* itemName, int& integer)
 {
     std::stringstream tempOutput;
     tempOutput << itemName << StringUtils::Space << integer;
-    lines.push_back(tempOutput.str());
+    outputLines.push_back(tempOutput.str());
 }
 
-void ConfigManager::WriteFloat(std::vector<std::string>& lines, const char* itemName, float& floatingPoint)
+void ConfigManager::WriteFloat(const char* itemName, float& floatingPoint)
 {
     double tempValue = floatingPoint;
     std::stringstream tempOutput;
     tempOutput << itemName << StringUtils::Space << tempValue;
-    lines.push_back(tempOutput.str());
+    outputLines.push_back(tempOutput.str());
 }
 
-void ConfigManager::WriteKey(std::vector<std::string>& lines, const char* itemName, sf::Keyboard::Key& key)
+void ConfigManager::WriteKey(const char* itemName, sf::Keyboard::Key& key)
 {
     std::stringstream tempOutput;
     tempOutput << itemName << StringUtils::Space << (int)key;
-    lines.push_back(tempOutput.str());
+    outputLines.push_back(tempOutput.str());
+}
+
+void ConfigManager::WriteVector(const char* itemName, vmath::vec3& vector)
+{
+	double x = vector[0];
+	double y = vector[1];
+	double z = vector[2];
+	std::stringstream tempOutput;
+	tempOutput << itemName << StringUtils::Space << x << StringUtils::Space << y << StringUtils::Space << z;
+	outputLines.push_back(tempOutput.str());
+
 }
 
 // Loads in all the configuration values.
@@ -131,357 +166,375 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 {
     int lineCounter = 0;
 
-    if (!LoadInt(configFileLines[lineCounter], ConfigVersion))
+	currentLine = configFileLines[lineCounter];
+    if (!LoadInt(ConfigVersion))
     {
         Logger::Log("Error decoding the configuration file version!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadBool(configFileLines[lineCounter], IsFullscreen))
+	currentLine = configFileLines[++lineCounter];
+    if (!LoadBool(IsFullscreen))
     {
         Logger::Log("Error decoding the fullscreen toggle!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], ScreenWidth))
+	currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(ScreenWidth))
     {
         Logger::Log("Error reading in the screen width!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], ScreenHeight))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(ScreenHeight))
     {
         Logger::Log("Error reading in the screen height!");
         return false;
     }
 
-	++lineCounter;
-	if (!LoadInt(configFileLines[lineCounter], TextImageSize))
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadInt(TextImageSize))
 	{
 		Logger::Log("Error reading in the text image size!");
 		return false;
 	}
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustForwardsKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustForwardsKey))
     {
         Logger::Log("Error reading in the thrust forwards key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustReverseKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustReverseKey))
     {
         Logger::Log("Error reading in the thrust reverse key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustLeftKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustLeftKey))
     {
         Logger::Log("Error reading in the thrust left key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustRightKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustRightKey))
     {
         Logger::Log("Error reading in the thrust right key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustUpKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustUpKey))
     {
         Logger::Log("Error reading in the thrust up key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ThrustDownKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ThrustDownKey))
     {
         Logger::Log("Error reading in the thrust down key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateLeftKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateLeftKey))
     {
         Logger::Log("Error reading in the rotate left key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateRightKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateRightKey))
     {
         Logger::Log("Error reading in the rotate right key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateUpKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateUpKey))
     {
         Logger::Log("Error reading in the rotate up key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateDownKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateDownKey))
     {
         Logger::Log("Error reading in the rotate down key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateCWKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateCWKey))
     {
         Logger::Log("Error reading in the rotate CW key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], RotateCCWKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(RotateCCWKey))
     {
         Logger::Log("Error reading in the rotate CCW key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ToggleRotationDampeningKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ToggleRotationDampeningKey))
     {
         Logger::Log("Error reading in the rotation dampening toggle key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], ToggleTranslationDampeningKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(ToggleTranslationDampeningKey))
     {
         Logger::Log("Error reading in the translational dampening toggle key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadKey(configFileLines[lineCounter], PauseKey))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadKey(PauseKey))
     {
         Logger::Log("Error reading in the pause key!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SunSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SunSize))
     {
         Logger::Log("Error reading in the sun size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SunMaxPerPointDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SunMaxPerPointDeformation))
     {
         Logger::Log("Error reading in the sun max per point deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SunTriangleSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SunTriangleSize))
     {
         Logger::Log("Error reading in the sun triangle size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SmallAsteroidSize))
     {
         Logger::Log("Error reading in the small asteroid size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxVariation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SmallAsteroidSizeMaxVariation))
     {
         Logger::Log("Error reading in the small asteroid size max variation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxAxisDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SmallAsteroidSizeMaxAxisDeformation))
     {
         Logger::Log("Error reading in the small asteroid size max axis deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidSizeMaxPerPointDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SmallAsteroidSizeMaxPerPointDeformation))
     {
         Logger::Log("Error reading in the small asteroid size max per point deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], SmallAsteroidTriangleSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(SmallAsteroidTriangleSize))
     {
         Logger::Log("Error reading in the small asteroid triangle size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(MediumAsteroidSize))
     {
         Logger::Log("Error reading in the medium asteroid size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxVariation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(MediumAsteroidSizeMaxVariation))
     {
         Logger::Log("Error reading in the medium asteroid size max variation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxAxisDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(MediumAsteroidSizeMaxAxisDeformation))
     {
         Logger::Log("Error reading in the medium asteroid size max axis deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidSizeMaxPerPointDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(MediumAsteroidSizeMaxPerPointDeformation))
     {
         Logger::Log("Error reading in the medium asteroid size max per point deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], MediumAsteroidTriangleSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(MediumAsteroidTriangleSize))
     {
         Logger::Log("Error reading in the medium asteroid triangle size!");
         return false;
     }
     
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(LargeAsteroidSize))
     {
         Logger::Log("Error reading in the large asteroid size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxVariation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(LargeAsteroidSizeMaxVariation))
     {
         Logger::Log("Error reading in the large asteroid size max variation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxPerPointDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(LargeAsteroidSizeMaxPerPointDeformation))
     {
         Logger::Log("Error reading in the large asteroid size max axis deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidSizeMaxPerPointDeformation))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(LargeAsteroidSizeMaxPerPointDeformation))
     {
         Logger::Log("Error reading in the large asteroid size max per point deformation!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadFloat(configFileLines[lineCounter], LargeAsteroidTriangleSize))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadFloat(LargeAsteroidTriangleSize))
     {
         Logger::Log("Error reading in the large asteroid triangle size!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], SmallAsteroidTypes))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(SmallAsteroidTypes))
     {
         Logger::Log("Error decoding the small asteroid type count!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], MediumAsteroidTypes))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(MediumAsteroidTypes))
     {
         Logger::Log("Error decoding the medium asteroid type count!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], LargeAsteroidTypes))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(LargeAsteroidTypes))
     {
         Logger::Log("Error decoding the large asteroid type count!");
         return false;
     }
 
-    ++lineCounter;
-    if (!LoadInt(configFileLines[lineCounter], AsteroidCount))
+    currentLine = configFileLines[++lineCounter];
+    if (!LoadInt(AsteroidCount))
     {
         Logger::Log("Error decoding the asteroid count!");
         return false;
     }
 
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(AsteroidGradientStartColor))
+	{
+		Logger::Log("Error decoding the asteroid gradient start color!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadVector(AsteroidGradientEndColor))
+	{
+		Logger::Log("Error decoding the asteroid gradient end color!");
+		return false;
+	}
+
     return true;
 }
 
-void ConfigManager::WriteConfigurationValues(std::vector<std::string>& configFileLines)
+void ConfigManager::WriteConfigurationValues()
 {
-    WriteInt(configFileLines, "ConfigVersion", ConfigVersion);
+    WriteInt("ConfigVersion", ConfigVersion);
     
-    WriteBool(configFileLines, "FullScreen", IsFullscreen);
-    WriteInt(configFileLines, "ScreenWidth", ScreenWidth);
-    WriteInt(configFileLines, "ScreenHeight", ScreenHeight);
+    WriteBool("FullScreen", IsFullscreen);
+    WriteInt("ScreenWidth", ScreenWidth);
+    WriteInt("ScreenHeight", ScreenHeight);
 
-	WriteInt(configFileLines, "TextImageSize", TextImageSize);
+	WriteInt("TextImageSize", TextImageSize);
 
-    WriteKey(configFileLines, "ThrustForwards", ThrustForwardsKey);
-    WriteKey(configFileLines, "ThrustReverse", ThrustReverseKey);
-    WriteKey(configFileLines, "ThrustLeft", ThrustLeftKey);
-    WriteKey(configFileLines, "ThrustRight", ThrustRightKey);
-    WriteKey(configFileLines, "ThrustUp", ThrustUpKey);
-    WriteKey(configFileLines, "ThrustDown", ThrustDownKey);
+    WriteKey("ThrustForwards", ThrustForwardsKey);
+    WriteKey("ThrustReverse", ThrustReverseKey);
+    WriteKey("ThrustLeft", ThrustLeftKey);
+    WriteKey("ThrustRight", ThrustRightKey);
+    WriteKey("ThrustUp", ThrustUpKey);
+    WriteKey("ThrustDown", ThrustDownKey);
     
-    WriteKey(configFileLines, "RotateLeft", RotateLeftKey);
-    WriteKey(configFileLines, "RotateRight", RotateRightKey);
-    WriteKey(configFileLines, "RotateUp", RotateUpKey);
-    WriteKey(configFileLines, "RotateDown", RotateDownKey);
-    WriteKey(configFileLines, "RotateCW", RotateCWKey);
-    WriteKey(configFileLines, "RotateCCW", RotateCCWKey);
+    WriteKey("RotateLeft", RotateLeftKey);
+    WriteKey("RotateRight", RotateRightKey);
+    WriteKey("RotateUp", RotateUpKey);
+    WriteKey("RotateDown", RotateDownKey);
+    WriteKey("RotateCW", RotateCWKey);
+    WriteKey("RotateCCW", RotateCCWKey);
     
-    WriteKey(configFileLines, "ToggleRotationDampening", ToggleRotationDampeningKey);
-    WriteKey(configFileLines, "ToggleTranslationDampening", ToggleTranslationDampeningKey);
-    WriteKey(configFileLines, "Pause", PauseKey);
+    WriteKey("ToggleRotationDampening", ToggleRotationDampeningKey);
+    WriteKey("ToggleTranslationDampening", ToggleTranslationDampeningKey);
+    WriteKey("Pause", PauseKey);
 
-    WriteFloat(configFileLines, "SunSize", SunSize);
-    WriteFloat(configFileLines, "SunMaxPerPointDeformation", SunMaxPerPointDeformation);
-    WriteFloat(configFileLines, "SunTriangleSize", SunTriangleSize);
+    WriteFloat("SunSize", SunSize);
+    WriteFloat("SunMaxPerPointDeformation", SunMaxPerPointDeformation);
+    WriteFloat("SunTriangleSize", SunTriangleSize);
     
-    WriteFloat(configFileLines, "SmallAsteroidSize", SmallAsteroidSize);
-    WriteFloat(configFileLines, "SmallAsteroidSizeMaxVariation", SmallAsteroidSizeMaxVariation);
-    WriteFloat(configFileLines, "SmallAsteroidSizeMaxAxisDeformation", SmallAsteroidSizeMaxAxisDeformation);
-    WriteFloat(configFileLines, "SmallAsteroidSizeMaxPerPointDeformation", SmallAsteroidSizeMaxPerPointDeformation);
-    WriteFloat(configFileLines, "SmallAsteroidTriangleSize", SmallAsteroidTriangleSize);
+    WriteFloat("SmallAsteroidSize", SmallAsteroidSize);
+    WriteFloat("SmallAsteroidSizeMaxVariation", SmallAsteroidSizeMaxVariation);
+    WriteFloat("SmallAsteroidSizeMaxAxisDeformation", SmallAsteroidSizeMaxAxisDeformation);
+    WriteFloat("SmallAsteroidSizeMaxPerPointDeformation", SmallAsteroidSizeMaxPerPointDeformation);
+    WriteFloat("SmallAsteroidTriangleSize", SmallAsteroidTriangleSize);
     
-    WriteFloat(configFileLines, "MediumAsteroidSize", MediumAsteroidSize);
-    WriteFloat(configFileLines, "MediumAsteroidSizeMaxVariation", MediumAsteroidSizeMaxVariation);
-    WriteFloat(configFileLines, "MediumAsteroidSizeMaxAxisDeformation", MediumAsteroidSizeMaxAxisDeformation);
-    WriteFloat(configFileLines, "MediumAsteroidSizeMaxPerPointDeformation", MediumAsteroidSizeMaxPerPointDeformation);
-    WriteFloat(configFileLines, "MediumAsteroidTriangleSize", MediumAsteroidTriangleSize);
+    WriteFloat("MediumAsteroidSize", MediumAsteroidSize);
+    WriteFloat("MediumAsteroidSizeMaxVariation", MediumAsteroidSizeMaxVariation);
+    WriteFloat("MediumAsteroidSizeMaxAxisDeformation", MediumAsteroidSizeMaxAxisDeformation);
+    WriteFloat("MediumAsteroidSizeMaxPerPointDeformation", MediumAsteroidSizeMaxPerPointDeformation);
+    WriteFloat("MediumAsteroidTriangleSize", MediumAsteroidTriangleSize);
     
-    WriteFloat(configFileLines, "LargeAsteroidSize", LargeAsteroidSize);
-    WriteFloat(configFileLines, "LargeAsteroidSizeMaxVariation", LargeAsteroidSizeMaxVariation);
-    WriteFloat(configFileLines, "LargeAsteroidSizeMaxAxisDeformation", LargeAsteroidSizeMaxAxisDeformation);
-    WriteFloat(configFileLines, "LargeAsteroidSizeMaxPerPointDeformation", LargeAsteroidSizeMaxPerPointDeformation);
-    WriteFloat(configFileLines, "LargeAsteroidTriangleSize", LargeAsteroidTriangleSize);
+    WriteFloat("LargeAsteroidSize", LargeAsteroidSize);
+    WriteFloat("LargeAsteroidSizeMaxVariation", LargeAsteroidSizeMaxVariation);
+    WriteFloat("LargeAsteroidSizeMaxAxisDeformation", LargeAsteroidSizeMaxAxisDeformation);
+    WriteFloat("LargeAsteroidSizeMaxPerPointDeformation", LargeAsteroidSizeMaxPerPointDeformation);
+    WriteFloat("LargeAsteroidTriangleSize", LargeAsteroidTriangleSize);
 
-    WriteInt(configFileLines, "SmallAsteroidTypes", SmallAsteroidTypes);
-    WriteInt(configFileLines, "MediumAsteroidTypes", MediumAsteroidTypes);
-    WriteInt(configFileLines, "LargeAsteroidTypes", LargeAsteroidTypes);
+    WriteInt("SmallAsteroidTypes", SmallAsteroidTypes);
+    WriteInt("MediumAsteroidTypes", MediumAsteroidTypes);
+    WriteInt("LargeAsteroidTypes", LargeAsteroidTypes);
 
-    WriteInt(configFileLines, "AsteroidCount", AsteroidCount);
+    WriteInt("AsteroidCount", AsteroidCount);
+
+	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
+	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);
 }
 
 // Reads in the configuration and sets up the variables listed
@@ -532,22 +585,22 @@ bool ConfigManager::ReadConfiguration()
 bool ConfigManager::WriteConfiguration()
 {
     // Write out our config file, ensuring we re-insert comment lines as appropriate.
-    std::vector<std::string> lines;
-    WriteConfigurationValues(lines);
+	outputLines.clear();
+    WriteConfigurationValues();
 
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (unsigned int i = 0; i < outputLines.size(); i++)
     {
         if (commentLines.count(i) != 0)
         {
             // There's a comment line at this position, so add it in.
-            lines.insert(lines.begin() + i, commentLines[i]);
+			outputLines.insert(outputLines.begin() + i, commentLines[i]);
         }
     }
 
     std::stringstream resultingFile;
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (unsigned int i = 0; i < outputLines.size(); i++)
     {
-        resultingFile << lines[i] << StringUtils::Newline;
+        resultingFile << outputLines[i] << StringUtils::Newline;
     }
 
     if (!StringUtils::WriteStringToFile(configFileName, resultingFile.str()))

@@ -5,6 +5,7 @@ layout (location = 2) in vec4 barycentricPosition;
 layout (location = 4) in uint drawId;
 
 uniform sampler1D asteroidPositions;
+uniform sampler1D asteroidColors;
 
 out VS_OUT
 {
@@ -18,7 +19,7 @@ uniform mat4 proj_matrix;
 // Renders asteroids with the specified color and position, using the barycentric coordinates to determine the opacity level.
 void main(void)
 {
-    vs_out.color = vec4(1.0f, 1.0f, 0.0f, 1);
+    vs_out.color = vec4(texelFetch(asteroidColors, int(drawId), 0).xyz, 1);
     vs_out.barycentricPosition = barycentricPosition;
 
     vec4 asteroidPosition = texelFetch(asteroidPositions, int(drawId), 0);

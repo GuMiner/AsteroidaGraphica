@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <SFML\Window.hpp>
+#include "vmath.hpp"
 
 // Loads in the configuration details for the rest of the system.
 class ConfigManager
@@ -13,18 +14,22 @@ class ConfigManager
     std::string CommentString;
     std::map<int, std::string> commentLines;
 
-    bool LoadBool(std::string& line, bool& boolean);
-    bool LoadInt(std::string& line, int& integer);
-    bool LoadFloat(std::string& line, float& floatingPoint);
-    bool LoadKey(std::string& line, sf::Keyboard::Key& key);
+	std::string currentLine;
+    bool LoadBool(bool& boolean);
+    bool LoadInt(int& integer);
+    bool LoadFloat(float& floatingPoint);
+    bool LoadKey(sf::Keyboard::Key& key);
+	bool LoadVector(vmath::vec3& vector);
 
-    void WriteBool(std::vector<std::string>& lines, const char* itemName, bool& boolean);
-    void WriteInt(std::vector<std::string>& lines, const char* itemName, int& integer);
-    void WriteFloat(std::vector<std::string>& lines, const char* itemName, float& floatingPoint);
-    void WriteKey(std::vector<std::string>& lines, const char* itemName, sf::Keyboard::Key& key);
+	std::vector<std::string> outputLines;
+    void WriteBool(const char* itemName, bool& boolean);
+    void WriteInt(const char* itemName, int& integer);
+    void WriteFloat(const char* itemName, float& floatingPoint);
+    void WriteKey(const char* itemName, sf::Keyboard::Key& key);
+	void WriteVector(const char* itemName, vmath::vec3& vector);
 
     bool LoadConfigurationValues(std::vector<std::string>& lines);
-    void WriteConfigurationValues(std::vector<std::string>& lines);
+    void WriteConfigurationValues();
 
 public:
     static int ConfigVersion;
@@ -83,6 +88,9 @@ public:
     static int LargeAsteroidTypes;
 
     static int AsteroidCount;
+
+	static vmath::vec3 AsteroidGradientStartColor;
+	static vmath::vec3 AsteroidGradientEndColor;
 
     ConfigManager();
     bool ReadConfiguration();

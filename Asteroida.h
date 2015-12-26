@@ -9,7 +9,7 @@ using namespace gl;
 // Manages the asteroids that are part of this game.
 class Asteroida
 {
-    GLuint asteroidShaderProgram;
+	GLuint asteroidShaderProgram;
     GLuint mvLocation, projLocation;
 
     GLuint vao;
@@ -20,9 +20,13 @@ class Asteroida
 
 	sf::Mutex updateMutex;
 	bool updatedAsteroidPosition;
-    GLuint asteroidPositionTexture;
+    
+	GLuint asteroidPositionTexture;
+	GLuint asteroidColorTexture;
+
 	std::vector<vmath::vec4> positions;
 	std::vector<vmath::vec3> velocities;
+	std::vector<vmath::vec3> colors;
 
 	GLuint asteroidIndexCount;
 
