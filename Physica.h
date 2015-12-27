@@ -7,6 +7,13 @@
 #include "Stellaria.h"
 #include "vmath.hpp"
 
+// The position-velocity structure used to simplify physics calculations.
+struct PosVel
+{
+	vmath::vec3 pos;
+	vmath::vec3 vel;
+};
+
 // Manages object physics.
 class Physica
 {
@@ -52,6 +59,11 @@ class Physica
 
     void HandleShipControls();
     void HandleShipMotion();
+
+	// Physics calculations
+	vmath::vec3 SunAcceleration(const vmath::vec3& pos) const;
+	PosVel RK4SunStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const;
+	void SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const;
 public:
     // Ship positioning
     vmath::vec3 shipPosition;

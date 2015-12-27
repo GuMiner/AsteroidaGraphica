@@ -146,24 +146,6 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     return true;
 }
 
-// Updates the asteroids. Note that this runs on the physics thread, so no GPU calls can be done here.
-void Asteroida::Update()
-{
-	updateMutex.lock();
-	for (unsigned int i = 0; i < positions.size(); i++)
-	{
-		// TODO use the physica-correct motion algorithms.		
-		positions[i][0] += velocities[i][0];
-		positions[i][1] += velocities[i][1];
-		positions[i][2] += velocities[i][2];
-	}
-
-	updateMutex.unlock();
-
-	// Note that we're storing custom data in the 4th spot, so simple addition fails.
-	updatedAsteroidPosition = true;
-}
-
 // Renders the asteroids with the given perspective/look-at projection matrix.
 void Asteroida::Render(vmath::mat4& projectionMatrix)
 {

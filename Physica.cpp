@@ -78,6 +78,50 @@ void Physica::Initialize(SoundManager *soundManager, Asteroida *asteroida, Stell
     initialized = true;
 }
 
+// Calculates the acceleration applied to objects as part of the sun.
+vmath::vec3 Physica::SunAcceleration(const vmath::vec3& pos) const
+{
+	// F_a = m_a*a
+	// F_a = (m_s*m_a*G_c/(r_2))r_hat
+
+	float distance = vmath::distance(pos, vmath::vec3(0, 0, 0));
+	float constants = -ConfigManager::SolarMass * ConfigManager::GravitationalConstant / distance;
+
+	return constants * vmath::normalize(pos);
+}
+
+// Performs RK4 step evaluation within the context of solar masse.
+PosVel Physica::RK4SunStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const
+{
+	PosVel result;
+	result.pos = initialState.vel + derivative.vel * dt;
+	result.vel = SunAcceleration(initialState.pos + derivative.pos * dt);
+	return result;
+}
+
+// Moves an item based on it's position, velocity, and timestep.
+void Physica::SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const
+{
+	PosVel initialState;
+	initialState.pos = pos;
+	initialState.vel = vel;
+
+	PosVel zero;
+	zero.pos = vmath::vec3(0.0f, 0.0f, 0.0f);
+	zero.vel = vmath::vec3(0.0f, 0.0f, 0.0f);
+	
+	PosVel left = RK4SunStepEvaluate(initialState, 0.0f, zero);
+	PosVel middleLeft = RK4SunStepEvaluate(initialState, dt * 0.5f, left);
+	PosVel middleRight = RK4SunStepEvaluate(initialState, dt * 0.5f, middleLeft);
+	PosVel right = RK4SunStepEvaluate(initialState, dt, middleRight);
+
+	vmath::vec3 dxdt = (1.0f / 6.0f) * (left.pos + 2.0f * (middleLeft.pos + middleRight.pos) + right.pos);
+	vmath::vec3 dvdt = (1.0f / 6.0f) * (right.vel + 2.0f * (middleLeft.vel + middleRight.vel) + right.vel);
+
+	pos += (dxdt * dt);
+	vel += (dvdt * dt);
+}
+
 void Physica::Run()
 {
     sf::Clock clock;
@@ -91,7 +135,20 @@ void Physica::Run()
             HandleShipMotion();
 
 			// Manage the asteroids
-			asteroida->Update();
+			asteroida->updateMutex.lock();
+			for (unsigned int i = 0; i < asteroida->positions.size(); i++)
+			{
+				// Note that we're storing custom data in the 4th spot, so simple addition fails.
+				vmath::vec3 position = vmath::vec3(asteroida->positions[i][0], asteroida->positions[i][1], asteroida->positions[i][2]);
+				SunIntegration(position, asteroida->velocities[i], ConfigManager::AsteroidTimestep);	
+				asteroida->positions[i][0] = position[0];
+				asteroida->positions[i][1] = position[1];
+				asteroida->positions[i][2] = position[2];
+			}
+
+			asteroida->updateMutex.unlock();
+			asteroida->updatedAsteroidPosition = true;
+			
 
 			// Manage the sun
 			stellaria->Update();
@@ -99,12 +156,12 @@ void Physica::Run()
             // TODO manage game physics.
         }
 
-        // The physics thread runs at a constant 30 updates-per-second. We attempt to ensure we don't wait too long here.
+        // The physics thread runs at a configurable delay, which we abide by here.
         sf::Time physicsUpdateTime = clock.restart();
-        int sleepTime = 33 - physicsUpdateTime.asMilliseconds();
-        if (sleepTime > 0)
+        int sleepAmount = ConfigManager::PhysicsThreadDelay - physicsUpdateTime.asMilliseconds();
+        if (sleepAmount > 0)
         {
-            std::chrono::milliseconds sleepTime(33);
+            std::chrono::milliseconds sleepTime(sleepAmount);
             std::this_thread::sleep_for(sleepTime);
         }
     }

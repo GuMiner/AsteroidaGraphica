@@ -90,6 +90,8 @@ public:
     static int AsteroidCount;
 
 	// Physics
+	static int PhysicsThreadDelay;
+
 	static float BaseShipMass;
 	static float SmallAsteroidMass;
 	static float MediumAsteroidMass;
@@ -97,6 +99,8 @@ public:
 
 	static float SolarMass;
 	static float GravitationalConstant;
+
+	static float AsteroidTimestep;
 
 	// Palettes
 	static vmath::vec3 AsteroidGradientStartColor;

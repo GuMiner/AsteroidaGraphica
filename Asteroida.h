@@ -17,16 +17,11 @@ class Asteroida
 	GLuint barycentricBuffer;
 	GLuint idBuffer;
 	GLuint indicesBuffer;
-
-	sf::Mutex updateMutex;
-	bool updatedAsteroidPosition;
-    
+	    
 	GLuint asteroidPositionTexture;
 	GLuint asteroidColorTexture;
 
 	// Asteroid data
-	std::vector<vmath::vec4> positions;
-	std::vector<vmath::vec3> velocities;
 	std::vector<vmath::vec3> colors;
 	std::vector<float> masses;
 
@@ -39,10 +34,16 @@ class Asteroida
     GLuint* smallAsteroidOffsets;
     GLuint* mediumAsteroidOffsets;
     GLuint* largeAsteroidOffsets;
+
 public:
+	// Physics data used for updating within Physica.
+	sf::Mutex updateMutex;
+	bool updatedAsteroidPosition;
+	std::vector<vmath::vec4> positions;
+	std::vector<vmath::vec3> velocities;
+
     Asteroida();
     bool Initialize(ShaderManager& shaderManager);
-	void Update();
     void Render(vmath::mat4& projectionMatrix);
     ~Asteroida();
 };

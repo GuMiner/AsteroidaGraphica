@@ -263,6 +263,8 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Int, LargeAsteroidTypes, "Error decoding the large asteroid type count!");
 	LoadConfigurationValue(Int, AsteroidCount, "Error decoding the asteroid count!");
 
+	LoadConfigurationValue(Int, PhysicsThreadDelay, "Error decoding the physics thread delay!");
+
 	LoadConfigurationValue(Float, BaseShipMass, "Error decoding the basic ship mass!");
 	LoadConfigurationValue(Float, SmallAsteroidMass, "Error decoding the small asteroid mass!");
 	LoadConfigurationValue(Float, MediumAsteroidMass, "Error decoding the medium asteroid mass!");
@@ -270,75 +272,18 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Float, SolarMass, "Error decoding the solar mass!");
 	LoadConfigurationValue(Float, GravitationalConstant, "Error decoding the gravitational constant!");
 
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(AsteroidGradientStartColor))
-	{
-		Logger::Log("Error decoding the asteroid gradient start color!");
-		return false;
-	}
+	LoadConfigurationValue(Float, AsteroidTimestep, "Error decoding the asteroid timestep");
 
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(AsteroidGradientEndColor))
-	{
-		Logger::Log("Error decoding the asteroid gradient end color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(WaterOreColor))
-	{
-		Logger::Log("Error decoding the water ore color!");
-		return false;
-	}
-	
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(FeOreColor))
-	{
-		Logger::Log("Error decoding the iron ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(SiOreColor))
-	{
-		Logger::Log("Error decoding the silicon ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(CuOreColor))
-	{
-		Logger::Log("Error decoding the copper ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(UOreColor))
-	{
-		Logger::Log("Error decoding the uranium ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(AuOreColor))
-	{
-		Logger::Log("Error decoding the gold ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(PtOreColor))
-	{
-		Logger::Log("Error decoding the platinum ore color!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadVector(ImpOreColor))
-	{
-		Logger::Log("Error decoding the impurity ore color!");
-		return false;
-	}
+	LoadConfigurationValue(Vector, AsteroidGradientStartColor, "Error decoding the asteroid gradient start color!");
+	LoadConfigurationValue(Vector, AsteroidGradientEndColor, "Error decoding the asteroid gradient end color!");
+	LoadConfigurationValue(Vector, WaterOreColor, "Error decoding the water ore color!");
+	LoadConfigurationValue(Vector, FeOreColor, "Error decoding the iron ore color!");
+	LoadConfigurationValue(Vector, SiOreColor, "Error decoding the silicon ore color!");
+	LoadConfigurationValue(Vector, CuOreColor, "Error decoding the copper ore color!");
+	LoadConfigurationValue(Vector, UOreColor, "Error decoding the uranium ore color!");
+	LoadConfigurationValue(Vector, AuOreColor, "Error decoding the gold ore color!");
+	LoadConfigurationValue(Vector, PtOreColor, "Error decoding the platinum ore color!");
+	LoadConfigurationValue(Vector, ImpOreColor, "Error decoding the impurity ore color!");
 
 	currentLine = configFileLines[++lineCounter];
 	if (!LoadFloat(BaseWaterOre))
@@ -511,12 +456,16 @@ void ConfigManager::WriteConfigurationValues()
 
     WriteInt("AsteroidCount", AsteroidCount);
 
+	WriteInt("PhysicsThreadDelay", PhysicsThreadDelay);
+
 	WriteFloat("BaseShipMass", BaseShipMass);
 	WriteFloat("SmallAsteroidMass", SmallAsteroidMass);
 	WriteFloat("MediumAsteroidMass", MediumAsteroidMass);
 	WriteFloat("LargeAsteroidMass", LargeAsteroidMass);
 	WriteFloat("SolarMass", SolarMass);
-	WriteFloat("GraviationalConstant", GravitationalConstant);
+	WriteFloat("GravtationalConstant", GravitationalConstant);
+
+	WriteFloat("AsteroidTimestep", AsteroidTimestep);
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);
