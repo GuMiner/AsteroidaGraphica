@@ -87,7 +87,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
     glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
 	
-    // TODO Randomly position the asteroids in the appropriate zones.
+    // TODO Randomly position the asteroids in the appropriate zones, moving at orbital speed.
     float separation = 2.0f;
     
     int fracAsteroidCount = (int)sqrt(ConfigManager::AsteroidCount);
@@ -96,7 +96,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
 		positions.push_back(vmath::vec4(xP * separation, yP * separation, 0.0f, 0.0f));
-		velocities.push_back(vmath::vec3(Constants::Rand(0.33f), Constants::Rand(0.33f), Constants::Rand(0.33f)));
+		velocities.push_back(vmath::vec3(0, 0, 0));
 
 		++xP;
 		if (xP == 100)

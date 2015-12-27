@@ -62,6 +62,9 @@ float ConfigManager::SmallAsteroidMass;
 float ConfigManager::MediumAsteroidMass;
 float ConfigManager::LargeAsteroidMass;
 
+float ConfigManager::SolarMass;
+float ConfigManager::GravitationalConstant;
+
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;
 
@@ -192,11 +195,20 @@ void ConfigManager::WriteVector(const char* itemName, vmath::vec3& vector)
 
 }
 
+// Function macro to wrap calls to Load* and spit out an error message on failure.
+#define LoadConfigurationValue(Type, Variable, ErrorMessage) \
+    currentLine = configFileLines[++lineCounter];			 \
+    if (!Load##Type(##Variable))		  					 \
+	{														 \
+		Logger::Log(##ErrorMessage);                         \
+		return false;										 \
+	}														 \
+
 // Loads in all the configuration values.
 bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFileLines)
 {
     int lineCounter = 0;
-
+	
 	currentLine = configFileLines[lineCounter];
     if (!LoadInt(ConfigVersion))
     {
@@ -204,320 +216,59 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
         return false;
     }
 
-	currentLine = configFileLines[++lineCounter];
-    if (!LoadBool(IsFullscreen))
-    {
-        Logger::Log("Error decoding the fullscreen toggle!");
-        return false;
-    }
+	// These calls are all the same as above, just using the function-esc macro.
+	LoadConfigurationValue(Bool, IsFullscreen, "Error decoding the fullscreen toggle!");
+	LoadConfigurationValue(Int, ScreenWidth, "Error reading in the screen width!");
+    LoadConfigurationValue(Int, ScreenHeight, "Error reading in the screen height!");
+	LoadConfigurationValue(Int, TextImageSize, "Error reading in the text image size!");
 
-	currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(ScreenWidth))
-    {
-        Logger::Log("Error reading in the screen width!");
-        return false;
-    }
+	LoadConfigurationValue(Key, ThrustForwardsKey, "Error reading in the thrust forwards key!");
+    LoadConfigurationValue(Key, ThrustReverseKey, "Error reading in the thrust reverse key!");
+	LoadConfigurationValue(Key, ThrustLeftKey, "Error reading in the thrust left key!");
+    LoadConfigurationValue(Key, ThrustRightKey, "Error reading in the thrust right key!");
+	LoadConfigurationValue(Key, ThrustUpKey, "Error reading in the thrust up key!");
+	LoadConfigurationValue(Key, ThrustDownKey, "Error reading in the thrust down key!");
+	LoadConfigurationValue(Key, RotateLeftKey, "Error reading in the rotate left key!");
+	LoadConfigurationValue(Key, RotateRightKey, "Error reading in the rotate right key!");
+    LoadConfigurationValue(Key, RotateUpKey, "Error reading in the rotate up key!");
+	LoadConfigurationValue(Key, RotateDownKey, "Error reading in the rotate down key!");
+	LoadConfigurationValue(Key, RotateCWKey, "Error reading in the rotate CW key!");
+	LoadConfigurationValue(Key, RotateCCWKey ,"Error reading in the rotate CCW key!");
+	LoadConfigurationValue(Key, ToggleRotationDampeningKey, "Error reading in the rotation dampening toggle key!");
+	LoadConfigurationValue(Key, ToggleTranslationDampeningKey, "Error reading in the translational dampening toggle key!");
+	LoadConfigurationValue(Key, PauseKey, "Error reading in the pause key!");
 
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(ScreenHeight))
-    {
-        Logger::Log("Error reading in the screen height!");
-        return false;
-    }
+	LoadConfigurationValue(Float, SunSize, "Error reading in the sun size!");
+	LoadConfigurationValue(Float, SunMaxPerPointDeformation, "Error reading in the sun max per point deformation!");
+    LoadConfigurationValue(Float, SunTriangleSize, "Error reading in the sun triangle size!");
+	LoadConfigurationValue(Float, SmallAsteroidSize, "Error reading in the small asteroid size!");
+	LoadConfigurationValue(Float, SmallAsteroidSizeMaxVariation, "Error reading in the small asteroid size max variation!");
+	LoadConfigurationValue(Float, SmallAsteroidSizeMaxAxisDeformation, "Error reading in the small asteroid size max axis deformation!");
+	LoadConfigurationValue(Float, SmallAsteroidSizeMaxPerPointDeformation, "Error reading in the small asteroid size max per point deformation!");
+	LoadConfigurationValue(Float, SmallAsteroidTriangleSize, "Error reading in the small asteroid triangle size!");
+	LoadConfigurationValue(Float, MediumAsteroidSize, "Error reading in the medium asteroid size!");
+	LoadConfigurationValue(Float, MediumAsteroidSizeMaxVariation, "Error reading in the medium asteroid size max variation!");
+	LoadConfigurationValue(Float, MediumAsteroidSizeMaxAxisDeformation, "Error reading in the medium asteroid size max axis deformation!");
+	LoadConfigurationValue(Float, MediumAsteroidSizeMaxPerPointDeformation, "Error reading in the medium asteroid size max per point deformation!");
+	LoadConfigurationValue(Float, MediumAsteroidTriangleSize, "Error reading in the medium asteroid triangle size!");
+	LoadConfigurationValue(Float, LargeAsteroidSize, "Error reading in the large asteroid size!");
+	LoadConfigurationValue(Float, LargeAsteroidSizeMaxVariation, "Error reading in the large asteroid size max variation!");
+	LoadConfigurationValue(Float, LargeAsteroidSizeMaxPerPointDeformation, "Error reading in the large asteroid size max axis deformation!");
+	LoadConfigurationValue(Float, LargeAsteroidSizeMaxPerPointDeformation, "Error reading in the large asteroid size max per point deformation!");
+	LoadConfigurationValue(Float, LargeAsteroidTriangleSize, "Error reading in the large asteroid triangle size!");
 
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadInt(TextImageSize))
-	{
-		Logger::Log("Error reading in the text image size!");
-		return false;
-	}
 
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustForwardsKey))
-    {
-        Logger::Log("Error reading in the thrust forwards key!");
-        return false;
-    }
+	LoadConfigurationValue(Int, SmallAsteroidTypes, "Error decoding the small asteroid type count!");
+	LoadConfigurationValue(Int, MediumAsteroidTypes, "Error decoding the medium asteroid type count!");
+	LoadConfigurationValue(Int, LargeAsteroidTypes, "Error decoding the large asteroid type count!");
+	LoadConfigurationValue(Int, AsteroidCount, "Error decoding the asteroid count!");
 
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustReverseKey))
-    {
-        Logger::Log("Error reading in the thrust reverse key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustLeftKey))
-    {
-        Logger::Log("Error reading in the thrust left key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustRightKey))
-    {
-        Logger::Log("Error reading in the thrust right key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustUpKey))
-    {
-        Logger::Log("Error reading in the thrust up key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ThrustDownKey))
-    {
-        Logger::Log("Error reading in the thrust down key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateLeftKey))
-    {
-        Logger::Log("Error reading in the rotate left key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateRightKey))
-    {
-        Logger::Log("Error reading in the rotate right key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateUpKey))
-    {
-        Logger::Log("Error reading in the rotate up key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateDownKey))
-    {
-        Logger::Log("Error reading in the rotate down key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateCWKey))
-    {
-        Logger::Log("Error reading in the rotate CW key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(RotateCCWKey))
-    {
-        Logger::Log("Error reading in the rotate CCW key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ToggleRotationDampeningKey))
-    {
-        Logger::Log("Error reading in the rotation dampening toggle key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(ToggleTranslationDampeningKey))
-    {
-        Logger::Log("Error reading in the translational dampening toggle key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadKey(PauseKey))
-    {
-        Logger::Log("Error reading in the pause key!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SunSize))
-    {
-        Logger::Log("Error reading in the sun size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SunMaxPerPointDeformation))
-    {
-        Logger::Log("Error reading in the sun max per point deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SunTriangleSize))
-    {
-        Logger::Log("Error reading in the sun triangle size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SmallAsteroidSize))
-    {
-        Logger::Log("Error reading in the small asteroid size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SmallAsteroidSizeMaxVariation))
-    {
-        Logger::Log("Error reading in the small asteroid size max variation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SmallAsteroidSizeMaxAxisDeformation))
-    {
-        Logger::Log("Error reading in the small asteroid size max axis deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SmallAsteroidSizeMaxPerPointDeformation))
-    {
-        Logger::Log("Error reading in the small asteroid size max per point deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(SmallAsteroidTriangleSize))
-    {
-        Logger::Log("Error reading in the small asteroid triangle size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(MediumAsteroidSize))
-    {
-        Logger::Log("Error reading in the medium asteroid size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(MediumAsteroidSizeMaxVariation))
-    {
-        Logger::Log("Error reading in the medium asteroid size max variation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(MediumAsteroidSizeMaxAxisDeformation))
-    {
-        Logger::Log("Error reading in the medium asteroid size max axis deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(MediumAsteroidSizeMaxPerPointDeformation))
-    {
-        Logger::Log("Error reading in the medium asteroid size max per point deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(MediumAsteroidTriangleSize))
-    {
-        Logger::Log("Error reading in the medium asteroid triangle size!");
-        return false;
-    }
-    
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(LargeAsteroidSize))
-    {
-        Logger::Log("Error reading in the large asteroid size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(LargeAsteroidSizeMaxVariation))
-    {
-        Logger::Log("Error reading in the large asteroid size max variation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(LargeAsteroidSizeMaxPerPointDeformation))
-    {
-        Logger::Log("Error reading in the large asteroid size max axis deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(LargeAsteroidSizeMaxPerPointDeformation))
-    {
-        Logger::Log("Error reading in the large asteroid size max per point deformation!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadFloat(LargeAsteroidTriangleSize))
-    {
-        Logger::Log("Error reading in the large asteroid triangle size!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(SmallAsteroidTypes))
-    {
-        Logger::Log("Error decoding the small asteroid type count!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(MediumAsteroidTypes))
-    {
-        Logger::Log("Error decoding the medium asteroid type count!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(LargeAsteroidTypes))
-    {
-        Logger::Log("Error decoding the large asteroid type count!");
-        return false;
-    }
-
-    currentLine = configFileLines[++lineCounter];
-    if (!LoadInt(AsteroidCount))
-    {
-        Logger::Log("Error decoding the asteroid count!");
-        return false;
-    }
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseShipMass))
-	{
-		Logger::Log("Error decoding the basic ship mass!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(SmallAsteroidMass))
-	{
-		Logger::Log("Error decoding the small asteroid mass!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MediumAsteroidMass))
-	{
-		Logger::Log("Error decoding the medium asteroid mass!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(LargeAsteroidMass))
-	{
-		Logger::Log("Error decoding the large asteroid mass!");
-		return false;
-	}
+	LoadConfigurationValue(Float, BaseShipMass, "Error decoding the basic ship mass!");
+	LoadConfigurationValue(Float, SmallAsteroidMass, "Error decoding the small asteroid mass!");
+	LoadConfigurationValue(Float, MediumAsteroidMass, "Error decoding the medium asteroid mass!");
+	LoadConfigurationValue(Float, LargeAsteroidMass, "Error decoding the large asteroid mass!");
+	LoadConfigurationValue(Float, SolarMass, "Error decoding the solar mass!");
+	LoadConfigurationValue(Float, GravitationalConstant, "Error decoding the gravitational constant!");
 
 	currentLine = configFileLines[++lineCounter];
 	if (!LoadVector(AsteroidGradientStartColor))
@@ -764,6 +515,8 @@ void ConfigManager::WriteConfigurationValues()
 	WriteFloat("SmallAsteroidMass", SmallAsteroidMass);
 	WriteFloat("MediumAsteroidMass", MediumAsteroidMass);
 	WriteFloat("LargeAsteroidMass", LargeAsteroidMass);
+	WriteFloat("SolarMass", SolarMass);
+	WriteFloat("GraviationalConstant", GravitationalConstant);
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);

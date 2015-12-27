@@ -82,6 +82,9 @@ SmallAsteroidMass 10.0
 MediumAsteroidMass 100.0
 LargeAsteroidMass 1000.0
 
+SolarMass 100000.0
+GravitationalConstant 10.0
+
 # Asteroid palette coloration.
 AsteroidGradientStartColor 0.85 0.42 0
 AsteroidGradientEndColor 0.44 0.44 0.24

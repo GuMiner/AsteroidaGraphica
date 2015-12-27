@@ -95,6 +95,9 @@ public:
 	static float MediumAsteroidMass;
 	static float LargeAsteroidMass;
 
+	static float SolarMass;
+	static float GravitationalConstant;
+
 	// Palettes
 	static vmath::vec3 AsteroidGradientStartColor;
 	static vmath::vec3 AsteroidGradientEndColor;

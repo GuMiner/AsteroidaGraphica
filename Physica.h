@@ -65,12 +65,10 @@ public:
     {
         isPaused = true;
     }
-
     void Resume()
     {
         isPaused = false;
     }
-
     void Stop()
     {
         isAlive = false;
