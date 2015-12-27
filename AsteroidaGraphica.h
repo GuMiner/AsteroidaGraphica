@@ -4,6 +4,7 @@
 #include <thread>
 #include "Asteroida.h"
 #include "ConfigManager.h"
+#include "Elementa.h"
 #include "FontManager.h"
 #include "ImageManager.h"
 #include "Logger.h"
@@ -21,6 +22,7 @@ class AsteroidaGraphica
 {
     // Game Data
     Asteroida asteroida;
+	Elementa elementa;
 	Stellaria stellaria;
     ShipHud shipHud;
     vmath::mat4 perspectiveMatrix;

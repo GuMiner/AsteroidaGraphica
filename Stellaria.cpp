@@ -38,6 +38,15 @@ bool Stellaria::Initialize(ShaderManager & shaderManager)
 // TODO: Updates the sun.
 void Stellaria::Update()
 {
+	// Make the sun seem to randomly 'vibrate'
+
+	vibrationLock.lock();
+	tempPositionVertices.positions.clear();
+	for (unsigned int i = 0; i < sunVertices.positions.size(); i++)
+	{
+		tempPositionVertices.positions.push_back(sunVertices.positions[i] + Constants::Rand(0.20f));
+	}
+	vibrationLock.unlock();
 }
 
 // Renders the sun.
@@ -45,6 +54,10 @@ void Stellaria::Render(vmath::mat4& projectionMatrix)
 {
 	glUseProgram(sunShaderProgram);
 	glBindVertexArray(vao);
+
+	vibrationLock.lock();
+	universalVertices::TransferToOpenGl(tempPositionVertices, positionBuffer, 0, 0, 0, 0, 0);
+	vibrationLock.unlock();
 
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
 	glDrawElements(GL_TRIANGLES, sunVertices.indices.size(), GL_UNSIGNED_INT, nullptr);

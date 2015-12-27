@@ -1,6 +1,5 @@
 #pragma once
 #include <glbinding/gl/gl.h>
-#include <SFML\System.hpp>
 #include "ImageManager.h"
 #include "FontManager.h"
 #include "Vertex.h"
@@ -103,7 +102,7 @@ public:
     bool Initialize(ShaderManager* shaderManager, FontManager* fontManager, ImageManager* imageManager);
     void UpdateCompassRotations(vmath::vec3& compassRotations);
     void UpdateShipPosition(vmath::vec3& shipOrientation, vmath::vec3& shipPosition);
-    void RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock);
+    void RenderHud(vmath::mat4& perspectiveMatrix);
 
     ~ShipHud();
 };

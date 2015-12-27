@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML\System.hpp>
 #include <glbinding/gl/gl.h>
 #include "ShaderManager.h"
 #include "Vertex.h"
@@ -19,6 +20,8 @@ class Stellaria
 
 	universalVertices sunVertices;
 
+	sf::Mutex vibrationLock;
+	universalVertices tempPositionVertices;
 public:
 	Stellaria();
 	bool Initialize(ShaderManager& shaderManager);

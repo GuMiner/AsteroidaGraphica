@@ -2,8 +2,6 @@
 #include <sstream>
 #include "Logger.h"
 #include "ShipHud.h"
-#include <SFML\Window.hpp>
-
 ShipHud::ShipHud()
 {
     hudDepth = -1.0f;
@@ -225,7 +223,7 @@ void ShipHud::UpdateShipPosition(vmath::vec3& shipOrientation, vmath::vec3& ship
 }
 
 // Renders the HUD of the ship.
-void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix, sf::Clock& clock)
+void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix)
 {
     // Bind in the texture and vertices we're using.
     glUseProgram(compassTextureProgram);

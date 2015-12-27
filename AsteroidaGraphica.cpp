@@ -80,12 +80,15 @@ void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int heigh
     }
 }
 
+// Performs initialization that can be done without a GPU context.
 Constants::Status AsteroidaGraphica::Initialize()
 {
     if (!configManager.ReadConfiguration())
     {
         return Constants::Status::BAD_CONFIG;
     }
+
+	Logger::Log("Configuration loaded!");
 
     physicaThread.launch();
     Logger::Log("Physica Thread Started!");
@@ -169,7 +172,9 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return status;
     }
 
-    // HUD
+    // HUD & elements
+	elementa.Initialize(&fontManager);
+
     Logger::Log("HUD loading...");
     if (!shipHud.Initialize(&shaderManager, &fontManager, &imageManager))
     {
@@ -302,7 +307,10 @@ Constants::Status AsteroidaGraphica::Run()
             // Draws our HUD
             shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
             shipHud.UpdateShipPosition(physicsManager.shipOrientation.forwardVector(), physicsManager.shipPosition);
-            shipHud.RenderHud(perspectiveMatrix, clock);
+            shipHud.RenderHud(perspectiveMatrix);
+
+			// Draws the status of all the elements on the HUD.
+			elementa.RenderHud(perspectiveMatrix);
 
             window.display();
         }
