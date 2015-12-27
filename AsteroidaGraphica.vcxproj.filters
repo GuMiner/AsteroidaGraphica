@@ -95,6 +95,9 @@
     <ClInclude Include="Stellaria.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Planetia.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -152,6 +155,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Stellaria.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Planetia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

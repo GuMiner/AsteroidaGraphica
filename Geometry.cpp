@@ -139,8 +139,7 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
     float stepSize = (2.0f * radius) / (float)ringCount;
     
     int topId = GetPointId(TOP_ID, TOP_ID);
-    int bottomId = GetPointId(BOTTOM_ID, BOTTOM_ID);
-
+    
     float ringHeight = radius - stepSize;
 	std::vector<int> ringCounts;
     for (int i = 0; i < ringCount - 1; i++)
@@ -171,6 +170,7 @@ unsigned int Geometry::GenerateSphericalArchetype(universalVertices& universalVe
     }
 
     // Connect the remaining point in the lastRingPoints array to the bottom point.
+	int bottomId = GetPointId(BOTTOM_ID, BOTTOM_ID);
     AddTriangleFan(bottomId);
 
     // Generate a map of points for all our point IDs.

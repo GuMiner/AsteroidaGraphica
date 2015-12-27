@@ -140,6 +140,7 @@
     <ClInclude Include="MusicManager.h" />
     <ClInclude Include="Paletta.h" />
     <ClInclude Include="Physica.h" />
+    <ClInclude Include="Planetia.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
     <ClInclude Include="SoundManager.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="MusicManager.cpp" />
     <ClCompile Include="Paletta.cpp" />
     <ClCompile Include="Physica.cpp" />
+    <ClCompile Include="Planetia.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShipHud.cpp" />
     <ClCompile Include="SoundManager.cpp" />

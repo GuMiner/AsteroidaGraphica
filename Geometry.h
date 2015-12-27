@@ -8,7 +8,8 @@
 class Geometry
 {
     const static int TOP_ID = -1;
-    const static int BOTTOM_ID = -2;
+    const static int BOTTOM_ID = 232323; // This should be fixed -- we're depending on the proper ordering of these within the map for barycentrics.
+	// Note that the ID doesn't matter, but that illustrates the problem -- we're depending on the wrong ordering for proper barycentric rendering.
 
     // Ring -> Ring Point (angle) -> Point ID
     std::map<int, std::map<int, int>> spherePointLookup;
