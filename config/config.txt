@@ -76,6 +76,12 @@ LargeAsteroidTypes 500
 # Total number of asteroids per displayable block. Note that there *will* be 1024*1024 total consumable asteroids.
 AsteroidCount 1500
 
+# Physics
+BaseShipMass 1000.0
+SmallAsteroidMass 10.0
+MediumAsteroidMass 100.0
+LargeAsteroidMass 1000.0
+
 # Asteroid palette coloration.
 AsteroidGradientStartColor 0.85 0.42 0
 AsteroidGradientEndColor 0.44 0.44 0.24

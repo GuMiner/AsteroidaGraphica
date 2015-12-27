@@ -89,6 +89,12 @@ public:
 
     static int AsteroidCount;
 
+	// Physics
+	static float BaseShipMass;
+	static float SmallAsteroidMass;
+	static float MediumAsteroidMass;
+	static float LargeAsteroidMass;
+
 	// Palettes
 	static vmath::vec3 AsteroidGradientStartColor;
 	static vmath::vec3 AsteroidGradientEndColor;
@@ -102,6 +108,7 @@ public:
 	static vmath::vec3 PtOreColor;
 	static vmath::vec3 ImpOreColor;
 
+	// Resources
 	static float BaseWaterOre;
 	static float MaxWaterOre;
 	static float BaseFeOre;

@@ -57,6 +57,11 @@ int ConfigManager::LargeAsteroidTypes;
 
 int ConfigManager::AsteroidCount;
 
+float ConfigManager::BaseShipMass;
+float ConfigManager::SmallAsteroidMass;
+float ConfigManager::MediumAsteroidMass;
+float ConfigManager::LargeAsteroidMass;
+
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;
 
@@ -487,6 +492,34 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
     }
 
 	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(BaseShipMass))
+	{
+		Logger::Log("Error decoding the basic ship mass!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(SmallAsteroidMass))
+	{
+		Logger::Log("Error decoding the small asteroid mass!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(MediumAsteroidMass))
+	{
+		Logger::Log("Error decoding the medium asteroid mass!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
+	if (!LoadFloat(LargeAsteroidMass))
+	{
+		Logger::Log("Error decoding the large asteroid mass!");
+		return false;
+	}
+
+	currentLine = configFileLines[++lineCounter];
 	if (!LoadVector(AsteroidGradientStartColor))
 	{
 		Logger::Log("Error decoding the asteroid gradient start color!");
@@ -726,6 +759,11 @@ void ConfigManager::WriteConfigurationValues()
     WriteInt("LargeAsteroidTypes", LargeAsteroidTypes);
 
     WriteInt("AsteroidCount", AsteroidCount);
+
+	WriteFloat("BaseShipMass", BaseShipMass);
+	WriteFloat("SmallAsteroidMass", SmallAsteroidMass);
+	WriteFloat("MediumAsteroidMass", MediumAsteroidMass);
+	WriteFloat("LargeAsteroidMass", LargeAsteroidMass);
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);

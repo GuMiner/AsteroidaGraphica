@@ -24,9 +24,11 @@ class Asteroida
 	GLuint asteroidPositionTexture;
 	GLuint asteroidColorTexture;
 
+	// Asteroid data
 	std::vector<vmath::vec4> positions;
 	std::vector<vmath::vec3> velocities;
 	std::vector<vmath::vec3> colors;
+	std::vector<float> masses;
 
 	GLuint asteroidIndexCount;
 

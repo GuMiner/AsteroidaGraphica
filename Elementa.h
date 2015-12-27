@@ -39,6 +39,11 @@ class Elementa
 	Element pt;
 	Element imp;
 
+	int totalMassTextId;
+	vmath::mat4 totalMassTextMatrix;
+
+	float GetMaximumTotalMass() const;
+	float GetCurrentMass() const;
 	void UpdateTextString(int sentenceId, const char* prefix, float amount, float maxAmount, vmath::vec3& color);
 	void UpdateTextStrings();
 
@@ -46,6 +51,5 @@ public:
 	Elementa();
 	void Initialize(FontManager *fontManager);
 	void RenderHud(vmath::mat4& perspectiveMatrix);
-	~Elementa();
 };
 

@@ -30,6 +30,7 @@ void Elementa::Initialize(FontManager *fontManager)
 	au.textId = fontManager->CreateNewSentence();
 	pt.textId = fontManager->CreateNewSentence();
 	imp.textId = fontManager->CreateNewSentence();
+	totalMassTextId = fontManager->CreateNewSentence();
 
 	vmath::mat4 textScale = vmath::scale(0.015f, 0.015f, 0.015f);
 	water.textMatrix = vmath::translate(0.611f, 0.420f, -1.0f) * textScale;
@@ -40,8 +41,24 @@ void Elementa::Initialize(FontManager *fontManager)
 	au.textMatrix = vmath::translate(0.611f, 0.275f, -1.0f) * textScale;
 	pt.textMatrix = vmath::translate(0.611f, 0.246f, -1.0f) * textScale;
 	imp.textMatrix = vmath::translate(0.611f, 0.217f, -1.0f) * textScale;
+	totalMassTextMatrix = vmath::translate(0.611f, 0.188f, -1.0f) * textScale;
 
 	UpdateTextStrings();
+}
+
+// Gets the maximum total mass the ship can carry, + the ship mass.
+float Elementa::GetMaximumTotalMass() const
+{
+	return ConfigManager::BaseShipMass +
+		ConfigManager::MaxWaterOre + ConfigManager::MaxFeOre + ConfigManager::MaxSiOre + ConfigManager::MaxCuOre +
+		ConfigManager::MaxUOre + ConfigManager::MaxAuOre + ConfigManager::MaxPtOre + ConfigManager::MaxImpOre;
+}
+
+// Gets the current mass of the ship + elements.
+float Elementa::GetCurrentMass() const
+{
+	return ConfigManager::BaseShipMass +
+		water.amount + fe.amount + si.amount + cu.amount + u.amount + au.amount + pt.amount + imp.amount;
 }
 
 // Updates a single inventory text string.
@@ -66,6 +83,8 @@ void Elementa::UpdateTextStrings()
 	UpdateTextString(au.textId, "Gold: ", au.amount, ConfigManager::MaxAuOre, ConfigManager::AuOreColor);
 	UpdateTextString(pt.textId, "Platinum: ", pt.amount, ConfigManager::MaxPtOre, ConfigManager::PtOreColor);
 	UpdateTextString(imp.textId, "Impurities: ", imp.amount, ConfigManager::MaxImpOre, ConfigManager::ImpOreColor);
+
+	UpdateTextString(totalMassTextId, "Total: ", GetCurrentMass(), GetMaximumTotalMass(), vmath::vec3(1.0f, 1.0f, 1.0f));
 }
 
 // Renders all of the inventory amounts.
@@ -79,8 +98,6 @@ void Elementa::RenderHud(vmath::mat4 & perspectiveMatrix)
 	fontManager->RenderSentence(au.textId, perspectiveMatrix, au.textMatrix);
 	fontManager->RenderSentence(pt.textId, perspectiveMatrix, pt.textMatrix);
 	fontManager->RenderSentence(imp.textId, perspectiveMatrix, imp.textMatrix);
-}
 
-Elementa::~Elementa()
-{
+	fontManager->RenderSentence(totalMassTextId, perspectiveMatrix, totalMassTextMatrix);
 }
