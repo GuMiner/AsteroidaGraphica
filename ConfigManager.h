@@ -101,8 +101,17 @@ public:
 	static float GravitationalConstant;
 
 	static float AsteroidTimestep;
-
 	static float AsteroidRotationSpeed;
+
+	static float ShipThrustSpeed;
+	static float ShipSideThrustSpeed;
+	static float ShipVerticalThrustSpeed;
+	static float TransDampenerThrustSpeed;
+
+	static float ShipHorizRotSpeed;
+	static float ShipVertRotSpeed;
+	static float ShipBarrelRollSpeed;
+	static float RotDampenerSpeed;
 
 	// Palettes
 	static vmath::vec3 AsteroidGradientStartColor;

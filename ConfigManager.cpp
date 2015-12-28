@@ -71,6 +71,16 @@ float ConfigManager::AsteroidTimestep;
 
 float ConfigManager::AsteroidRotationSpeed;
 
+float ConfigManager::ShipThrustSpeed;
+float ConfigManager::ShipSideThrustSpeed;
+float ConfigManager::ShipVerticalThrustSpeed;
+float ConfigManager::TransDampenerThrustSpeed;
+
+float ConfigManager::ShipHorizRotSpeed;
+float ConfigManager::ShipVertRotSpeed;
+float ConfigManager::ShipBarrelRollSpeed;
+float ConfigManager::RotDampenerSpeed;
+
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;
 
@@ -282,6 +292,16 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	
 	LoadConfigurationValue(Float, AsteroidRotationSpeed, "Error decoding the default asteroid rotation speed!");
 
+	LoadConfigurationValue(Float, ShipThrustSpeed, "Error decoding the ship thrust force!");
+	LoadConfigurationValue(Float, ShipSideThrustSpeed, "Error decoding the sideways ship thrust force!");
+	LoadConfigurationValue(Float, ShipVerticalThrustSpeed, "Error decoding the vertical ship thrust force!");
+	LoadConfigurationValue(Float, TransDampenerThrustSpeed, "Error decoding the translational dampener force!");
+
+	LoadConfigurationValue(Float, ShipHorizRotSpeed, "Error decoding the horizontal gyroscope speed!");
+	LoadConfigurationValue(Float, ShipVertRotSpeed, "Error decoding the vertical gyroscope speed!");
+	LoadConfigurationValue(Float, ShipBarrelRollSpeed, "Error decoding the barrel roll gyroscope speed!");
+	LoadConfigurationValue(Float, RotDampenerSpeed, "Error decoding the rotational dampener speed!");
+
 	LoadConfigurationValue(Vector, AsteroidGradientStartColor, "Error decoding the asteroid gradient start color!");
 	LoadConfigurationValue(Vector, AsteroidGradientEndColor, "Error decoding the asteroid gradient end color!");
 	LoadConfigurationValue(Vector, WaterOreColor, "Error decoding the water ore color!");
@@ -381,6 +401,16 @@ void ConfigManager::WriteConfigurationValues()
 	WriteFloat("AsteroidTimestep", AsteroidTimestep);
 
 	WriteFloat("AsteroidRotationSpeed", AsteroidRotationSpeed);
+
+	WriteFloat("ShipThrustSpeed", ShipThrustSpeed);
+	WriteFloat("ShipSideThrustSpeed", ShipSideThrustSpeed);
+	WriteFloat("ShipVerticalThrustSpeed", ShipVerticalThrustSpeed);
+	WriteFloat("TransDampenerThrustSpeed", TransDampenerThrustSpeed);
+
+	WriteFloat("ShipHorizRotSpeed", ShipHorizRotSpeed);
+	WriteFloat("ShipVertRotSpeed", ShipVertRotSpeed);
+	WriteFloat("ShipBarrelRollSpeed", ShipBarrelRollSpeed);
+	WriteFloat("RotDampenerSpeed", RotDampenerSpeed);
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);

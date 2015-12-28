@@ -95,6 +95,17 @@ AsteroidTimestep 0.00033
 # Default max rotation speed for asteroids per tick, in radians. There will be asteroids rotating slower/faster than this over game time.
 AsteroidRotationSpeed 0.06
 
+# Ship performance data
+ShipThrustSpeed 190.0
+ShipSideThrustSpeed 190.0
+ShipVerticalThrustSpeed 190.0
+TransDampenerThrustSpeed 5.0f
+
+ShipHorizRotSpeed 0.0015
+ShipVertRotSpeed 0.0015
+ShipBarrelRollSpeed 0.0015
+RotDampenerSpeed 0.00025
+
 # Asteroid palette coloration.
 AsteroidGradientStartColor 0.85 0.42 0
 AsteroidGradientEndColor 0.44 0.44 0.24

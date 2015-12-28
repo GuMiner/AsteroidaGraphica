@@ -1,9 +1,8 @@
 #pragma once
-#include <functional>
 #include <memory>
 #include <vector>
 #include "Asteroida.h"
-#include "SoundManager.h"
+#include "Shipia.h"
 #include "Stellaria.h"
 #include "vmath.hpp"
 
@@ -17,21 +16,9 @@ struct PosVel
 // Manages object physics.
 class Physica
 {
-    SoundManager *soundManager;
-	Asteroida *asteroida;
+    Asteroida *asteroida;
+	Shipia *shipia;
 	Stellaria *stellaria;
-
-    // Ship physical constants
-    vmath::vec3 shipVelocity;
-    vmath::vec3 shipForce;
-    vmath::vec3 shipRotation;
-    float shipMass;
-    bool rotationalDampener;
-    bool translationalDampener;
-
-    // Make sure that the dampeners act as buttons instead of thrusters.
-    bool rotDampToggled;
-    bool tranDampToggled;
 
     bool didTranslate;
     bool didRotate;
@@ -40,24 +27,6 @@ class Physica
     bool isPaused;
     bool initialized;
 
-    float shipThrustSpeed;
-    float shipSideThrustSpeed;
-    float shipVerticalThrustSpeed;
-    float shipHorizRotSpeed;
-    float shipVertRotSpeed;
-    float shipBarrelRollSpeed;
-
-    float rotDampenerSpeed;
-    float transDampenerThrustSpeed;
-
-    void Thrust(bool forwards);
-    void SideThrust(bool left);
-    void VerticalThrust(bool up);
-    void RotateHorizontal(bool left);
-    void RotateVertical(bool up);
-    void BarrelRoll(bool clockwise);
-
-    void HandleShipControls();
     void HandleShipMotion();
 	void HandleAsteroidMotion();
 
@@ -66,12 +35,9 @@ class Physica
 	PosVel RK4SunStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const;
 	void SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const;
 public:
-    // Ship positioning
-    vmath::vec3 shipPosition;
-    vmath::quaternion shipOrientation;
 
     Physica();
-    void Initialize(SoundManager *soundManager, Asteroida* asteroida, Stellaria* stellaria);
+    void Initialize(Asteroida* asteroida, Stellaria* stellaria, Shipia* shipia);
     void Run();
 
     void Pause()

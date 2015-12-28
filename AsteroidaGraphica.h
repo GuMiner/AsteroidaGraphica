@@ -11,6 +11,7 @@
 #include "MusicManager.h"
 #include "Physica.h"
 #include "ShaderManager.h"
+#include "Shipia.h"
 #include "ShipHud.h"
 #include "SoundManager.h"
 #include "Stellaria.h"
@@ -22,6 +23,7 @@ class AsteroidaGraphica
 {
     // Game Data
     Asteroida asteroida;
+	Shipia shipia;
 	Elementa elementa;
 	Stellaria stellaria;
     ShipHud shipHud;

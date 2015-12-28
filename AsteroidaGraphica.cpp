@@ -229,10 +229,13 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 		return Constants::Status::BAD_STELLARIA;
 	}
 
+	// Shipia
+	Logger::Log("Shipia loading...");
+	shipia.Initialize(&soundManager, &elementa);
+
     // Physica
     Logger::Log("Physica loading...");
-    physicsManager.Initialize(&soundManager, &asteroida, &stellaria);
-    Logger::Log("Physica loading done!");
+    physicsManager.Initialize(&asteroida, &stellaria, &shipia);
 	
     return Constants::Status::OK;
 }
@@ -288,7 +291,7 @@ Constants::Status AsteroidaGraphica::Run()
             }
         }
 
-        vmath::mat4 lookAtMatrix = physicsManager.shipOrientation.asMatrix() * vmath::translate(-physicsManager.shipPosition);
+        vmath::mat4 lookAtMatrix = shipia.shipOrientation.asMatrix() * vmath::translate(-shipia.shipPosition);
         vmath::mat4 projectionMatrix = perspectiveMatrix * lookAtMatrix;
 
         // Render, only if non-paused.
@@ -305,8 +308,8 @@ Constants::Status AsteroidaGraphica::Run()
 			stellaria.Render(projectionMatrix);
 
             // Draws our HUD
-            shipHud.UpdateCompassRotations(physicsManager.shipOrientation.asEulerAngles());
-            shipHud.UpdateShipPosition(physicsManager.shipOrientation.forwardVector(), physicsManager.shipPosition);
+            shipHud.UpdateCompassRotations(shipia.shipOrientation.asEulerAngles());
+            shipHud.UpdateShipPosition(shipia.shipOrientation.forwardVector(), shipia.shipPosition);
             shipHud.RenderHud(perspectiveMatrix);
 
 			// Draws the status of all the elements on the HUD.
