@@ -23,8 +23,8 @@ vmath::vec3 Physica::SunAcceleration(const vmath::vec3& pos) const
 	// F_a = m_a*a
 	// F_a = (m_s*m_a*G_c/(r_2))r_hat
 
-	float distance = vmath::distance(pos, vmath::vec3(0, 0, 0));
-	float constants = -ConfigManager::SolarMass * ConfigManager::GravitationalConstant / distance;
+	float distance = vmath::length(pos);
+	float constants = -ConfigManager::SolarMass * ConfigManager::GravitationalConstant / (distance * distance);
 
 	return constants * vmath::normalize(pos);
 }
@@ -55,7 +55,7 @@ void Physica::SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const
 	PosVel right = RK4SunStepEvaluate(initialState, dt, middleRight);
 
 	vmath::vec3 dxdt = (1.0f / 6.0f) * (left.pos + 2.0f * (middleLeft.pos + middleRight.pos) + right.pos);
-	vmath::vec3 dvdt = (1.0f / 6.0f) * (right.vel + 2.0f * (middleLeft.vel + middleRight.vel) + right.vel);
+	vmath::vec3 dvdt = (1.0f / 6.0f) * (left.vel + 2.0f * (middleLeft.vel + middleRight.vel) + right.vel);
 
 	pos += (dxdt * dt);
 	vel += (dvdt * dt);

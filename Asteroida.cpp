@@ -68,6 +68,14 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 	}
 }
 
+// Returns the orbital velocity for a position away from the sun, heading CW in the XY plane.
+vmath::vec3 Asteroida::GetOrbitalVelocity(const vmath::vec2& pos) const
+{
+	float length = vmath::length(pos);
+	float orbitalSpeed = sqrt(ConfigManager::GravitationalConstant * ConfigManager::SolarMass / length);
+	return vmath::normalize(vmath::cross(vmath::vec3(-pos[0], -pos[1], 0), vmath::vec3(0, 0, 1))) * orbitalSpeed;
+}
+
 bool Asteroida::Initialize(ShaderManager& shaderManager, Elementa* elementa)
 {
 	if (!InitializeShader(shaderManager))
@@ -169,8 +177,9 @@ bool Asteroida::Initialize(ShaderManager& shaderManager, Elementa* elementa)
 	int yP = 15;
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
-		positions.push_back(vmath::vec4(xP * separation, yP * separation, 0.0f, 0.0f));
-		velocities.push_back(vmath::vec3(-400, 400, 0));
+		vmath::vec4 position = vmath::vec4(xP * separation, yP * separation, 0.0f, 0.0f);
+		positions.push_back(position);
+		velocities.push_back(GetOrbitalVelocity(vmath::vec2(position[0], position[1])));
 
 		++xP;
 		if (xP == 100)

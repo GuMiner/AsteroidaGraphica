@@ -48,6 +48,7 @@ class Asteroida
 
 	bool InitializeShader(ShaderManager& shaderManager);
 	void GenerateAsteroidTypes(universalVertices& allAsteroids);
+	vmath::vec3 GetOrbitalVelocity(const vmath::vec2& pos) const;
 
 public:
 	// Physics data used for updating within Physica.
