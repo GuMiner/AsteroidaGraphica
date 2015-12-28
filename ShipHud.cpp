@@ -227,10 +227,10 @@ void ShipHud::RenderHud(vmath::mat4& perspectiveMatrix)
 {
     // Bind in the texture and vertices we're using.
     glUseProgram(compassTextureProgram);
-    glBindVertexArray(compassVao);
-    
-    glUniform1i(glGetUniformLocation(compassTextureProgram, "imageTex"), 0);
+	glUniform1i(compassTexLocation, 0);
 
+	glBindVertexArray(compassVao);
+    
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, compassTexture);
 

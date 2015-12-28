@@ -623,7 +623,7 @@ namespace vmath
             return quaternion(-x, -y, -z, w);
         }
 
-        // Given an axis and an angle (in radians), returns a unit quaternion.
+        // Given an axis (unit vector) and an angle (in radians), returns a unit quaternion.
         static inline quaternion fromAxisAngle(float angle, vec3 axis)
         {
             float halfAngle = angle * 0.5f;

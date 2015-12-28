@@ -2,6 +2,7 @@
 #include <SFML\System.hpp>
 #include <glbinding/gl/gl.h>
 #include "ShaderManager.h"
+#include "Vertex.h"
 #include "vmath.hpp"
 
 using namespace gl;
@@ -11,6 +12,7 @@ class Asteroida
 {
 	GLuint asteroidShaderProgram;
     GLuint mvLocation, projLocation;
+	GLuint asteroidPositionLocation, asteroidColorsLocation, asteroidRotationsLocation;
 
     GLuint vao;
     GLuint positionBuffer;
@@ -20,6 +22,7 @@ class Asteroida
 	    
 	GLuint asteroidPositionTexture;
 	GLuint asteroidColorTexture;
+	GLuint asteroidRotationTexture;
 
 	// Asteroid data
 	std::vector<vmath::vec3> colors;
@@ -35,11 +38,15 @@ class Asteroida
     GLuint* mediumAsteroidOffsets;
     GLuint* largeAsteroidOffsets;
 
+	bool InitializeShader(ShaderManager& shaderManager);
+	void GenerateAsteroidTypes(universalVertices& allAsteroids);
+
 public:
 	// Physics data used for updating within Physica.
 	sf::Mutex updateMutex;
 	bool updatedAsteroidPosition;
 	std::vector<vmath::vec4> positions;
+	std::vector<vmath::quaternion> rotations;
 	std::vector<vmath::vec3> velocities;
 
     Asteroida();

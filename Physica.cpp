@@ -148,7 +148,6 @@ void Physica::Run()
 
 			asteroida->updateMutex.unlock();
 			asteroida->updatedAsteroidPosition = true;
-			
 
 			// Manage the sun
 			stellaria->Update();

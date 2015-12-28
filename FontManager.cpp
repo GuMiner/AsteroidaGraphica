@@ -27,6 +27,7 @@ bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
 
     mvLocation = glGetUniformLocation(fontShader, "mv_matrix");
     projLocation = glGetUniformLocation(fontShader, "proj_matrix");
+	fontImageLocation = glGetUniformLocation(fontShader, "fontimage");
 
     /// Load in the font file
     std::ifstream file(fontName, std::ios::binary | std::ios::ate);
@@ -268,7 +269,7 @@ void FontManager::RenderSentence(int sentenceId, vmath::mat4& perpective, vmath:
     }
 
     glUseProgram(fontShader);
-	glUniform1i(glGetUniformLocation(fontShader, "fontimage"), 0);
+	glUniform1i(fontImageLocation, 0);
 	
     // Bind in the texture and vertices we're using.
     glBindVertexArray(sentenceInfo.vao);

@@ -6,6 +6,7 @@ layout (location = 4) in uint drawId;
 
 uniform sampler1D asteroidPositions;
 uniform sampler1D asteroidColors;
+uniform sampler1D asteroidRotations;
 
 out VS_OUT
 {
@@ -23,5 +24,6 @@ void main(void)
     vs_out.barycentricPosition = barycentricPosition;
 
     vec4 asteroidPosition = texelFetch(asteroidPositions, int(drawId), 0);
-    gl_Position = proj_matrix * mv_matrix * (vec4(position, 1) + asteroidPosition);
+	vec4 asteroidRotation = texelFetch(asteroidRotations, int(drawId), 0);
+    gl_Position = proj_matrix * mv_matrix * (vec4(position, 1) + asteroidPosition + vec4(asteroidRotation.x, asteroidRotation.y, 0, 0));
 }

@@ -27,6 +27,7 @@ class FontManager
     // Holds our font shader information.
     gl::GLuint fontShader;
     gl::GLint projLocation, mvLocation;
+	gl::GLint fontImageLocation;
 
     // Holds STB font info for loading in new font data as necessary
     stbtt_fontinfo fontInfo;

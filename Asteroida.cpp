@@ -2,25 +2,74 @@
 #include "Geometry.h"
 #include "Logger.h"
 #include "Paletta.h"
-#include "Vertex.h"
 #include "Asteroida.h"
 
 Asteroida::Asteroida()
 {
 }
 
+// Initializes the asteroid shader.
+bool Asteroida::InitializeShader(ShaderManager& shaderManager)
+{
+	Logger::Log("Asteroida shader creation...");
+	if (!shaderManager.CreateShaderProgram("asteroidRender", &asteroidShaderProgram))
+	{
+		return false;
+	}
+	Logger::Log("Asteroida shader creation successful!");
+
+	mvLocation = glGetUniformLocation(asteroidShaderProgram, "mv_matrix");
+	projLocation = glGetUniformLocation(asteroidShaderProgram, "proj_matrix");
+	asteroidPositionLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidPositions");
+	asteroidColorsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidColors");
+	asteroidRotationsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidRotations");
+}
+
+// Generates the asteroid archetypes for the small, medium, and large asteroids, storing them (in that order) in the universal vertices.
+void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
+{
+	smallAsteroidVertexCounts = new GLuint[ConfigManager::SmallAsteroidTypes];
+	mediumAsteroidVertexCounts = new GLuint[ConfigManager::MediumAsteroidTypes];
+	largeAsteroidVertexCounts = new GLuint[ConfigManager::LargeAsteroidTypes];
+
+	smallAsteroidOffsets = new GLuint[ConfigManager::SmallAsteroidTypes];
+	mediumAsteroidOffsets = new GLuint[ConfigManager::MediumAsteroidTypes];
+	largeAsteroidOffsets = new GLuint[ConfigManager::LargeAsteroidTypes];
+
+	Geometry geometry;
+
+	Logger::Log("Generating small asteroid types...");
+	GLuint vertexCount = 0;
+	for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
+	{
+		smallAsteroidVertexCounts[i] = geometry.GenerateSmallAsteroid(allAsteroids);
+		smallAsteroidOffsets[i] = vertexCount;
+		vertexCount += smallAsteroidVertexCounts[i];
+	}
+
+	Logger::Log("Generating medium asteroid types...");
+	for (int i = 0; i < ConfigManager::MediumAsteroidTypes; i++)
+	{
+		mediumAsteroidVertexCounts[i] = geometry.GenerateMediumAsteroid(allAsteroids);
+		mediumAsteroidOffsets[i] = vertexCount;
+		vertexCount += mediumAsteroidVertexCounts[i];
+	}
+
+	Logger::Log("Generating large asteroid types...");
+	for (int i = 0; i < ConfigManager::LargeAsteroidTypes; i++)
+	{
+		largeAsteroidVertexCounts[i] = geometry.GenerateLargeAsteroid(allAsteroids);
+		largeAsteroidOffsets[i] = vertexCount;
+		vertexCount += largeAsteroidVertexCounts[i];
+	}
+}
+
 bool Asteroida::Initialize(ShaderManager& shaderManager)
 {
-    // Shaders
-    Logger::Log("Asteroida shader creation...");
-    if (!shaderManager.CreateShaderProgram("asteroidRender", &asteroidShaderProgram))
-    {
-        return false;
-    }
-    Logger::Log("Asteroida shader creation successful!");
-
-    mvLocation = glGetUniformLocation(asteroidShaderProgram, "mv_matrix");
-    projLocation = glGetUniformLocation(asteroidShaderProgram, "proj_matrix");
+	if (!InitializeShader(shaderManager))
+	{
+		return false;
+	}
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -30,46 +79,25 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 	glGenBuffers(1, &idBuffer);
 	glGenBuffers(1, &indicesBuffer);
 
-    // Asteroid random generation with resource statistics.
-    smallAsteroidVertexCounts = new GLuint[ConfigManager::SmallAsteroidTypes];
-    mediumAsteroidVertexCounts = new GLuint[ConfigManager::MediumAsteroidTypes];
-    largeAsteroidVertexCounts = new GLuint[ConfigManager::LargeAsteroidTypes];
-
-    smallAsteroidOffsets = new GLuint[ConfigManager::SmallAsteroidTypes];
-    mediumAsteroidOffsets = new GLuint[ConfigManager::MediumAsteroidTypes];
-    largeAsteroidOffsets = new GLuint[ConfigManager::LargeAsteroidTypes];
-    
-    Geometry geometry;
-	universalVertices allAsteroids;
-    
-    Logger::Log("Generating small asteroid types...");
-	GLuint vertexCount = 0;
-    for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
-    {
-		smallAsteroidVertexCounts[i] = geometry.GenerateSmallAsteroid(allAsteroids);
-        smallAsteroidOffsets[i] = vertexCount;
-        vertexCount += smallAsteroidVertexCounts[i];
-    }
-
-    Logger::Log("Generating medium asteroid types...");
-    for (int i = 0; i < ConfigManager::MediumAsteroidTypes; i++)
-    {
-		mediumAsteroidVertexCounts[i] = geometry.GenerateMediumAsteroid(allAsteroids);
-		mediumAsteroidOffsets[i] = vertexCount;
-		vertexCount += mediumAsteroidVertexCounts[i];
-    }
-
-    Logger::Log("Generating large asteroid types...");
-    for (int i = 0; i < ConfigManager::LargeAsteroidTypes; i++)
-    {
-        largeAsteroidVertexCounts[i] = geometry.GenerateLargeAsteroid(allAsteroids);
-        largeAsteroidOffsets[i] = vertexCount;
-        vertexCount += largeAsteroidVertexCounts[i];
-    }
-    
-    Logger::Log("Sending asteroid customization data to the GPU...");
-    glGenTextures(1, &asteroidPositionTexture);
+	glGenTextures(1, &asteroidPositionTexture);
 	glGenTextures(1, &asteroidColorTexture);
+	glGenTextures(1, &asteroidRotationTexture);
+
+    // Asteroid random generation with resource statistics.
+	universalVertices allAsteroids;
+	GenerateAsteroidTypes(allAsteroids);
+    
+	Logger::Log("Customizing rotations...");
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_1D, asteroidRotationsLocation);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGB32F_ARB, ConfigManager::AsteroidCount);
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		vmath::vec3 randomAxis = vmath::normalize(vmath::vec3(Constants::Rand(), Constants::Rand(), Constants::Rand()));
+		float randomAngle = Constants::Rand() * 2 * 3.15159f;
+
+		rotations.push_back(vmath::quaternion::fromAxisAngle(randomAngle, randomAxis));
+	}
 
 	Logger::Log("Customizing colors...");
 	glActiveTexture(GL_TEXTURE1);
@@ -161,9 +189,10 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 	}
 
     glUseProgram(asteroidShaderProgram);
-	glUniform1i(glGetUniformLocation(asteroidShaderProgram, "asteroidPositions"), 0);
-	glUniform1i(glGetUniformLocation(asteroidShaderProgram, "asteroidColors"), 1);
-
+	glUniform1i(asteroidPositionLocation, 0);
+	glUniform1i(asteroidColorsLocation, 1);
+	glUniform1i(asteroidRotationsLocation, 2);
+	
     glBindVertexArray(vao);
 		
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
@@ -187,4 +216,5 @@ Asteroida::~Asteroida()
 
     glDeleteTextures(1, &asteroidPositionTexture);
 	glDeleteTextures(1, &asteroidColorTexture);
+	glDeleteTextures(1, &asteroidRotationTexture);
 }
