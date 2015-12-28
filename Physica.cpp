@@ -97,29 +97,28 @@ void Physica::Run()
 // Moves and rotates the asteroids according to sun gravity.
 void Physica::HandleAsteroidMotion()
 {
-	asteroida->updateMutex.lock();
-	for (unsigned int i = 0; i < asteroida->positions.size(); i++)
+	for (unsigned int i = 0; i < asteroida->asteroids.positions.size(); i++)
 	{
 		// Note that we're storing custom data in the 4th spot, so simple addition fails.
-		vmath::vec3 position = vmath::vec3(asteroida->positions[i][0], asteroida->positions[i][1], asteroida->positions[i][2]);
-		SunIntegration(position, asteroida->velocities[i], ConfigManager::AsteroidTimestep);
-		asteroida->positions[i][0] = position[0];
-		asteroida->positions[i][1] = position[1];
-		asteroida->positions[i][2] = position[2];
+		vmath::vec3 position = vmath::vec3(
+			asteroida->asteroids.positions[i][0],
+			asteroida->asteroids.positions[i][1],
+			asteroida->asteroids.positions[i][2]);
+		SunIntegration(position, asteroida->asteroids.velocities[i], ConfigManager::AsteroidTimestep);
+		asteroida->asteroids.positions[i][0] = position[0];
+		asteroida->asteroids.positions[i][1] = position[1];
+		asteroida->asteroids.positions[i][2] = position[2];
 
 		// Yaw, pitch, and roll for each asteroid.
-		asteroida->rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->eulerRotations[i][0], 
-			vmath::vec3(1, 0, 0)) * asteroida->rotations[i];
-		asteroida->rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->eulerRotations[i][1],
-			vmath::vec3(0, 1, 0)) * asteroida->rotations[i];
-		asteroida->rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->eulerRotations[i][2],
-			vmath::vec3(0, 0, 1)) * asteroida->rotations[i];
+		asteroida->asteroids.rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->asteroids.eulerRotations[i][0],
+			vmath::vec3(1, 0, 0)) * asteroida->asteroids.rotations[i];
+		asteroida->asteroids.rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->asteroids.eulerRotations[i][1],
+			vmath::vec3(0, 1, 0)) * asteroida->asteroids.rotations[i];
+		asteroida->asteroids.rotations[i] = vmath::quaternion::fromAxisAngle(asteroida->asteroids.eulerRotations[i][2],
+			vmath::vec3(0, 0, 1)) * asteroida->asteroids.rotations[i];
 
-		asteroida->rotations[i].normalize();
+		asteroida->asteroids.rotations[i].normalize();
 	}
-
-	asteroida->updateMutex.unlock();
-	asteroida->updatedAsteroidPositionAndRotation = true;
 }
 
 void Physica::HandleShipMotion()

@@ -39,6 +39,8 @@ public:
     static int ScreenWidth;
     static int ScreenHeight;
 
+	static float ViewDistance;
+
 	static int TextImageSize;
 
     // Key bindings
@@ -88,6 +90,7 @@ public:
     static int LargeAsteroidTypes;
 
     static int AsteroidCount;
+	static int AsteroidRenderLimit;
 
 	// Physics
 	static int PhysicsThreadDelay;

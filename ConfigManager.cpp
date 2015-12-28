@@ -9,6 +9,8 @@ bool ConfigManager::IsFullscreen;
 int ConfigManager::ScreenWidth;
 int ConfigManager::ScreenHeight;
 
+float ConfigManager::ViewDistance;
+
 int ConfigManager::TextImageSize;
 
 sf::Keyboard::Key ConfigManager::ThrustForwardsKey;
@@ -56,6 +58,7 @@ int ConfigManager::MediumAsteroidTypes;
 int ConfigManager::LargeAsteroidTypes;
 
 int ConfigManager::AsteroidCount;
+int ConfigManager::AsteroidRenderLimit;
 
 int ConfigManager::PhysicsThreadDelay;
 
@@ -246,6 +249,7 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Bool, IsFullscreen, "Error decoding the fullscreen toggle!");
 	LoadConfigurationValue(Int, ScreenWidth, "Error reading in the screen width!");
     LoadConfigurationValue(Int, ScreenHeight, "Error reading in the screen height!");
+	LoadConfigurationValue(Float, ViewDistance, "Error reading in the asteroid view distance!");
 	LoadConfigurationValue(Int, TextImageSize, "Error reading in the text image size!");
 
 	LoadConfigurationValue(Key, ThrustForwardsKey, "Error reading in the thrust forwards key!");
@@ -283,11 +287,12 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Float, LargeAsteroidSizeMaxPerPointDeformation, "Error reading in the large asteroid size max per point deformation!");
 	LoadConfigurationValue(Float, LargeAsteroidTriangleSize, "Error reading in the large asteroid triangle size!");
 
-
 	LoadConfigurationValue(Int, SmallAsteroidTypes, "Error decoding the small asteroid type count!");
 	LoadConfigurationValue(Int, MediumAsteroidTypes, "Error decoding the medium asteroid type count!");
 	LoadConfigurationValue(Int, LargeAsteroidTypes, "Error decoding the large asteroid type count!");
+	
 	LoadConfigurationValue(Int, AsteroidCount, "Error decoding the asteroid count!");
+	LoadConfigurationValue(Int, AsteroidRenderLimit, "Error decoding the asteroid render limit!");
 
 	LoadConfigurationValue(Int, PhysicsThreadDelay, "Error decoding the physics thread delay!");
 
@@ -361,6 +366,8 @@ void ConfigManager::WriteConfigurationValues()
     WriteInt("ScreenWidth", ScreenWidth);
     WriteInt("ScreenHeight", ScreenHeight);
 
+	WriteFloat("ViewDistance", ViewDistance);
+
 	WriteInt("TextImageSize", TextImageSize);
 
     WriteKey("ThrustForwards", ThrustForwardsKey);
@@ -408,6 +415,7 @@ void ConfigManager::WriteConfigurationValues()
     WriteInt("LargeAsteroidTypes", LargeAsteroidTypes);
 
     WriteInt("AsteroidCount", AsteroidCount);
+	WriteInt("AsteroidRenderLimit", AsteroidRenderLimit);
 
 	WriteInt("PhysicsThreadDelay", PhysicsThreadDelay);
 

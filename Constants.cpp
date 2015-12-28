@@ -16,7 +16,7 @@ float Constants::Rand()
 
 int Constants::Rand(int min, int max)
 {
-    return std::uniform_int_distribution<int>{min, max}(mersenneTwiser);
+    return std::uniform_int_distribution<int>{min, max - 1}(mersenneTwiser);
 }
 
 float Constants::Rand(float range)

@@ -7,6 +7,16 @@
 // Generates in-game geometry so that asteroids are *always* different per game but *always* consistent once generated.
 class Geometry
 {
+public:
+	// Current asteroid size, used within Asteroida.
+	enum AsteroidSize
+	{
+		Small,
+		Medium,
+		Large,
+	};
+
+private:
     const static int TOP_ID = -1;
     const static int BOTTOM_ID = 232323; // This should be fixed -- we're depending on the proper ordering of these within the map for barycentrics.
 	// Note that the ID doesn't matter, but that illustrates the problem -- we're depending on the wrong ordering for proper barycentric rendering.

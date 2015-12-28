@@ -29,6 +29,9 @@ public:
 
 	std::vector<unsigned int> indices;
 
+	// Clears all the data in the universal vertices, minus IDs.
+	void Reset();
+
     // Adds a position, color, UV vertex.
     void AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv);
 

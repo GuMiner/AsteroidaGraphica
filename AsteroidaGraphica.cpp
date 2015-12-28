@@ -306,7 +306,7 @@ Constants::Status AsteroidaGraphica::Run()
             glClearBufferfv(GL_DEPTH, 0, &one);
             
             // Draw the asteroids
-            asteroida.Render(projectionMatrix);
+            asteroida.Render(projectionMatrix, shipia.shipPosition);
 			stellaria.Render(projectionMatrix);
 
             // Draws our HUD

@@ -15,6 +15,10 @@ FullScreen false
 ScreenWidth 1280
 ScreenHeight 720
 
+# Distance that asteroids are visible from the current ship location.
+#  Note that if this is too large (and AsteroidRenderLimit is too small), asteroids will flicker within the visible range.
+ViewDistance 1.73
+
 # Maximum size of the text image.
 # Text will fail to be displayed if this is too small, but certain GPUs won't support their reported maximum texture size.
 TextImageSize 1024
@@ -69,12 +73,17 @@ LargeAsteroidSizeMaxPerPointDeformation 0.9
 LargeAsteroidTriangleSize 0.30
 
 # The number of archetypes for each asteroid to generate.
-SmallAsteroidTypes 500
-MediumAsteroidTypes 500
-LargeAsteroidTypes 500
+SmallAsteroidTypes 300
+MediumAsteroidTypes 300
+LargeAsteroidTypes 300
 
-# Total number of asteroids per displayable block. Note that there *will* be 1024*1024 total consumable asteroids.
-AsteroidCount 1500
+# Total number of asteroids.
+AsteroidCount 10000
+# 1048576
+
+# Maximum number of asteroids that will be rendered at a single time.
+#  All asteroids are rendered as points to give a LOD effect.
+AsteroidRenderLimit 1024
 
 # Physics
 #  Delay in ms for physics thread updates. 30 Hz gives a reasonable speed and prevents excessive GPU updates,

@@ -27,6 +27,16 @@ void universalVertices::SendIndicesToOpenGl(GLuint buffer, const std::vector<uns
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_STATIC_DRAW);
 }
 
+void universalVertices::Reset()
+{
+	positions.clear();
+	colors.clear();
+	barycentrics.clear();
+	uvs.clear();
+	ids.clear();
+	indices.clear();
+}
+
 void universalVertices::AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv)
 {
     positions.push_back(position);
