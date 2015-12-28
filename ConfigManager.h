@@ -102,6 +102,8 @@ public:
 
 	static float AsteroidTimestep;
 
+	static float AsteroidRotationSpeed;
+
 	// Palettes
 	static vmath::vec3 AsteroidGradientStartColor;
 	static vmath::vec3 AsteroidGradientEndColor;

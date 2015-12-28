@@ -44,9 +44,10 @@ class Asteroida
 public:
 	// Physics data used for updating within Physica.
 	sf::Mutex updateMutex;
-	bool updatedAsteroidPosition;
+	bool updatedAsteroidPositionAndRotation;
 	std::vector<vmath::vec4> positions;
 	std::vector<vmath::quaternion> rotations;
+	std::vector<vmath::vec3> eulerRotations;
 	std::vector<vmath::vec3> velocities;
 
     Asteroida();

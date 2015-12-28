@@ -59,6 +59,7 @@ class Physica
 
     void HandleShipControls();
     void HandleShipMotion();
+	void HandleAsteroidMotion();
 
 	// Physics calculations
 	vmath::vec3 SunAcceleration(const vmath::vec3& pos) const;

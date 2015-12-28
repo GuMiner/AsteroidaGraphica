@@ -69,6 +69,8 @@ float ConfigManager::GravitationalConstant;
 
 float ConfigManager::AsteroidTimestep;
 
+float ConfigManager::AsteroidRotationSpeed;
+
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;
 
@@ -276,7 +278,9 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Float, SolarMass, "Error decoding the solar mass!");
 	LoadConfigurationValue(Float, GravitationalConstant, "Error decoding the gravitational constant!");
 
-	LoadConfigurationValue(Float, AsteroidTimestep, "Error decoding the asteroid timestep");
+	LoadConfigurationValue(Float, AsteroidTimestep, "Error decoding the asteroid timestep!");
+	
+	LoadConfigurationValue(Float, AsteroidRotationSpeed, "Error decoding the default asteroid rotation speed!");
 
 	LoadConfigurationValue(Vector, AsteroidGradientStartColor, "Error decoding the asteroid gradient start color!");
 	LoadConfigurationValue(Vector, AsteroidGradientEndColor, "Error decoding the asteroid gradient end color!");
@@ -289,117 +293,22 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Vector, PtOreColor, "Error decoding the platinum ore color!");
 	LoadConfigurationValue(Vector, ImpOreColor, "Error decoding the impurity ore color!");
 
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseWaterOre))
-	{
-		Logger::Log("Error decoding the base water ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxWaterOre))
-	{
-		Logger::Log("Error decoding the max water ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseFeOre))
-	{
-		Logger::Log("Error decoding the base iron ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxFeOre))
-	{
-		Logger::Log("Error decoding the max iron ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseSiOre))
-	{
-		Logger::Log("Error decoding the base silicon ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxSiOre))
-	{
-		Logger::Log("Error decoding the max silicon ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseCuOre))
-	{
-		Logger::Log("Error decoding the base copper ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxCuOre))
-	{
-		Logger::Log("Error decoding the max copper ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseUOre))
-	{
-		Logger::Log("Error decoding the base uranium ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxUOre))
-	{
-		Logger::Log("Error decoding the max uranium ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseAuOre))
-	{
-		Logger::Log("Error decoding the base gold ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxAuOre))
-	{
-		Logger::Log("Error decoding the max gold ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BasePtOre))
-	{
-		Logger::Log("Error decoding the base platinum ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxPtOre))
-	{
-		Logger::Log("Error decoding the max platinum ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(BaseImpOre))
-	{
-		Logger::Log("Error decoding the base impurities ore amount!");
-		return false;
-	}
-
-	currentLine = configFileLines[++lineCounter];
-	if (!LoadFloat(MaxImpOre))
-	{
-		Logger::Log("Error decoding the max imputiries ore amount!");
-		return false;
-	}
+	LoadConfigurationValue(Float, BaseWaterOre, "Error decoding the base water ore amount!");
+	LoadConfigurationValue(Float, MaxWaterOre, "Error decoding the max water ore amount!");
+	LoadConfigurationValue(Float, BaseFeOre, "Error decoding the base iron ore amount!");
+	LoadConfigurationValue(Float, MaxFeOre, "Error decoding the max iron ore amount!");
+	LoadConfigurationValue(Float, BaseSiOre, "Error decoding the base silicon ore amount!");
+	LoadConfigurationValue(Float, MaxSiOre, "Error decoding the max silicon ore amount!");
+	LoadConfigurationValue(Float, BaseCuOre, "Error decoding the base copper ore amount!");
+	LoadConfigurationValue(Float, MaxCuOre, "Error decoding the max copper ore amount!");
+	LoadConfigurationValue(Float, BaseUOre, "Error decoding the base uranium ore amount!");
+	LoadConfigurationValue(Float, MaxUOre, "Error decoding the max uranium ore amount!");
+	LoadConfigurationValue(Float, BaseAuOre, "Error decoding the base gold ore amount!");
+	LoadConfigurationValue(Float, MaxAuOre, "Error decoding the max gold ore amount!");
+	LoadConfigurationValue(Float, BasePtOre, "Error decoding the base platinum ore amount!");
+	LoadConfigurationValue(Float, MaxPtOre, "Error decoding the max platinum ore amount!");
+	LoadConfigurationValue(Float, BaseImpOre, "Error decoding the base impurities ore amount!");
+	LoadConfigurationValue(Float, MaxImpOre, "Error decoding the max imputiries ore amount!");
 
     return true;
 }
@@ -470,6 +379,8 @@ void ConfigManager::WriteConfigurationValues()
 	WriteFloat("GravtationalConstant", GravitationalConstant);
 
 	WriteFloat("AsteroidTimestep", AsteroidTimestep);
+
+	WriteFloat("AsteroidRotationSpeed", AsteroidRotationSpeed);
 
 	WriteVector("AsteroidGradientStartColor", AsteroidGradientStartColor);
 	WriteVector("AsteroidGradientEndColor", AsteroidGradientEndColor);

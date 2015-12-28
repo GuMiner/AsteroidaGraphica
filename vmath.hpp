@@ -665,7 +665,6 @@ namespace vmath
             const float xx = x * x;
             const float yy = y * y;
             const float zz = z * z;
-            const float ww = w * w;
             const float xy = x * y;
             const float xz = x * z;
             const float xw = x * w;

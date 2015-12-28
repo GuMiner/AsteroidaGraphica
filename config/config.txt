@@ -89,7 +89,11 @@ LargeAsteroidMass 1000.0
 SolarMass 50000.0
 GravitationalConstant 10.0
 
+# Delta T applied to physics calculations with asteroids.
 AsteroidTimestep 0.00033
+
+# Default max rotation speed for asteroids per tick, in radians. There will be asteroids rotating slower/faster than this over game time.
+AsteroidRotationSpeed 0.06
 
 # Asteroid palette coloration.
 AsteroidGradientStartColor 0.85 0.42 0

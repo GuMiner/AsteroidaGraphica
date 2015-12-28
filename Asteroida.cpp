@@ -89,14 +89,20 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     
 	Logger::Log("Customizing rotations...");
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_1D, asteroidRotationsLocation);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGB32F_ARB, ConfigManager::AsteroidCount);
+	glBindTexture(GL_TEXTURE_1D, asteroidRotationTexture);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
 	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
 	{
 		vmath::vec3 randomAxis = vmath::normalize(vmath::vec3(Constants::Rand(), Constants::Rand(), Constants::Rand()));
 		float randomAngle = Constants::Rand() * 2 * 3.15159f;
 
+		vmath::vec3 currentEulerRotation = vmath::vec3(
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed));
+
 		rotations.push_back(vmath::quaternion::fromAxisAngle(randomAngle, randomAxis));
+		eulerRotations.push_back(currentEulerRotation);
 	}
 
 	Logger::Log("Customizing colors...");
@@ -134,7 +140,7 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 		}
     }
 
-	updatedAsteroidPosition = true;
+	updatedAsteroidPositionAndRotation = true;
 
 	Logger::Log("Adding ID field for asteroids");
 	for (unsigned int i = 0; i < (unsigned int)ConfigManager::SmallAsteroidTypes; i++)
@@ -177,15 +183,19 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 // Renders the asteroids with the given perspective/look-at projection matrix.
 void Asteroida::Render(vmath::mat4& projectionMatrix)
 {
-	if (updatedAsteroidPosition)
+	if (updatedAsteroidPositionAndRotation)
 	{
+		updateMutex.lock();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
-
-		updateMutex.lock();
 		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, &positions[0]);
+		
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_1D, asteroidRotationTexture);
+		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, &rotations[0]);
 		updateMutex.unlock();
-		updatedAsteroidPosition = false;
+		
+		updatedAsteroidPositionAndRotation = false;
 	}
 
     glUseProgram(asteroidShaderProgram);
