@@ -57,6 +57,8 @@ int ConfigManager::LargeAsteroidTypes;
 
 int ConfigManager::AsteroidCount;
 
+int ConfigManager::PhysicsThreadDelay;
+
 float ConfigManager::BaseShipMass;
 float ConfigManager::SmallAsteroidMass;
 float ConfigManager::MediumAsteroidMass;
@@ -64,6 +66,8 @@ float ConfigManager::LargeAsteroidMass;
 
 float ConfigManager::SolarMass;
 float ConfigManager::GravitationalConstant;
+
+float ConfigManager::AsteroidTimestep;
 
 vmath::vec3 ConfigManager::AsteroidGradientStartColor;
 vmath::vec3 ConfigManager::AsteroidGradientEndColor;

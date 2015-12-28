@@ -77,15 +77,16 @@ LargeAsteroidTypes 500
 AsteroidCount 1500
 
 # Physics
-#  Delay in ms for physics thread updates. 10 Hz gives a reasonable speed and prevents excessive GPU updates.
-PhysicsThreadDelay 100
+#  Delay in ms for physics thread updates. 30 Hz gives a reasonable speed and prevents excessive GPU updates,
+#   while also avoiding visible stuttering.
+PhysicsThreadDelay 33
 
 BaseShipMass 1000.0
 SmallAsteroidMass 10.0
 MediumAsteroidMass 100.0
 LargeAsteroidMass 1000.0
 
-SolarMass 100000.0
+SolarMass 50000.0
 GravitationalConstant 10.0
 
 AsteroidTimestep 0.00033

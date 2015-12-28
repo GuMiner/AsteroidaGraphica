@@ -91,17 +91,17 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
     float separation = 2.0f;
     
     int fracAsteroidCount = (int)sqrt(ConfigManager::AsteroidCount);
-	int xP = 0;
-	int yP = 0;
+	int xP = 15;
+	int yP = 15;
     for (int i = 0; i < ConfigManager::AsteroidCount; i++)
     {
 		positions.push_back(vmath::vec4(xP * separation, yP * separation, 0.0f, 0.0f));
-		velocities.push_back(vmath::vec3(0, 0, 0));
+		velocities.push_back(vmath::vec3(-400, 400, 0));
 
 		++xP;
 		if (xP == 100)
 		{
-			xP = 0;
+			xP = 15;
 			++yP;
 		}
     }
