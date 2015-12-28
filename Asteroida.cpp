@@ -16,6 +16,7 @@ bool Asteroida::InitializeShader(ShaderManager& shaderManager)
 	{
 		return false;
 	}
+
 	Logger::Log("Asteroida shader creation successful!");
 
 	mvLocation = glGetUniformLocation(asteroidShaderProgram, "mv_matrix");
@@ -23,6 +24,9 @@ bool Asteroida::InitializeShader(ShaderManager& shaderManager)
 	asteroidPositionLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidPositions");
 	asteroidColorsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidColors");
 	asteroidRotationsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidRotations");
+	asteroidOresLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidOres");
+
+	return true;
 }
 
 // Generates the asteroid archetypes for the small, medium, and large asteroids, storing them (in that order) in the universal vertices.
@@ -64,12 +68,14 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 	}
 }
 
-bool Asteroida::Initialize(ShaderManager& shaderManager)
+bool Asteroida::Initialize(ShaderManager& shaderManager, Elementa* elementa)
 {
 	if (!InitializeShader(shaderManager))
 	{
 		return false;
 	}
+
+	this->elementa = elementa;
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -82,11 +88,45 @@ bool Asteroida::Initialize(ShaderManager& shaderManager)
 	glGenTextures(1, &asteroidPositionTexture);
 	glGenTextures(1, &asteroidColorTexture);
 	glGenTextures(1, &asteroidRotationTexture);
+	glGenTextures(1, &asteroidOresTexture);
 
     // Asteroid random generation with resource statistics.
 	universalVertices allAsteroids;
 	GenerateAsteroidTypes(allAsteroids);
     
+	Logger::Log("Customizing resource stats");
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_1D, asteroidOresTexture);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
+
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		float isOre = Constants::Rand();
+		if (isOre > ConfigManager::OreEmptyRatio)
+		{
+			// No ore
+			oreColors.push_back(vmath::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+			asteroidElement.push_back(Elementa::Elements::None);
+			elementAmounts.push_back(0.0f);
+		}
+		else
+		{
+			// Some ore.
+			Elementa::Elements element = elementa->GetRandomElement();
+			vmath::vec3 oreColor = elementa->GetOreColor(element);
+
+			float elementAmount = elementa->GetRandomOreAmount(element);
+			float maxElementAmount = elementa->GetMaxRandomOreAmount(element);
+			
+			oreColors.push_back(vmath::vec4(oreColor[0], oreColor[1], oreColor[2], elementAmount / maxElementAmount));
+			asteroidElement.push_back(element);
+			elementAmounts.push_back(elementAmount);
+		}
+	}
+
+	// TODO make asteroids mineable, which means this will update on a semi-regular basis.
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, ConfigManager::AsteroidCount, GL_RGBA, GL_FLOAT, &oreColors[0]);
+
 	Logger::Log("Customizing rotations...");
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_1D, asteroidRotationTexture);
@@ -202,6 +242,7 @@ void Asteroida::Render(vmath::mat4& projectionMatrix)
 	glUniform1i(asteroidPositionLocation, 0);
 	glUniform1i(asteroidColorsLocation, 1);
 	glUniform1i(asteroidRotationsLocation, 2);
+	glUniform1i(asteroidOresLocation, 3);
 	
     glBindVertexArray(vao);
 		

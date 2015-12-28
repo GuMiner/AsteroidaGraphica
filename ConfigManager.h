@@ -144,6 +144,16 @@ public:
 	static float BaseImpOre;
 	static float MaxImpOre;
 
+	static float OreEmptyRatio;
+	static float WaterRatio;
+	static float FeRatio;
+	static float SiRatio;
+	static float CuRatio;
+	static float URatio;
+	static float AuRatio;
+	static float PtRatio;
+	static float ImpRatio;
+
     ConfigManager();
     bool ReadConfiguration();
     bool WriteConfiguration();

@@ -5,6 +5,7 @@ out vec4 color;
 in VS_OUT
 {
     vec4 color;
+	vec4 highlightColor;
     vec4 barycentricPosition;
 } fs_in;
 
@@ -19,7 +20,7 @@ void main(void)
     if (inpColor.a < 0.30f)
     {
         // Make physical cutouts in our asteroids, which looks awesome.
-        discard;
+		inpColor = fs_in.highlightColor;
     }
     else
     {

@@ -110,6 +110,16 @@ float ConfigManager::MaxPtOre;
 float ConfigManager::BaseImpOre;
 float ConfigManager::MaxImpOre;
 
+float ConfigManager::OreEmptyRatio;
+float ConfigManager::WaterRatio;
+float ConfigManager::FeRatio;
+float ConfigManager::SiRatio;
+float ConfigManager::CuRatio;
+float ConfigManager::URatio;
+float ConfigManager::AuRatio;
+float ConfigManager::PtRatio;
+float ConfigManager::ImpRatio;
+
 ConfigManager::ConfigManager()
 {
     CommentString = "#";
@@ -328,7 +338,17 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Float, BasePtOre, "Error decoding the base platinum ore amount!");
 	LoadConfigurationValue(Float, MaxPtOre, "Error decoding the max platinum ore amount!");
 	LoadConfigurationValue(Float, BaseImpOre, "Error decoding the base impurities ore amount!");
-	LoadConfigurationValue(Float, MaxImpOre, "Error decoding the max imputiries ore amount!");
+	LoadConfigurationValue(Float, MaxImpOre, "Error decoding the max impurities ore amount!");
+
+	LoadConfigurationValue(Float, OreEmptyRatio, "Error decoding the ore/no ore ratio!");
+	LoadConfigurationValue(Float, WaterRatio, "Error decoding the water ratio!");
+	LoadConfigurationValue(Float, FeRatio, "Error decoding the iron ratio!");
+	LoadConfigurationValue(Float, SiRatio, "Error decoding the silicon ratio!");
+	LoadConfigurationValue(Float, CuRatio, "Error decoding the copper ratio!");
+	LoadConfigurationValue(Float, URatio, "Error decoding the uranium ratio!");
+	LoadConfigurationValue(Float, AuRatio, "Error decoding the gold ratio!");
+	LoadConfigurationValue(Float, PtRatio, "Error decoding the platinum ratio!");
+	LoadConfigurationValue(Float, ImpRatio, "Error decoding the impurities ratio!");
 
     return true;
 }
@@ -440,6 +460,16 @@ void ConfigManager::WriteConfigurationValues()
 	WriteFloat("MaxPtOre", MaxPtOre);
 	WriteFloat("BaseImpOre",BaseImpOre);
 	WriteFloat("MaxImpOre", MaxImpOre);
+
+	WriteFloat("OreEmptyRatio", OreEmptyRatio);
+	WriteFloat("WaterRatio", WaterRatio);
+	WriteFloat("FeRatio", FeRatio);
+	WriteFloat("SiRatio", SiRatio);
+	WriteFloat("CuRatio", CuRatio);
+	WriteFloat("URatio", URatio);
+	WriteFloat("AuRatio", AuRatio);
+	WriteFloat("PtRatio", PtRatio);
+	WriteFloat("ImpRatio", ImpRatio);
 }
 
 // Reads in the configuration and sets up the variables listed

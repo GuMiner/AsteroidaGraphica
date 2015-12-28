@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\System.hpp>
 #include <glbinding/gl/gl.h>
+#include "Elementa.h"
 #include "ShaderManager.h"
 #include "Vertex.h"
 #include "vmath.hpp"
@@ -10,9 +11,11 @@ using namespace gl;
 // Manages the asteroids that are part of this game.
 class Asteroida
 {
+	Elementa* elementa;
+
 	GLuint asteroidShaderProgram;
     GLuint mvLocation, projLocation;
-	GLuint asteroidPositionLocation, asteroidColorsLocation, asteroidRotationsLocation;
+	GLuint asteroidPositionLocation, asteroidColorsLocation, asteroidRotationsLocation, asteroidOresLocation;
 
     GLuint vao;
     GLuint positionBuffer;
@@ -23,10 +26,15 @@ class Asteroida
 	GLuint asteroidPositionTexture;
 	GLuint asteroidColorTexture;
 	GLuint asteroidRotationTexture;
+	GLuint asteroidOresTexture;
 
 	// Asteroid data
 	std::vector<vmath::vec3> colors;
 	std::vector<float> masses;
+
+	std::vector<vmath::vec4> oreColors;
+	std::vector<Elementa::Elements> asteroidElement;
+	std::vector<float> elementAmounts;
 
 	GLuint asteroidIndexCount;
 
@@ -51,7 +59,7 @@ public:
 	std::vector<vmath::vec3> velocities;
 
     Asteroida();
-    bool Initialize(ShaderManager& shaderManager);
+    bool Initialize(ShaderManager& shaderManager, Elementa* elementa);
     void Render(vmath::mat4& projectionMatrix);
     ~Asteroida();
 };

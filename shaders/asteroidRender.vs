@@ -7,10 +7,12 @@ layout (location = 4) in uint drawId;
 uniform sampler1D asteroidPositions;
 uniform sampler1D asteroidColors;
 uniform sampler1D asteroidRotations;
+uniform sampler1D asteroidOres;
 
 out VS_OUT
 {
     vec4 color;
+	vec4 highlightColor;
     vec4 barycentricPosition;
 } vs_out;
 
@@ -22,6 +24,7 @@ void main(void)
 {
 	// Pass-through colors and barycentrics to our fragment shader.
     vs_out.color = vec4(texelFetch(asteroidColors, int(drawId), 0).xyz, 1);
+	vs_out.highlightColor = texelFetch(asteroidOres, int(drawId), 0);
     vs_out.barycentricPosition = barycentricPosition;
 
 	// Form a matrix out of our asteroid position because we perform rotation beforehand, so we can't add it to the existing vertex position.

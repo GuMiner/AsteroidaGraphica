@@ -69,12 +69,9 @@ void Physica::Run()
         if (!isPaused && initialized)
         {
 			// Update the ship with user input.
-			bool didRotate, didTranslate;
 			shipia->Update(didRotate, didTranslate);
 
             // Manage ship physics
-            
-            
             HandleShipMotion();
 
 			// Manage the asteroids

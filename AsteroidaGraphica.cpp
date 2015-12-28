@@ -172,10 +172,8 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
         return status;
     }
 
-    // HUD & elements
-	elementa.Initialize(&fontManager);
-
-    Logger::Log("HUD loading...");
+    // HUD
+	Logger::Log("HUD loading...");
     if (!shipHud.Initialize(&shaderManager, &fontManager, &imageManager))
     {
         return Constants::Status::BAD_HUD;
@@ -215,9 +213,13 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 
     musicManager.Pause(); // TODO temp code (annoying when developing)
 
+	// Elements (with HUD)
+	Logger::Log("Elementa loading...");
+	elementa.Initialize(&fontManager);
+
 	// Asteroids
 	Logger::Log("Asteroida loading...");
-	if (!asteroida.Initialize(shaderManager))
+	if (!asteroida.Initialize(shaderManager, &elementa))
 	{
 		return Constants::Status::BAD_ASTEROIDA;
 	}

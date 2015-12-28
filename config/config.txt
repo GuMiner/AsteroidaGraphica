@@ -137,3 +137,16 @@ BasePtOre 0
 MaxPtOre 100
 BaseImpOre 1
 MaxImpOre 10
+
+# Ore Generation ratios
+#  Ore amounts for all other types are summed and normalized appropriately.
+#  Note that in addition to defining the abundance, this also defines the maximum amount each ore can generate.
+OreEmptyRatio 0.80
+WaterRatio 20.00
+FeRatio 10.00
+SiRatio 5.00
+CuRatio 10.00
+URatio 3.00
+AuRatio 2.00
+PtRatio 1.00
+ImpRatio 1.00
