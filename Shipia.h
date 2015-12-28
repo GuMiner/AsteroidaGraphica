@@ -9,10 +9,6 @@ class Shipia
 	Elementa* elementa;
 	SoundManager *soundManager;
 
-	// Whether or not the dampeners are enabled.
-	bool rotationalDampener;
-	bool translationalDampener;
-
 	// Make sure that the dampeners act as buttons instead of thrusters.
 	bool rotDampToggled;
 	bool tranDampToggled;
@@ -33,6 +29,10 @@ public:
 	// Ship positioning
 	vmath::vec3 shipPosition;
 	vmath::quaternion shipOrientation;
+
+	// Whether or not the dampeners are enabled.
+	bool rotationalDampener;
+	bool translationalDampener;
 
 	Shipia();
 	void Initialize(SoundManager *soundManager, Elementa *elementa);

@@ -145,6 +145,20 @@ void Physica::HandleShipMotion()
 
 	shipia->shipOrientation = vmath::quaternion::fromAxisAngle(shipia->shipRotation[2], shipia->shipOrientation.forwardVector()) * shipia->shipOrientation;
 	shipia->shipOrientation.normalize();
+
+	if (!didTranslate && shipia->translationalDampener)
+	{
+		// Apply translational dampening
+		// TODO use real dampening forces instead of just a multiplying force
+		shipia->shipVelocity *= 0.95f;
+	}
+	
+	if (!didRotate && shipia->rotationalDampener)
+	{
+		// Apply rotational dampening
+		// TODO use real dampening forces instead of just a multiplying force
+		shipia->shipRotation *= 0.95f;
+	}
 }
 
 Physica::~Physica()
