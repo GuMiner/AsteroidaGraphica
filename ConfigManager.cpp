@@ -57,6 +57,10 @@ int ConfigManager::SmallAsteroidTypes;
 int ConfigManager::MediumAsteroidTypes;
 int ConfigManager::LargeAsteroidTypes;
 
+float ConfigManager::AsteroidTorusMinDistance;
+float ConfigManager::AsteroidTorusRadius;
+float ConfigManager::AsteroidTorusHeight;
+
 int ConfigManager::AsteroidCount;
 int ConfigManager::AsteroidRenderLimit;
 
@@ -290,6 +294,10 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Int, SmallAsteroidTypes, "Error decoding the small asteroid type count!");
 	LoadConfigurationValue(Int, MediumAsteroidTypes, "Error decoding the medium asteroid type count!");
 	LoadConfigurationValue(Int, LargeAsteroidTypes, "Error decoding the large asteroid type count!");
+
+	LoadConfigurationValue(Float, AsteroidTorusMinDistance, "Error decoding the torus min distance!");
+	LoadConfigurationValue(Float, AsteroidTorusRadius, "Error decoding the torus radius!");
+	LoadConfigurationValue(Float, AsteroidTorusHeight, "Error decoding the torus height!");
 	
 	LoadConfigurationValue(Int, AsteroidCount, "Error decoding the asteroid count!");
 	LoadConfigurationValue(Int, AsteroidRenderLimit, "Error decoding the asteroid render limit!");
@@ -413,6 +421,10 @@ void ConfigManager::WriteConfigurationValues()
     WriteInt("SmallAsteroidTypes", SmallAsteroidTypes);
     WriteInt("MediumAsteroidTypes", MediumAsteroidTypes);
     WriteInt("LargeAsteroidTypes", LargeAsteroidTypes);
+
+	WriteFloat("AsteroidTorusMinDistance", AsteroidTorusMinDistance);
+	WriteFloat("AsteroidTorusRadius", AsteroidTorusRadius);
+	WriteFloat("AsteroidTorusHeight", AsteroidTorusHeight);
 
     WriteInt("AsteroidCount", AsteroidCount);
 	WriteInt("AsteroidRenderLimit", AsteroidRenderLimit);

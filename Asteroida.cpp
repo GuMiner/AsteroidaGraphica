@@ -150,9 +150,9 @@ void Asteroida::GenerateAsteroidField()
 	// Give all the asteroids a random position.
 	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
 	{
-		float distance = 50.0f + Constants::Rand() * 30.0f; // TODO put this in config manager also.
+		float distance = ConfigManager::AsteroidTorusMinDistance + Constants::Rand() * ConfigManager::AsteroidTorusRadius;
 		float angle = 2 * 3.14159f * Constants::Rand();
-		float height = Constants::Rand(2.0f); // TODO this should also be in the config.
+		float height = Constants::Rand(ConfigManager::AsteroidTorusHeight);
 
 		vmath::vec4 position = vmath::vec4(distance * cos(angle), distance * sin(angle), height, 0.0f);
 		asteroids.positions.push_back(position);

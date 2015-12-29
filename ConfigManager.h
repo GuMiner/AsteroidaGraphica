@@ -89,6 +89,10 @@ public:
     static int MediumAsteroidTypes;
     static int LargeAsteroidTypes;
 
+	static float AsteroidTorusMinDistance;
+	static float AsteroidTorusRadius;
+	static float AsteroidTorusHeight;
+
     static int AsteroidCount;
 	static int AsteroidRenderLimit;
 
