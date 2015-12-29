@@ -48,14 +48,21 @@ class Asteroida
 
 	// GPU data
 	GLuint asteroidShaderProgram;
-    GLuint mvLocation, projLocation;
+    GLuint projLocation;
 	GLuint asteroidPositionLocation, asteroidColorsLocation, asteroidRotationsLocation, asteroidOresLocation;
+
+	GLuint pointRenderShaderProgram;
+	GLuint pointRenderProjLocation;
 
     GLuint vao;
     GLuint positionBuffer;
 	GLuint barycentricBuffer;
 	GLuint idBuffer;
 	GLuint indicesBuffer;
+
+	GLuint pointRenderVao;
+	GLuint pointRenderPositionBuffer;
+	GLuint pointRenderColorBuffer;
 	    
 	GLuint asteroidPositionTexture;
 	GLuint asteroidColorTexture;
@@ -77,6 +84,8 @@ class Asteroida
 
 	bool InitializeShader(ShaderManager& shaderManager);
 	void GenerateAsteroidTypes(universalVertices& allAsteroids);
+	
+	void GenerateRandomColorRotations();
 	void GenerateAsteroidField();
 	void GenerateAsteroidView();
 

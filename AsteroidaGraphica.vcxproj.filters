@@ -201,6 +201,12 @@
     <None Include="shaders\sunRender.vs">
       <Filter>Content\Shaders</Filter>
     </None>
+    <None Include="shaders\asteroidPointRender.fs">
+      <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\asteroidPointRender.vs">
+      <Filter>Content\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="DebugCode.txt">

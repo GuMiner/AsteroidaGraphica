@@ -16,7 +16,6 @@ out VS_OUT
     vec4 barycentricPosition;
 } vs_out;
 
-uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 
 // Renders asteroids with the specified color and position, using the barycentric coordinates to determine the opacity level.
@@ -57,6 +56,5 @@ void main(void)
 		2.0f * (xz - yw), 2.0f * (yz + xw), 1.0f - 2.0f * (xx + yy), 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
 
-	//asteroidRotationMatrix = transpose(asteroidRotationMatrix);
-    gl_Position = proj_matrix * mv_matrix * asteroidPositionMatrix * asteroidRotationMatrix * vec4(position, 1);
+    gl_Position = proj_matrix * asteroidPositionMatrix * asteroidRotationMatrix * vec4(position, 1);
 }

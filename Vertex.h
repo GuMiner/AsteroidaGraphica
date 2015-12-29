@@ -39,6 +39,9 @@ public:
     // Note that buffer layout is 1 == position, 2 == color, and so on and so forth.
     static void TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer,
 		GLuint barycentricBuffer, GLuint uvBuffer, GLuint idBuffer, GLuint indiciesBuffer);
+
+	// Transfers a position/color array set directly to OpenGl.
+	static void TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, const std::vector<vmath::vec3>& colors, GLuint positionBuffer, GLuint colorBuffer);
 };
 
 struct DrawArraysIndirectCommand

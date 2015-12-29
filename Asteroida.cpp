@@ -16,15 +16,20 @@ bool Asteroida::InitializeShader(ShaderManager& shaderManager)
 		return false;
 	}
 
+	if (!shaderManager.CreateShaderProgram("asteroidPointRender", &pointRenderShaderProgram))
+	{
+		return false;
+	}
+
 	Logger::Log("Asteroida shader creation successful!");
 
-	mvLocation = glGetUniformLocation(asteroidShaderProgram, "mv_matrix");
 	projLocation = glGetUniformLocation(asteroidShaderProgram, "proj_matrix");
 	asteroidPositionLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidPositions");
 	asteroidColorsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidColors");
 	asteroidRotationsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidRotations");
 	asteroidOresLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidOres");
 
+	pointRenderProjLocation = glGetUniformLocation(pointRenderShaderProgram, "proj_matrix");
 	return true;
 }
 
@@ -93,6 +98,31 @@ vmath::vec3 Asteroida::GetOrbitalVelocity(const vmath::vec2& pos) const
 	return vmath::normalize(vmath::cross(vmath::vec3(-pos[0], -pos[1], 0), vmath::vec3(0, 0, 1))) * orbitalSpeed;
 }
 
+// Generates random color and rotations for all the asteroids.
+void Asteroida::GenerateRandomColorRotations()
+{
+	// Give all the asteroids a random color.
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		asteroids.colors.push_back(Paletta::GetRandomAsteroidColor());
+	}
+
+	// Give all the asteroids a random rotation.
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		vmath::vec3 randomAxis = vmath::normalize(vmath::vec3(Constants::Rand(), Constants::Rand(), Constants::Rand()));
+		float randomAngle = Constants::Rand() * 2 * 3.15159f;
+
+		vmath::vec3 currentEulerRotation = vmath::vec3(
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
+			Constants::Rand(ConfigManager::AsteroidRotationSpeed));
+
+		asteroids.rotations.push_back(vmath::quaternion::fromAxisAngle(randomAngle, randomAxis));
+		asteroids.eulerRotations.push_back(currentEulerRotation);
+	}
+}
+
 // Generates the field of all the asteroids.
 void Asteroida::GenerateAsteroidField()
 {
@@ -118,7 +148,6 @@ void Asteroida::GenerateAsteroidField()
 	}
 
 	// Give all the asteroids a random position.
-	int fracAsteroidCount = (int)sqrt(ConfigManager::AsteroidCount);
 	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
 	{
 		float distance = 50.0f + Constants::Rand() * 30.0f; // TODO put this in config manager also.
@@ -130,26 +159,8 @@ void Asteroida::GenerateAsteroidField()
 		asteroids.velocities.push_back(GetOrbitalVelocity(vmath::vec2(position[0], position[1])));
 	}
 
-	// Give all the asteroids a random color.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
-	{
-		asteroids.colors.push_back(Paletta::GetRandomAsteroidColor());
-	}
-
-	// Give all the asteroids a random rotation.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
-	{
-		vmath::vec3 randomAxis = vmath::normalize(vmath::vec3(Constants::Rand(), Constants::Rand(), Constants::Rand()));
-		float randomAngle = Constants::Rand() * 2 * 3.15159f;
-
-		vmath::vec3 currentEulerRotation = vmath::vec3(
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed));
-
-		asteroids.rotations.push_back(vmath::quaternion::fromAxisAngle(randomAngle, randomAxis));
-		asteroids.eulerRotations.push_back(currentEulerRotation);
-	}
+	Logger::Log("Generating random colors and rotations...");
+	GenerateRandomColorRotations();
 	
 	// Generate the ore distribution.
 	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
@@ -212,7 +223,14 @@ void Asteroida::GenerateAsteroidView()
 	Logger::Log("Creating 1D texture for asteroid positioning...");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidCount);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidRenderLimit);
+
+	// Generate data for point rendering.
+	glGenVertexArrays(1, &pointRenderVao);
+	glBindVertexArray(pointRenderVao);
+
+	glGenBuffers(1, &pointRenderPositionBuffer);
+	glGenBuffers(1, &pointRenderColorBuffer);
 }
 
 bool Asteroida::Initialize(ShaderManager& shaderManager, Elementa* elementa)
@@ -281,6 +299,7 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 	}
 
 	// Send the Vertex data
+	glBindVertexArray(vao);
 	universalVertices::TransferToOpenGl(gpuAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer, indicesBuffer);
 
 	// Send the Texture data
@@ -299,12 +318,15 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_1D, asteroidOresTexture);
 	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, gpuOreColors.size(), GL_RGBA, GL_FLOAT, &gpuOreColors[0]);
+
+	// Update the points matrix.
+	glBindVertexArray(pointRenderVao);
+	universalVertices::TransferDirectToOpenGl(asteroids.positions, asteroids.colors, pointRenderPositionBuffer, pointRenderColorBuffer);
 }
 
 // Renders the asteroids with the given perspective/look-at projection matrix.
 void Asteroida::Render(const vmath::mat4& projectionMatrix, const vmath::vec3& shipPosition)
 {
-	glBindVertexArray(vao);
 	UpdateVisibleAsteroids(shipPosition);
 
     glUseProgram(asteroidShaderProgram);
@@ -313,13 +335,17 @@ void Asteroida::Render(const vmath::mat4& projectionMatrix, const vmath::vec3& s
 	glUniform1i(asteroidRotationsLocation, 2);
 	glUniform1i(asteroidOresLocation, 3);
 	
+	// Asteroids that made the cut.
     glBindVertexArray(vao);
-		
     glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
-    vmath::mat4 mv_matrix = vmath::translate(vmath::vec3(0.0f, 0.0f, 0.0f));
-    glUniformMatrix4fv(mvLocation, 1, GL_FALSE, mv_matrix);
-    
 	glDrawElements(GL_TRIANGLES, gpuAsteroids.indices.size(), GL_UNSIGNED_INT, nullptr);
+
+	// Points for all asteroids that missed the cut.
+	glUseProgram(pointRenderShaderProgram);
+	glBindVertexArray(pointRenderVao);
+	glUniformMatrix4fv(pointRenderProjLocation, 1, GL_FALSE, projectionMatrix);
+	glDrawArrays(GL_POINTS, 0, gpuAsteroids.positions.size());
+
 }
 
 Asteroida::~Asteroida()
@@ -333,4 +359,8 @@ Asteroida::~Asteroida()
     glDeleteTextures(1, &asteroidPositionTexture);
 	glDeleteTextures(1, &asteroidColorTexture);
 	glDeleteTextures(1, &asteroidRotationTexture);
+
+	glDeleteVertexArrays(1, &pointRenderVao);
+	glDeleteBuffers(1, &pointRenderPositionBuffer);
+	glDeleteBuffers(1, &pointRenderColorBuffer);
 }

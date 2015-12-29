@@ -8,7 +8,7 @@ void universalVertices::SendToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint ite
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(shaderIdx, itemCount, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(T), &data[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(T), &data[0], GL_DYNAMIC_DRAW);
 }
 
 void universalVertices::SendUIntToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint itemCount, const std::vector<unsigned int>& data)
@@ -18,13 +18,13 @@ void universalVertices::SendUIntToOpenGl(GLuint buffer, GLuint shaderIdx, GLuint
 
 	// Note this is glVertexAttrib*I*Pointer in comparison to the other call above.
 	glVertexAttribIPointer(shaderIdx, itemCount, GL_UNSIGNED_INT, 0, nullptr);
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_DYNAMIC_DRAW);
 }
 
 void universalVertices::SendIndicesToOpenGl(GLuint buffer, const std::vector<unsigned int>& data)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_DYNAMIC_DRAW);
 }
 
 void universalVertices::Reset()
@@ -42,6 +42,12 @@ void universalVertices::AddColorTextureVertex(vmath::vec3 position, vmath::vec3 
     positions.push_back(position);
     colors.push_back(color);
     uvs.push_back(uv);
+}
+
+void universalVertices::TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, const std::vector<vmath::vec3>& colors, GLuint positionBuffer, GLuint colorBuffer)
+{
+	universalVertices::SendToOpenGl(positionBuffer, 0, 4, positions); // Alas, we must use this for efficiency.
+	universalVertices::SendToOpenGl(colorBuffer, 1, 3, colors);
 }
 
 void universalVertices::TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer,
