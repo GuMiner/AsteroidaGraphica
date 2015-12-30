@@ -331,7 +331,10 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 
 	// Send the Vertex data
 	glBindVertexArray(vao);
-	universalVertices::TransferToOpenGl(gpuAsteroids, positionBuffer, 0, barycentricBuffer, 0, idBuffer, indicesBuffer);
+	gpuAsteroids.TransferPositionToOpenGl(positionBuffer);
+	gpuAsteroids.TransferBarycentricsToOpenGl(barycentricBuffer);
+	gpuAsteroids.TransferIdsToOpenGl(idBuffer);
+	gpuAsteroids.TransferIndicesToOpenGl(indicesBuffer);
 
 	// Send the Texture data
 	glActiveTexture(GL_TEXTURE0);
@@ -352,7 +355,7 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 
 	// Update the points matrix.
 	glBindVertexArray(pointRenderVao);
-	universalVertices::TransferDirectToOpenGl(asteroids.positions, asteroids.colors, pointRenderPositionBuffer, pointRenderColorBuffer);
+	universalVertices::TransferDirectToOpenGl(asteroids.positions, pointRenderPositionBuffer, asteroids.colors, pointRenderColorBuffer);
 }
 
 // Renders the asteroids with the given perspective/look-at projection matrix.

@@ -85,6 +85,8 @@ public:
     static float LargeAsteroidSizeMaxPerPointDeformation;
     static float LargeAsteroidTriangleSize;
 
+	static float ForceFieldTriangleSize;
+
     static int SmallAsteroidTypes;
     static int MediumAsteroidTypes;
     static int LargeAsteroidTypes;

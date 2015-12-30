@@ -293,6 +293,17 @@ unsigned int Geometry::GenerateSun(universalVertices& vertices)
         ConfigManager::SunTriangleSize);
 }
 
+// Generates a force field of the specified radius.
+unsigned int Geometry::GenerateForceField(universalVertices& vertices, float radius)
+{
+	return GenerateSphericalArchetype(
+		vertices,
+		radius,
+		0.0f,
+		0.0f,
+		ConfigManager::ForceFieldTriangleSize);
+}
+
 // Generates a small asteroid, which means it is less than a grid size
 unsigned int Geometry::GenerateSmallAsteroid(universalVertices& vertices)
 {

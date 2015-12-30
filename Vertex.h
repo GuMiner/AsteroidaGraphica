@@ -21,7 +21,8 @@ private:
 	static void SendIndicesToOpenGl(GLuint buffer, const std::vector<unsigned int>& data);
 
 public:
-    std::vector<vmath::vec3> positions;
+	// Note that each item here follows the given buffer layout.
+    std::vector<vmath::vec3> positions; // layout position 0
     std::vector<vmath::vec3> colors;
     std::vector<vmath::vec4> barycentrics;
     std::vector<vmath::vec2> uvs;
@@ -35,13 +36,16 @@ public:
     // Adds a position, color, UV vertex.
     void AddColorTextureVertex(vmath::vec3 position, vmath::vec3 color, vmath::vec2 uv);
 
-    // Transfers the vertex data for any non-zero filled array into OpenGL.
-    // Note that buffer layout is 1 == position, 2 == color, and so on and so forth.
-    static void TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer,
-		GLuint barycentricBuffer, GLuint uvBuffer, GLuint idBuffer, GLuint indiciesBuffer);
-
-	// Transfers a position/color array set directly to OpenGl.
-	static void TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, const std::vector<vmath::vec3>& colors, GLuint positionBuffer, GLuint colorBuffer);
+    // Transfers the vertex data for the specified array to OpenGL.
+	void TransferPositionToOpenGl(GLuint positionBuffer);
+	void TransferColorToOpenGl(GLuint colorBuffer);
+	void TransferBarycentricsToOpenGl(GLuint barycentricBuffer);
+	void TransferUvsToOpenGl(GLuint uvBuffer);
+	void TransferIdsToOpenGl(GLuint idBuffer);
+	void TransferIndicesToOpenGl(GLuint indiciesBuffer);
+    
+	// Transfers a vec4 position set directly to OpenGL. Used for *speed* within asteroid rendering for LOD effects.
+	static void TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, GLuint positionBuffer, const std::vector<vmath::vec3>& colors, GLuint colorBuffer);
 };
 
 struct DrawArraysIndirectCommand

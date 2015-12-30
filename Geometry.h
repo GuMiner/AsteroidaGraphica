@@ -44,6 +44,7 @@ private:
     unsigned int GenerateSphericalArchetype(universalVertices& vertices, float radius, float majorAxisDeformation, float perPointDeformation, float triangleSize);
 public:
     unsigned int GenerateSun(universalVertices& vertices);
+	unsigned int GenerateForceField(universalVertices& vertices, float radius);
     unsigned int GenerateSmallAsteroid(universalVertices& vertices);
     unsigned int GenerateMediumAsteroid(universalVertices& vertices);
     unsigned int GenerateLargeAsteroid(universalVertices& vertices);

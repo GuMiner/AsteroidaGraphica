@@ -9,6 +9,7 @@
 #include "ImageManager.h"
 #include "Logger.h"
 #include "MusicManager.h"
+#include "Planetia.h"
 #include "Physica.h"
 #include "ShaderManager.h"
 #include "Shipia.h"
@@ -25,6 +26,7 @@ class AsteroidaGraphica
     Asteroida asteroida;
 	Shipia shipia;
 	Elementa elementa;
+	Planetia planetia;
 	Stellaria stellaria;
     ShipHud shipHud;
     vmath::mat4 perspectiveMatrix;

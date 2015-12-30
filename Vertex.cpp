@@ -44,44 +44,41 @@ void universalVertices::AddColorTextureVertex(vmath::vec3 position, vmath::vec3 
     uvs.push_back(uv);
 }
 
-void universalVertices::TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, const std::vector<vmath::vec3>& colors, GLuint positionBuffer, GLuint colorBuffer)
+void universalVertices::TransferPositionToOpenGl(GLuint positionBuffer)
 {
-	universalVertices::SendToOpenGl(positionBuffer, 0, 4, positions); // Alas, we must use this for efficiency.
+	universalVertices::SendToOpenGl(positionBuffer, 0, 3, positions);
+}
+
+void universalVertices::TransferColorToOpenGl(GLuint colorBuffer)
+{
 	universalVertices::SendToOpenGl(colorBuffer, 1, 3, colors);
 }
 
-void universalVertices::TransferToOpenGl(const universalVertices& vertices, GLuint positionBuffer, GLuint colorBuffer,
-	GLuint barycentricBuffer, GLuint uvBuffer, GLuint idBuffer, GLuint indiciesBuffer)
+void universalVertices::TransferBarycentricsToOpenGl(GLuint barycentricBuffer)
 {
-    if (vertices.positions.size() != 0)
-    {
-        universalVertices::SendToOpenGl(positionBuffer, 0, 3, vertices.positions);
-    }
+	universalVertices::SendToOpenGl(barycentricBuffer, 2, 4, barycentrics);
+}
 
-    if (vertices.colors.size() != 0)
-    {
-        universalVertices::SendToOpenGl(colorBuffer, 1, 3, vertices.colors);
-    }
+void universalVertices::TransferUvsToOpenGl(GLuint uvBuffer)
+{
+	universalVertices::SendToOpenGl(uvBuffer, 3, 2, uvs);
+}
 
-    if (vertices.barycentrics.size() != 0)
-    {
-        universalVertices::SendToOpenGl(barycentricBuffer, 2, 4, vertices.barycentrics);
-    }
+void universalVertices::TransferIdsToOpenGl(GLuint idBuffer)
+{
+	universalVertices::SendUIntToOpenGl(idBuffer, 4, 1, ids);
+}
 
-    if (vertices.uvs.size() != 0)
-    {
-        universalVertices::SendToOpenGl(uvBuffer, 3, 2, vertices.uvs);
-    }
+void universalVertices::TransferIndicesToOpenGl(GLuint indiciesBuffer)
+{
+	universalVertices::SendIndicesToOpenGl(indiciesBuffer, indices);
+}
 
-    if (vertices.ids.size() != 0)
-    {
-        universalVertices::SendUIntToOpenGl(idBuffer, 4, 1, vertices.ids);
-    }
+void universalVertices::TransferDirectToOpenGl(const std::vector<vmath::vec4>& positions, GLuint positionBuffer, const std::vector<vmath::vec3>& colors, GLuint colorBuffer)
+{
+	universalVertices::SendToOpenGl(positionBuffer, 0, 4, positions);
+	universalVertices::SendToOpenGl(colorBuffer, 1, 3, colors);
 
-	if (vertices.indices.size() != 0)
-	{
-		universalVertices::SendIndicesToOpenGl(indiciesBuffer, vertices.indices);
-	}
 }
 
 void DrawArraysIndirectCommand::Set(GLuint vertexCount, GLuint instanceCount, GLuint firstVertexOffset, GLuint baseInstance)

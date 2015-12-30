@@ -31,7 +31,9 @@ bool Stellaria::Initialize(ShaderManager & shaderManager)
 	GLuint vertexCount = geometry.GenerateSun(sunVertices);
 	
 	Logger::Log("Sending the sun to the GPU...");
-	universalVertices::TransferToOpenGl(sunVertices, positionBuffer, 0, barycentricBuffer, 0, 0, indicesBuffer);
+	sunVertices.TransferPositionToOpenGl(positionBuffer);
+	sunVertices.TransferBarycentricsToOpenGl(barycentricBuffer);
+	sunVertices.TransferIndicesToOpenGl(indicesBuffer);
 	return true;
 }
 
@@ -56,7 +58,7 @@ void Stellaria::Render(vmath::mat4& projectionMatrix)
 	glBindVertexArray(vao);
 
 	vibrationLock.lock();
-	universalVertices::TransferToOpenGl(tempPositionVertices, positionBuffer, 0, 0, 0, 0, 0);
+	tempPositionVertices.TransferPositionToOpenGl(positionBuffer);
 	vibrationLock.unlock();
 
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);

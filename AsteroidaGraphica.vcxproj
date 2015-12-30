@@ -180,6 +180,8 @@
     <None Include="README.md" />
     <None Include="shaders\asteroidPointRender.fs" />
     <None Include="shaders\asteroidPointRender.vs" />
+    <None Include="shaders\fieldRender.fs" />
+    <None Include="shaders\fieldRender.vs" />
     <None Include="shaders\fontRender.fs" />
     <None Include="shaders\fontRender.vs" />
     <None Include="shaders\mapRender.fs" />

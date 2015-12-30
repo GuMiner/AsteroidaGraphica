@@ -115,6 +115,7 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
 			Logger::Log(errorStream.str().c_str());
 		}
 	});
+
 	/*
 	setCallbackMask(CallbackMask::After | CallbackMask::ParametersAndReturnValue);
 	glbinding::setAfterCallback([](const glbinding::FunctionCall & call)
@@ -225,6 +226,12 @@ Constants::Status AsteroidaGraphica::LoadAssets()
 		return Constants::Status::BAD_ASTEROIDA;
 	}
 
+	Logger::Log("Planets loading...");
+	if (!planetia.Initialize(shaderManager))
+	{
+		return Constants::Status::BAD_PLANETIA;
+	}
+
 	// Sun
 	Logger::Log("Stellaria loading...");
 	if (!stellaria.Initialize(shaderManager))
@@ -309,6 +316,9 @@ Constants::Status AsteroidaGraphica::Run()
             // Draw the asteroids
             asteroida.Render(perspectiveMatrix, lookAtMatrix, shipia.shipPosition);
 			stellaria.Render(projectionMatrix);
+
+			// Draw the planets & force field.
+			planetia.Render(projectionMatrix);
 
             // Draws our HUD
             shipHud.UpdateCompassRotations(shipia.shipOrientation.asEulerAngles());

@@ -53,6 +53,8 @@ float ConfigManager::LargeAsteroidSizeMaxAxisDeformation;
 float ConfigManager::LargeAsteroidSizeMaxPerPointDeformation;
 float ConfigManager::LargeAsteroidTriangleSize;
 
+float ConfigManager::ForceFieldTriangleSize;
+
 int ConfigManager::SmallAsteroidTypes;
 int ConfigManager::MediumAsteroidTypes;
 int ConfigManager::LargeAsteroidTypes;
@@ -291,6 +293,8 @@ bool ConfigManager::LoadConfigurationValues(std::vector<std::string>& configFile
 	LoadConfigurationValue(Float, LargeAsteroidSizeMaxPerPointDeformation, "Error reading in the large asteroid size max per point deformation!");
 	LoadConfigurationValue(Float, LargeAsteroidTriangleSize, "Error reading in the large asteroid triangle size!");
 
+	LoadConfigurationValue(Float, ForceFieldTriangleSize, "Error reading in the force field triangle size!");
+
 	LoadConfigurationValue(Int, SmallAsteroidTypes, "Error decoding the small asteroid type count!");
 	LoadConfigurationValue(Int, MediumAsteroidTypes, "Error decoding the medium asteroid type count!");
 	LoadConfigurationValue(Int, LargeAsteroidTypes, "Error decoding the large asteroid type count!");
@@ -417,6 +421,8 @@ void ConfigManager::WriteConfigurationValues()
     WriteFloat("LargeAsteroidSizeMaxAxisDeformation", LargeAsteroidSizeMaxAxisDeformation);
     WriteFloat("LargeAsteroidSizeMaxPerPointDeformation", LargeAsteroidSizeMaxPerPointDeformation);
     WriteFloat("LargeAsteroidTriangleSize", LargeAsteroidTriangleSize);
+
+	WriteFloat("ForceFieldTriangleSize", ForceFieldTriangleSize);
 
     WriteInt("SmallAsteroidTypes", SmallAsteroidTypes);
     WriteInt("MediumAsteroidTypes", MediumAsteroidTypes);
