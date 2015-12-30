@@ -4,15 +4,16 @@ layout (location = 0) in vec3 position;
 
 out VS_OUT
 {
-    vec4 color;
+	vec3 position;
+	flat vec3 cornerPos;
 } vs_out;
 
 uniform mat4 projMatrix;
-uniform float phase;
 
 void main(void)
 {
-    vs_out.color = vec4(phase, phase, phase, 1.0f);
+	vs_out.position = position;
+	vs_out.cornerPos = position;
 
     gl_Position = projMatrix * vec4(position, 1.0f);
 }
