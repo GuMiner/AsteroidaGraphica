@@ -4,6 +4,7 @@ out vec4 color;
 
 in VS_OUT
 {
+	float viewDistance;
     vec4 color;
 	vec4 highlightColor;
     vec4 barycentricPosition;
@@ -24,12 +25,19 @@ void main(void)
     }
     else
     {
-        // Make everything else completely solid, but darkened appropriate.y
+        // Make everything else completely solid, but darkened appropriately
         inpColor.r *= inpColor.a * 2.0;
         inpColor.g *= inpColor.a * 2.0;
         inpColor.b *= inpColor.a * 2.0;
         inpColor.a = 1.0f;
     }
 
-    color = inpColor;
+	// Apply fog.
+	float extinctionFogFactor = 0.022f;
+	float inscatteringFogFactor = 0.011f;
+	vec4 fogColor = vec4(0.7f, 0.8f, 0.9f, 0.0f);
+	float extinction = exp(-fs_in.viewDistance*extinctionFogFactor);
+	float inscattering = exp(-fs_in.viewDistance*inscatteringFogFactor);
+
+    color = inpColor*extinction + fogColor*(1.0f - inscattering);
 }

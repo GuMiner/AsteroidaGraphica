@@ -11,6 +11,7 @@ uniform sampler1D asteroidOres;
 
 out VS_OUT
 {
+	float viewDistance;
     vec4 color;
 	vec4 highlightColor;
     vec4 barycentricPosition;
@@ -64,9 +65,12 @@ void main(void)
 	vec4 effectiveNormal = asteroidRotationMatrix * vec4(position, 1);
 	vec4 effectivePosition = asteroidPositionMatrix * effectiveNormal;
 
+	vec3 viewVector = -(viewMatrix * effectivePosition).xyz;
+	vs_out.viewDistance = length(viewVector);
+
 	vec3 normalN = normalize(effectiveNormal.xyz);
 	vec3 normalL = normalize(-effectivePosition.xyz);
-	vec3 normalV = normalize(-(viewMatrix * effectivePosition).xyz);
+	vec3 normalV = viewVector / vs_out.viewDistance;
 
 	vec3 reflection = reflect(-normalL, normalV);
 
