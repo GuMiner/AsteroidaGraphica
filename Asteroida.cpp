@@ -258,8 +258,6 @@ bool Asteroida::Initialize(ShaderManager& shaderManager, Elementa* elementa)
 // Updates the visible asteroids and sends the vertex and texture data to the gpu.
 void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 {
-	// TODO select the visible asteroids, not the first 100 asteroids
-	
 	// Clear the results from the last update.
 	gpuAsteroids.Reset();
 	gpuPositions.clear();
@@ -268,8 +266,39 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 	gpuOreColors.clear();
 
 	int currentIndex = 0;
-	for (int i = 0; i < ConfigManager::AsteroidRenderLimit; i++)
+	int asteroidCount = 0;
+	
+	// Yes, this should be in the class. Considering this is essentially debugging functionality, I'm leaving it as-is.
+	static bool hitRenderLimitBefore = false;
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
 	{
+		if (asteroidCount == ConfigManager::AsteroidRenderLimit)
+		{
+			if (!hitRenderLimitBefore)
+			{
+				Logger::Log("Warning! Hit the asteroid render limit -- consider increasing the limit or decreasing your view distance");
+				hitRenderLimitBefore = true;
+			}
+			break;
+		}
+
+		const vmath::vec4 asteroidPosition = asteroids.positions[i];
+		if (!(asteroidPosition[0] - ConfigManager::ViewDistance < shipPosition[0] && asteroidPosition[0] + ConfigManager::ViewDistance > shipPosition[0]))
+		{
+			// Asteroid not in x-bounds
+			continue;
+		}
+		if (!(asteroidPosition[1] - ConfigManager::ViewDistance < shipPosition[1] && asteroidPosition[1] + ConfigManager::ViewDistance > shipPosition[1]))
+		{
+			// Asteroid not in y-bounds
+			continue;
+		}
+		if (!(asteroidPosition[2] - ConfigManager::ViewDistance < shipPosition[2] && asteroidPosition[2] + ConfigManager::ViewDistance > shipPosition[2]))
+		{
+			// Asteroid not in z-bounds
+			continue;
+		}
+
 		// Load the vertex data
 		int vertexOffset = archetypeData[asteroids.archetypeIds[i]].vertexOffset;
 		int vertexCount = archetypeData[asteroids.archetypeIds[i]].vertexCount;
@@ -280,7 +309,7 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 		{
 			gpuAsteroids.positions.push_back(allAsteroids.positions[vertexOffset + j]);
 			gpuAsteroids.barycentrics.push_back(allAsteroids.barycentrics[vertexOffset + j]);
-			gpuAsteroids.ids.push_back(i); // Yes, i. This is the ID of the asteroid, not the vertex.
+			gpuAsteroids.ids.push_back(asteroidCount); // Yes, asteroidCount. This is the ID of the asteroid, not the vertex.
 		}
 
 		for (int j = 0; j < indiciesCount; j++)
@@ -289,14 +318,15 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 			gpuAsteroids.indices.push_back(currentIndex + (allAsteroids.indices[indiciesOffset + j] - vertexOffset));
 		}
 
-		// Note that the *value* of each index cannot be > the new vertex count.
-		currentIndex += vertexCount;
-
 		// Load the texture data.
 		gpuPositions.push_back(asteroids.positions[i]);
 		gpuColors.push_back(asteroids.colors[i]);
 		gpuRotations.push_back(asteroids.rotations[i]);
 		gpuOreColors.push_back(asteroids.oreColors[i]);
+
+		// Note that the *value* of each index cannot be > the new vertex count.
+		currentIndex += vertexCount;
+		++asteroidCount;
 	}
 
 	// Send the Vertex data

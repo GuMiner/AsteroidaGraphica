@@ -15,9 +15,9 @@ FullScreen false
 ScreenWidth 1280
 ScreenHeight 720
 
-# Distance that asteroids are visible from the current ship location.
+# Distance that asteroids are visible from the current ship location, in all directions.
 #  Note that if this is too large (and AsteroidRenderLimit is too small), asteroids will flicker within the visible range.
-ViewDistance 1.73
+ViewDistance 15.0
 
 # Maximum size of the text image.
 # Text will fail to be displayed if this is too small, but certain GPUs won't support their reported maximum texture size.
@@ -79,8 +79,8 @@ LargeAsteroidTypes 300
 
 # Where asteroids are generated
 AsteroidTorusMinDistance 50.0
-AsteroidTorusRadius 30.0
-AsteroidTorusHeight 20.0
+AsteroidTorusRadius 40.0
+AsteroidTorusHeight 40.0
 
 # Total number of asteroids.
 # 1048576 was the original intent, but that amount isn't viable on low-spec hardware.
