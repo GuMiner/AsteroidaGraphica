@@ -19,9 +19,19 @@ bool Asteroida::InitializeShader(ShaderManager& shaderManager)
 		return false;
 	}
 
-	if (!shaderManager.CreateShaderProgram("asteroidPointRender", &pointRenderShaderProgram))
+	if (GeneralConfig::SimpleAsteroidLodShader)
 	{
-		return false;
+		if (!shaderManager.CreateShaderProgram("simple/asteroidPointRender", &pointRenderShaderProgram))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!shaderManager.CreateShaderProgram("asteroidPointRender", &pointRenderShaderProgram))
+		{
+			return false;
+		}
 	}
 
 	Logger::Log("Asteroida shader creation successful!");

@@ -1,3 +1,4 @@
+#include "GeneralConfig.h"
 #include "Geometry.h"
 #include "Logger.h"
 #include "Vertex.h"
@@ -14,9 +15,19 @@ bool Planetia::Initialize(ShaderManager& shaderManager)
 {
 	// Create shader and GPU data
 	Logger::Log("Force field shader creation...");
-	if (!shaderManager.CreateShaderProgram("fieldRender", &fieldShaderProgram))
+	if (GeneralConfig::SimpleForceFieldShader)
 	{
-		return false;
+		if (!shaderManager.CreateShaderProgram("simple/fieldRender", &fieldShaderProgram))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!shaderManager.CreateShaderProgram("fieldRender", &fieldShaderProgram))
+		{
+			return false;
+		}
 	}
 
 	projLocation = glGetUniformLocation(fieldShaderProgram, "projMatrix");

@@ -17,6 +17,9 @@ public:
 
 	static int AsteroidRenderLimit;
 
+	static bool SimpleForceFieldShader;
+	static bool SimpleAsteroidLodShader;
+
 	GeneralConfig(const char* configName);
 };
 

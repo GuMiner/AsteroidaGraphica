@@ -36,6 +36,9 @@
     <Filter Include="Content\Configs">
       <UniqueIdentifier>{60b9a922-bb9f-4846-8aba-1c6d25f948ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content\Shaders\Simple">
+      <UniqueIdentifier>{77b1217f-3b3a-4f0f-be0e-77420537ec31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h">
@@ -251,6 +254,18 @@
     </None>
     <None Include="shaders\fieldRender.vs">
       <Filter>Content\Shaders</Filter>
+    </None>
+    <None Include="shaders\simple\asteroidPointRender.fs">
+      <Filter>Content\Shaders\Simple</Filter>
+    </None>
+    <None Include="shaders\simple\asteroidPointRender.vs">
+      <Filter>Content\Shaders\Simple</Filter>
+    </None>
+    <None Include="shaders\simple\fieldRender.fs">
+      <Filter>Content\Shaders\Simple</Filter>
+    </None>
+    <None Include="shaders\simple\fieldRender.vs">
+      <Filter>Content\Shaders\Simple</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

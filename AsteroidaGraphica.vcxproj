@@ -198,6 +198,10 @@
     <None Include="shaders\mapRender.vs" />
     <None Include="shaders\asteroidRender.fs" />
     <None Include="shaders\asteroidRender.vs" />
+    <None Include="shaders\simple\asteroidPointRender.fs" />
+    <None Include="shaders\simple\asteroidPointRender.vs" />
+    <None Include="shaders\simple\fieldRender.fs" />
+    <None Include="shaders\simple\fieldRender.vs" />
     <None Include="shaders\sunRender.fs" />
     <None Include="shaders\sunRender.vs" />
     <None Include="shaders\textureRender.fs" />

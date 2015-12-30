@@ -26,3 +26,7 @@ TextImageSize 1024
 # Maximum number of asteroids that will be rendered at a single time.
 #  All asteroids are rendered as points to give a LOD effect.
 AsteroidRenderLimit 1024
+
+# Simplifies shaders for low-spec devices
+SimpleForceFieldShader false
+SimpleAsteroidLodShader true

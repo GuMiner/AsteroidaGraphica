@@ -11,6 +11,9 @@ int GeneralConfig::TextImageSize;
 
 int GeneralConfig::AsteroidRenderLimit;
 
+bool GeneralConfig::SimpleForceFieldShader;
+bool GeneralConfig::SimpleAsteroidLodShader;
+
 bool GeneralConfig::LoadConfigValues(std::vector<std::string>& configFileLines)
 {
 	LoadConfigurationValue(Bool, IsFullscreen, "Error decoding the fullscreen toggle!");
@@ -20,6 +23,9 @@ bool GeneralConfig::LoadConfigValues(std::vector<std::string>& configFileLines)
 	LoadConfigurationValue(Int, TextImageSize, "Error reading in the text image size!");
 
 	LoadConfigurationValue(Int, AsteroidRenderLimit, "Error decoding the asteroid render limit!");
+
+	LoadConfigurationValue(Bool, SimpleForceFieldShader, "Error decoding the simple force field shader toggle!");
+	LoadConfigurationValue(Bool, SimpleAsteroidLodShader, "Error decoding the simple asteroid LOD shader toggle!");
 
 	return true;
 }
