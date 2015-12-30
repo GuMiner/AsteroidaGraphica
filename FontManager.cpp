@@ -2,8 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <glbinding/gl/gl.h>
-#include "ConfigManager.h"
 #include "Constants.h"
+#include "GeneralConfig.h"
 #include "Logger.h"
 #include "FontManager.h"
 
@@ -59,8 +59,8 @@ bool FontManager::LoadFont(ShaderManager *shaderManager, const char *fontName)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
 
-	width = ConfigManager::TextImageSize;
-	height = ConfigManager::TextImageSize;
+	width = GeneralConfig::TextImageSize;
+	height = GeneralConfig::TextImageSize;
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
    
     return true;

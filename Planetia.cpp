@@ -1,8 +1,8 @@
-#include "ConfigManager.h"
 #include "Geometry.h"
 #include "Logger.h"
 #include "Vertex.h"
 #include "Planetia.h"
+#include "WorldGenerationConfig.h"
 
 Planetia::Planetia()
 {
@@ -30,8 +30,8 @@ bool Planetia::Initialize(ShaderManager& shaderManager)
 	// Create the force fields.
 	Geometry geometry;
 	universalVertices vertices;
-	geometry.GenerateForceField(vertices, ConfigManager::AsteroidTorusMinDistance);
-	geometry.GenerateForceField(vertices, ConfigManager::AsteroidTorusMinDistance + ConfigManager::AsteroidTorusRadius);
+	geometry.GenerateForceField(vertices, WorldGenerationConfig::AsteroidTorusMinDistance);
+	geometry.GenerateForceField(vertices, WorldGenerationConfig::AsteroidTorusMinDistance + WorldGenerationConfig::AsteroidTorusRadius);
 
 	vertices.TransferPositionToOpenGl(positionBuffer);
 	vertices.TransferIndicesToOpenGl(indicesBuffer);

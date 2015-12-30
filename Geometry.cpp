@@ -1,6 +1,6 @@
-#include "ConfigManager.h"
 #include "Constants.h"
 #include "Geometry.h"
+#include "WorldGenerationConfig.h"
 
 // Determines the ring radius.
 float Geometry::GetRingRadius(float radius, float ringHeight)
@@ -287,10 +287,10 @@ unsigned int Geometry::GenerateSun(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
 		vertices,
-        ConfigManager::SunSize,
+		WorldGenerationConfig::SunSize,
         0.0f,
-        Constants::Rand(ConfigManager::SunMaxPerPointDeformation),
-        ConfigManager::SunTriangleSize);
+        Constants::Rand(WorldGenerationConfig::SunMaxPerPointDeformation),
+		WorldGenerationConfig::SunTriangleSize);
 }
 
 // Generates a force field of the specified radius.
@@ -301,7 +301,7 @@ unsigned int Geometry::GenerateForceField(universalVertices& vertices, float rad
 		radius,
 		0.0f,
 		0.0f,
-		ConfigManager::ForceFieldTriangleSize);
+		WorldGenerationConfig::ForceFieldTriangleSize);
 }
 
 // Generates a small asteroid, which means it is less than a grid size
@@ -309,10 +309,10 @@ unsigned int Geometry::GenerateSmallAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
 		vertices,
-        ConfigManager::SmallAsteroidSize + Constants::Rand(ConfigManager::SmallAsteroidSizeMaxVariation),
-        Constants::Rand(ConfigManager::SmallAsteroidSizeMaxAxisDeformation),
-        Constants::Rand(ConfigManager::SmallAsteroidSizeMaxPerPointDeformation),
-        ConfigManager::SmallAsteroidTriangleSize);
+		WorldGenerationConfig::SmallAsteroidSize + Constants::Rand(WorldGenerationConfig::SmallAsteroidSizeMaxVariation),
+        Constants::Rand(WorldGenerationConfig::SmallAsteroidSizeMaxAxisDeformation),
+        Constants::Rand(WorldGenerationConfig::SmallAsteroidSizeMaxPerPointDeformation),
+		WorldGenerationConfig::SmallAsteroidTriangleSize);
 }
 
 // Generates a medium asteroid, which means it is about 40% of a grid size.
@@ -320,10 +320,10 @@ unsigned int Geometry::GenerateMediumAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
 		vertices,
-        ConfigManager::MediumAsteroidSize + Constants::Rand(ConfigManager::MediumAsteroidSizeMaxVariation),
-        Constants::Rand(ConfigManager::MediumAsteroidSizeMaxAxisDeformation),
-        Constants::Rand(ConfigManager::MediumAsteroidSizeMaxPerPointDeformation),
-        ConfigManager::MediumAsteroidTriangleSize);
+		WorldGenerationConfig::MediumAsteroidSize + Constants::Rand(WorldGenerationConfig::MediumAsteroidSizeMaxVariation),
+        Constants::Rand(WorldGenerationConfig::MediumAsteroidSizeMaxAxisDeformation),
+        Constants::Rand(WorldGenerationConfig::MediumAsteroidSizeMaxPerPointDeformation),
+		WorldGenerationConfig::MediumAsteroidTriangleSize);
 }
 
 // Generates a large asteroid, which means it is about the size of the grid.
@@ -331,8 +331,8 @@ unsigned int Geometry::GenerateLargeAsteroid(universalVertices& vertices)
 {
     return GenerateSphericalArchetype(
 		vertices,
-        ConfigManager::LargeAsteroidSize + Constants::Rand(ConfigManager::LargeAsteroidSizeMaxVariation),
-        Constants::Rand(ConfigManager::LargeAsteroidSizeMaxAxisDeformation),
-        Constants::Rand(ConfigManager::LargeAsteroidSizeMaxPerPointDeformation),
-        ConfigManager::LargeAsteroidTriangleSize);
+		WorldGenerationConfig::LargeAsteroidSize + Constants::Rand(WorldGenerationConfig::LargeAsteroidSizeMaxVariation),
+        Constants::Rand(WorldGenerationConfig::LargeAsteroidSizeMaxAxisDeformation),
+        Constants::Rand(WorldGenerationConfig::LargeAsteroidSizeMaxPerPointDeformation),
+		WorldGenerationConfig::LargeAsteroidTriangleSize);
 }

@@ -1,6 +1,6 @@
 #include <thread>
-#include "ConfigManager.h"
 #include "Physica.h"
+#include "PhysicsConfig.h"
 
 Physica::Physica()
 {
@@ -24,7 +24,7 @@ vmath::vec3 Physica::SunAcceleration(const vmath::vec3& pos) const
 	// F_a = (m_s*m_a*G_c/(r_2))r_hat
 
 	float distance = vmath::length(pos);
-	float constants = -ConfigManager::SolarMass * ConfigManager::GravitationalConstant / (distance * distance);
+	float constants = -PhysicsConfig::SolarMass * PhysicsConfig::GravitationalConstant / (distance * distance);
 
 	return constants * vmath::normalize(pos);
 }
@@ -123,7 +123,7 @@ void Physica::Run()
 
         // The physics thread runs at a configurable delay, which we abide by here.
         sf::Time physicsUpdateTime = clock.restart();
-        int sleepAmount = ConfigManager::PhysicsThreadDelay - physicsUpdateTime.asMilliseconds();
+        int sleepAmount = PhysicsConfig::PhysicsThreadDelay - physicsUpdateTime.asMilliseconds();
         if (sleepAmount > 0)
         {
             std::chrono::milliseconds sleepTime(sleepAmount);
@@ -142,7 +142,7 @@ void Physica::HandleAsteroidMotion()
 			asteroida->asteroids.positions[i][0],
 			asteroida->asteroids.positions[i][1],
 			asteroida->asteroids.positions[i][2]);
-		SunIntegration(position, asteroida->asteroids.velocities[i], ConfigManager::AsteroidTimestep);
+		SunIntegration(position, asteroida->asteroids.velocities[i], PhysicsConfig::AsteroidTimestep);
 		asteroida->asteroids.positions[i][0] = position[0];
 		asteroida->asteroids.positions[i][1] = position[1];
 		asteroida->asteroids.positions[i][2] = position[2];
@@ -163,7 +163,7 @@ void Physica::HandleAsteroidMotion()
 void Physica::HandleShipMotion()
 {
 	// Note that I'm using the asteroid timestep, because else you cannot match orbital speeds with an asteroid!
-	ShipIntegration(shipia->shipPosition, shipia->shipVelocity, ConfigManager::AsteroidTimestep);
+	ShipIntegration(shipia->shipPosition, shipia->shipVelocity, PhysicsConfig::AsteroidTimestep);
 
     // Apply rotation (yaw, pitch, and then roll, in that order).
     // This is actually horrendously incorrect (physically speaking). However, it looks ok and works ok for small rotation speeds.

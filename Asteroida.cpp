@@ -1,6 +1,9 @@
-#include "ConfigManager.h"
+#include "GeneralConfig.h"
 #include "Logger.h"
+#include "OreConfig.h"
 #include "Paletta.h"
+#include "PhysicsConfig.h"
+#include "WorldGenerationConfig.h"
 #include "Asteroida.h"
 
 Asteroida::Asteroida()
@@ -43,7 +46,7 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 	unsigned int vertexCounter = 0;
 	unsigned int indiciesCounter = 0;
 	ArchetypeData archetype;
-	for (int i = 0; i < ConfigManager::SmallAsteroidTypes; i++)
+	for (int i = 0; i < WorldGenerationConfig::SmallAsteroidTypes; i++)
 	{
 		archetype.vertexOffset = vertexCounter;
 		archetype.indexOffset = indiciesCounter;
@@ -59,7 +62,7 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 	}
 
 	Logger::Log("Generating medium asteroid types...");
-	for (int i = 0; i < ConfigManager::MediumAsteroidTypes; i++)
+	for (int i = 0; i < WorldGenerationConfig::MediumAsteroidTypes; i++)
 	{
 		archetype.vertexOffset = vertexCounter;
 		archetype.indexOffset = indiciesCounter;
@@ -75,7 +78,7 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 	}
 
 	Logger::Log("Generating large asteroid types...");
-	for (int i = 0; i < ConfigManager::LargeAsteroidTypes; i++)
+	for (int i = 0; i < WorldGenerationConfig::LargeAsteroidTypes; i++)
 	{
 		archetype.vertexOffset = vertexCounter;
 		archetype.indexOffset = indiciesCounter;
@@ -95,7 +98,7 @@ void Asteroida::GenerateAsteroidTypes(universalVertices& allAsteroids)
 vmath::vec3 Asteroida::GetOrbitalVelocity(const vmath::vec2& pos) const
 {
 	float length = vmath::length(pos);
-	float orbitalSpeed = sqrt(ConfigManager::GravitationalConstant * ConfigManager::SolarMass / length);
+	float orbitalSpeed = sqrt(PhysicsConfig::GravitationalConstant * PhysicsConfig::SolarMass / length);
 	return vmath::normalize(vmath::cross(vmath::vec3(-pos[0], -pos[1], 0), vmath::vec3(0, 0, 1))) * orbitalSpeed;
 }
 
@@ -103,21 +106,21 @@ vmath::vec3 Asteroida::GetOrbitalVelocity(const vmath::vec2& pos) const
 void Asteroida::GenerateRandomColorRotations()
 {
 	// Give all the asteroids a random color.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
 		asteroids.colors.push_back(Paletta::GetRandomAsteroidColor());
 	}
 
 	// Give all the asteroids a random rotation.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
 		vmath::vec3 randomAxis = vmath::normalize(vmath::vec3(Constants::Rand(), Constants::Rand(), Constants::Rand()));
 		float randomAngle = Constants::Rand() * 2 * 3.15159f;
 
 		vmath::vec3 currentEulerRotation = vmath::vec3(
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed),
-			Constants::Rand(ConfigManager::AsteroidRotationSpeed));
+			Constants::Rand(PhysicsConfig::AsteroidRotationSpeed),
+			Constants::Rand(PhysicsConfig::AsteroidRotationSpeed),
+			Constants::Rand(PhysicsConfig::AsteroidRotationSpeed));
 
 		asteroids.rotations.push_back(vmath::quaternion::fromAxisAngle(randomAngle, randomAxis));
 		asteroids.eulerRotations.push_back(currentEulerRotation);
@@ -128,10 +131,10 @@ void Asteroida::GenerateRandomColorRotations()
 void Asteroida::GenerateAsteroidOreDistribution()
 {
 	// Generate the ore distribution.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
 		float isOre = Constants::Rand();
-		if (isOre > ConfigManager::OreEmptyRatio)
+		if (isOre > OreConfig::OreEmptyRatio)
 		{
 			// No ore
 			asteroids.oreColors.push_back(vmath::vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -158,7 +161,7 @@ void Asteroida::GenerateAsteroidOreDistribution()
 void Asteroida::GenerateAsteroidField()
 {
 	// Determine if this is a S/M/L asteroid and the archetype ID.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
 		Geometry::AsteroidSize asteroidSize = (Geometry::AsteroidSize)Constants::Rand(0, 3);
 		asteroids.asteroidSizes.push_back(asteroidSize);
@@ -167,26 +170,26 @@ void Asteroida::GenerateAsteroidField()
 		switch (asteroidSize)
 		{
 		case Geometry::AsteroidSize::Small:
-			asteroids.masses.push_back(ConfigManager::SmallAsteroidMass);
+			asteroids.masses.push_back(PhysicsConfig::SmallAsteroidMass);
 			break;
 		case Geometry::AsteroidSize::Medium:
-			asteroids.masses.push_back(ConfigManager::MediumAsteroidMass);
+			asteroids.masses.push_back(PhysicsConfig::MediumAsteroidMass);
 			break;
 		case Geometry::AsteroidSize::Large:
-			asteroids.masses.push_back(ConfigManager::LargeAsteroidMass);
+			asteroids.masses.push_back(PhysicsConfig::LargeAsteroidMass);
 			break;
 		}
 	}
 
 	// Give all the asteroids a random position, ensuring all asteroids spawn within the shields.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
-		float distance = ConfigManager::AsteroidTorusMinDistance + ConfigManager::LargeAsteroidSize * 2
-			 + Constants::Rand() * (ConfigManager::AsteroidTorusRadius - 4 * ConfigManager::LargeAsteroidSize);
+		float distance = WorldGenerationConfig::AsteroidTorusMinDistance + WorldGenerationConfig::LargeAsteroidSize * 2
+			 + Constants::Rand() * (WorldGenerationConfig::AsteroidTorusRadius - 4 * WorldGenerationConfig::LargeAsteroidSize);
 		float angle = 2 * 3.14159f * Constants::Rand();
-		float height = Constants::Rand(ConfigManager::AsteroidTorusHeight);
+		float height = Constants::Rand(WorldGenerationConfig::AsteroidTorusHeight);
 
-		distance -= ConfigManager::AsteroidTorusMinDistance * (1.0f - cos(atan(height / ConfigManager::AsteroidTorusMinDistance)));
+		distance -= WorldGenerationConfig::AsteroidTorusMinDistance * (1.0f - cos(atan(height / WorldGenerationConfig::AsteroidTorusMinDistance)));
 
 		vmath::vec4 position = vmath::vec4(distance * cos(angle), distance * sin(angle), height, 0.0f);
 		asteroids.positions.push_back(position);
@@ -219,22 +222,22 @@ void Asteroida::GenerateAsteroidView()
 	Logger::Log("Creating 1D texture for ore visualization...");
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_1D, asteroidOresTexture);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidRenderLimit);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, GeneralConfig::AsteroidRenderLimit);
 
 	Logger::Log("Creating 1D texture for asteroid rotation...");
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_1D, asteroidRotationTexture);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidRenderLimit);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, GeneralConfig::AsteroidRenderLimit);
 
 	Logger::Log("Creating 1D texture for asteroid color visualization...");
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_1D, asteroidColorTexture);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGB32F_ARB, ConfigManager::AsteroidRenderLimit);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGB32F_ARB, GeneralConfig::AsteroidRenderLimit);
 
 	Logger::Log("Creating 1D texture for asteroid positioning...");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, asteroidPositionTexture);
-	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, ConfigManager::AsteroidRenderLimit);
+	glTexStorage1D(GL_TEXTURE_1D, 1, GL_RGBA32F_ARB, GeneralConfig::AsteroidRenderLimit);
 
 	// Generate data for point rendering.
 	glGenVertexArrays(1, &pointRenderVao);
@@ -280,9 +283,9 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 	
 	// Yes, this should be in the class. Considering this is essentially debugging functionality, I'm leaving it as-is.
 	static bool hitRenderLimitBefore = false;
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	for (int i = 0; i < WorldGenerationConfig::AsteroidCount; i++)
 	{
-		if (asteroidCount == ConfigManager::AsteroidRenderLimit)
+		if (asteroidCount == GeneralConfig::AsteroidRenderLimit)
 		{
 			if (!hitRenderLimitBefore)
 			{
@@ -293,17 +296,17 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 		}
 
 		const vmath::vec4 asteroidPosition = asteroids.positions[i];
-		if (!(asteroidPosition[0] - ConfigManager::ViewDistance < shipPosition[0] && asteroidPosition[0] + ConfigManager::ViewDistance > shipPosition[0]))
+		if (!(asteroidPosition[0] - GeneralConfig::ViewDistance < shipPosition[0] && asteroidPosition[0] + GeneralConfig::ViewDistance > shipPosition[0]))
 		{
 			// Asteroid not in x-bounds
 			continue;
 		}
-		if (!(asteroidPosition[1] - ConfigManager::ViewDistance < shipPosition[1] && asteroidPosition[1] + ConfigManager::ViewDistance > shipPosition[1]))
+		if (!(asteroidPosition[1] - GeneralConfig::ViewDistance < shipPosition[1] && asteroidPosition[1] + GeneralConfig::ViewDistance > shipPosition[1]))
 		{
 			// Asteroid not in y-bounds
 			continue;
 		}
-		if (!(asteroidPosition[2] - ConfigManager::ViewDistance < shipPosition[2] && asteroidPosition[2] + ConfigManager::ViewDistance > shipPosition[2]))
+		if (!(asteroidPosition[2] - GeneralConfig::ViewDistance < shipPosition[2] && asteroidPosition[2] + GeneralConfig::ViewDistance > shipPosition[2]))
 		{
 			// Asteroid not in z-bounds
 			continue;

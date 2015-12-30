@@ -1,6 +1,6 @@
-#include "ConfigManager.h"
 #include "Constants.h"
 #include "Paletta.h"
+#include "OreConfig.h"
 
 Paletta::Paletta()
 {
@@ -10,7 +10,7 @@ Paletta::Paletta()
 vmath::vec3 Paletta::GetRandomAsteroidColor()
 {
 	float randomValue = Constants::Rand();
-	return (ConfigManager::AsteroidGradientEndColor - ConfigManager::AsteroidGradientStartColor) * randomValue + ConfigManager::AsteroidGradientStartColor;
+	return (OreConfig::AsteroidGradientEndColor - OreConfig::AsteroidGradientStartColor) * randomValue + OreConfig::AsteroidGradientStartColor;
 }
 
 Paletta::~Paletta()

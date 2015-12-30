@@ -29,7 +29,9 @@ Version AsteroidaGraphica::Version;
 Constants AsteroidaGraphica::Constant;
 
 AsteroidaGraphica::AsteroidaGraphica()
-    : physicsManager(), physicaThread(&Physica::Run, &physicsManager), musicThread(&MusicManager::Run, &musicManager)
+	: physicsManager(), physicaThread(&Physica::Run, &physicsManager), musicThread(&MusicManager::Run, &musicManager),
+	generalConfig("config/general.txt"), keyBindingConfig("config/keyBindings.txt"), oreConfig("config/ore.txt"),
+	physicsConfig("config/physics.txt"), worldGenerationConfig("config/worldGeneration.txt")
 {
 }
 
@@ -83,10 +85,35 @@ void AsteroidaGraphica::UpdatePerspective(unsigned int width, unsigned int heigh
 // Performs initialization that can be done without a GPU context.
 Constants::Status AsteroidaGraphica::Initialize()
 {
-    if (!configManager.ReadConfiguration())
+    if (!generalConfig.ReadConfiguration())
     {
+		Logger::Log("Bad general config file!");
         return Constants::Status::BAD_CONFIG;
     }
+
+	if (!keyBindingConfig.ReadConfiguration())
+	{
+		Logger::Log("Bad key binding config file!");
+		return Constants::Status::BAD_CONFIG;
+	}
+
+	if (!oreConfig.ReadConfiguration())
+	{
+		Logger::Log("Bad ore config file!");
+		return Constants::Status::BAD_CONFIG;
+	}
+
+	if (!physicsConfig.ReadConfiguration())
+	{
+		Logger::Log("Bad physics config file!");
+		return Constants::Status::BAD_CONFIG;
+	}
+
+	if (!worldGenerationConfig.ReadConfiguration())
+	{
+		Logger::Log("Bad world generation config file!");
+		return Constants::Status::BAD_CONFIG;
+	}
 
 	Logger::Log("Configuration loaded!");
 
@@ -256,8 +283,8 @@ Constants::Status AsteroidaGraphica::Run()
     Logger::Log("Graphics Initializing...");
     sf::ContextSettings contextSettings = sf::ContextSettings(24, 8, 8, 4, 0, 0);
 
-    sf::Uint32 style = ConfigManager::IsFullscreen ? sf::Style::Fullscreen : sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close;
-    sf::Window window(sf::VideoMode(ConfigManager::ScreenWidth, ConfigManager::ScreenHeight), Version::NAME, style, contextSettings);
+    sf::Uint32 style = GeneralConfig::IsFullscreen ? sf::Style::Fullscreen : sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close;
+    sf::Window window(sf::VideoMode(GeneralConfig::ScreenWidth, GeneralConfig::ScreenHeight), Version::NAME, style, contextSettings);
     Constants::Status firstTimeSetup = LoadFirstTimeGraphics();
     if (firstTimeSetup != Constants::Status::OK)
     {

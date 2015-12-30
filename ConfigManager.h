@@ -5,16 +5,29 @@
 #include <SFML\Window.hpp>
 #include "vmath.hpp"
 
+// Function macro to wrap calls to Load* and spit out an error message on failure.
+#define LoadConfigurationValue(Type, Variable, ErrorMessage) \
+	currentLine = configFileLines[++lineCounter];			 \
+	if (!Load##Type(##Variable))		  					 \
+	{														 \
+		Logger::Log(##ErrorMessage);                         \
+		return false;										 \
+	}														 \
+
+
 // Loads in the configuration details for the rest of the system.
 class ConfigManager
 {
-    const char* configFileName;
-    
-    // Empty lines are counted as comment lines to preserve formatting of spacing.
-    std::string CommentString;
-    std::map<int, std::string> commentLines;
+private:
+	const char* configFileName;
+	
+	// Empty lines are counted as comment lines to preserve formatting of spacing.
+	std::string CommentString;
+	std::map<int, std::string> commentLines;
 
+protected:
 	std::string currentLine;
+	int lineCounter;
     bool LoadBool(bool& boolean);
     bool LoadInt(int& integer);
     bool LoadFloat(float& floatingPoint);
@@ -28,142 +41,18 @@ class ConfigManager
     void WriteKey(const char* itemName, sf::Keyboard::Key& key);
 	void WriteVector(const char* itemName, vmath::vec3& vector);
 
+	// Performs config-manager specific loading and writing. Called by read/write configuration.
     bool LoadConfigurationValues(std::vector<std::string>& lines);
     void WriteConfigurationValues();
 
+	// Implemented by derived classes for loading / writing.
+	virtual bool LoadConfigValues(std::vector<std::string>& lines) = 0;
+	virtual void WriteConfigValues() = 0;
+
 public:
-    static int ConfigVersion;
+	int configVersion;
 
-    // Graphics
-    static bool IsFullscreen;
-    static int ScreenWidth;
-    static int ScreenHeight;
-
-	static float ViewDistance;
-
-	static int TextImageSize;
-
-    // Key bindings
-    static sf::Keyboard::Key ThrustForwardsKey;
-    static sf::Keyboard::Key ThrustReverseKey;
-    static sf::Keyboard::Key ThrustLeftKey;
-    static sf::Keyboard::Key ThrustRightKey;
-    static sf::Keyboard::Key ThrustUpKey;
-    static sf::Keyboard::Key ThrustDownKey;
-
-    static sf::Keyboard::Key RotateLeftKey;
-    static sf::Keyboard::Key RotateRightKey;
-    static sf::Keyboard::Key RotateUpKey;
-    static sf::Keyboard::Key RotateDownKey;
-    static sf::Keyboard::Key RotateCWKey;
-    static sf::Keyboard::Key RotateCCWKey;
-
-    static sf::Keyboard::Key ToggleRotationDampeningKey;
-    static sf::Keyboard::Key ToggleTranslationDampeningKey;
-    static sf::Keyboard::Key PauseKey;
-
-    // World Generation
-    static float SunSize;
-    static float SunMaxPerPointDeformation;
-    static float SunTriangleSize;
-
-    static float SmallAsteroidSize;
-    static float SmallAsteroidSizeMaxVariation;
-    static float SmallAsteroidSizeMaxAxisDeformation;
-    static float SmallAsteroidSizeMaxPerPointDeformation;
-    static float SmallAsteroidTriangleSize;
-
-    static float MediumAsteroidSize;
-    static float MediumAsteroidSizeMaxVariation;
-    static float MediumAsteroidSizeMaxAxisDeformation;
-    static float MediumAsteroidSizeMaxPerPointDeformation;
-    static float MediumAsteroidTriangleSize;
-
-    static float LargeAsteroidSize;
-    static float LargeAsteroidSizeMaxVariation;
-    static float LargeAsteroidSizeMaxAxisDeformation;
-    static float LargeAsteroidSizeMaxPerPointDeformation;
-    static float LargeAsteroidTriangleSize;
-
-	static float ForceFieldTriangleSize;
-
-    static int SmallAsteroidTypes;
-    static int MediumAsteroidTypes;
-    static int LargeAsteroidTypes;
-
-	static float AsteroidTorusMinDistance;
-	static float AsteroidTorusRadius;
-	static float AsteroidTorusHeight;
-
-    static int AsteroidCount;
-	static int AsteroidRenderLimit;
-
-	// Physics
-	static int PhysicsThreadDelay;
-
-	static float BaseShipMass;
-	static float SmallAsteroidMass;
-	static float MediumAsteroidMass;
-	static float LargeAsteroidMass;
-
-	static float SolarMass;
-	static float GravitationalConstant;
-
-	static float AsteroidTimestep;
-	static float AsteroidRotationSpeed;
-
-	static float ShipThrustSpeed;
-	static float ShipSideThrustSpeed;
-	static float ShipVerticalThrustSpeed;
-	static float TransDampenerThrustSpeed;
-
-	static float ShipHorizRotSpeed;
-	static float ShipVertRotSpeed;
-	static float ShipBarrelRollSpeed;
-	static float RotDampenerSpeed;
-
-	// Palettes
-	static vmath::vec3 AsteroidGradientStartColor;
-	static vmath::vec3 AsteroidGradientEndColor;
-
-	static vmath::vec3 WaterOreColor;
-	static vmath::vec3 FeOreColor;
-	static vmath::vec3 SiOreColor;
-	static vmath::vec3 CuOreColor;
-	static vmath::vec3 UOreColor;
-	static vmath::vec3 AuOreColor;
-	static vmath::vec3 PtOreColor;
-	static vmath::vec3 ImpOreColor;
-
-	// Resources
-	static float BaseWaterOre;
-	static float MaxWaterOre;
-	static float BaseFeOre;
-	static float MaxFeOre;
-	static float BaseSiOre;
-	static float MaxSiOre;
-	static float BaseCuOre;
-	static float MaxCuOre;
-	static float BaseUOre;
-	static float MaxUOre;
-	static float BaseAuOre;
-	static float MaxAuOre;
-	static float BasePtOre;
-	static float MaxPtOre;
-	static float BaseImpOre;
-	static float MaxImpOre;
-
-	static float OreEmptyRatio;
-	static float WaterRatio;
-	static float FeRatio;
-	static float SiRatio;
-	static float CuRatio;
-	static float URatio;
-	static float AuRatio;
-	static float PtRatio;
-	static float ImpRatio;
-
-    ConfigManager();
+    ConfigManager(const char* configFileName);
     bool ReadConfiguration();
     bool WriteConfiguration();
 };

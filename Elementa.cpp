@@ -1,9 +1,10 @@
 #include <string>
 #include <sstream>
-#include "ConfigManager.h"
 #include "Constants.h"
 #include "Elementa.h"
 #include "Logger.h"
+#include "OreConfig.h"
+#include "PhysicsConfig.h"
 
 Elementa::Elementa()
 { }
@@ -14,14 +15,14 @@ void Elementa::Initialize(FontManager *fontManager)
 	this->fontManager = fontManager;
 
 	Logger::Log("Loading in the base ore amounts...");
-	water.amount = ConfigManager::BaseWaterOre;
-	fe.amount = ConfigManager::BaseFeOre;
-	si.amount = ConfigManager::BaseSiOre;
-	cu.amount = ConfigManager::BaseCuOre;
-	u.amount = ConfigManager::BaseUOre;
-	au.amount = ConfigManager::BaseAuOre;
-	pt.amount = ConfigManager::BasePtOre;
-	imp.amount = ConfigManager::BaseImpOre;
+	water.amount = OreConfig::BaseWaterOre;
+	fe.amount = OreConfig::BaseFeOre;
+	si.amount = OreConfig::BaseSiOre;
+	cu.amount = OreConfig::BaseCuOre;
+	u.amount = OreConfig::BaseUOre;
+	au.amount = OreConfig::BaseAuOre;
+	pt.amount = OreConfig::BasePtOre;
+	imp.amount = OreConfig::BaseImpOre;
 
 	water.textId = fontManager->CreateNewSentence();
 	fe.textId = fontManager->CreateNewSentence();
@@ -47,25 +48,25 @@ void Elementa::Initialize(FontManager *fontManager)
 	UpdateTextStrings();
 
 	// Setup the random limits for weighted random element generation.
-	float sumElementWeights = ConfigManager::WaterRatio + ConfigManager::FeRatio + ConfigManager::SiRatio +
-		ConfigManager::CuRatio + ConfigManager::URatio + ConfigManager::AuRatio + ConfigManager::PtRatio + ConfigManager::ImpRatio;
+	float sumElementWeights = OreConfig::WaterRatio + OreConfig::FeRatio + OreConfig::SiRatio +
+		OreConfig::CuRatio + OreConfig::URatio + OreConfig::AuRatio + OreConfig::PtRatio + OreConfig::ImpRatio;
 
-	waterRandomLimit = ConfigManager::WaterRatio / sumElementWeights;
-	feRandomLimit = waterRandomLimit + ConfigManager::FeRatio / sumElementWeights;
-	siRandomLimit = feRandomLimit + ConfigManager::SiRatio / sumElementWeights;
-	cuRandomLimit = siRandomLimit + ConfigManager::CuRatio / sumElementWeights;
-	uRandomLimit = cuRandomLimit + ConfigManager::URatio / sumElementWeights;
-	auRandomLimit = uRandomLimit + ConfigManager::AuRatio / sumElementWeights;
-	ptRandomLimit = auRandomLimit + ConfigManager::PtRatio / sumElementWeights;
-	impRandomLimit = ptRandomLimit + ConfigManager::ImpRatio / sumElementWeights; // 1.00f.
+	waterRandomLimit = OreConfig::WaterRatio / sumElementWeights;
+	feRandomLimit = waterRandomLimit + OreConfig::FeRatio / sumElementWeights;
+	siRandomLimit = feRandomLimit + OreConfig::SiRatio / sumElementWeights;
+	cuRandomLimit = siRandomLimit + OreConfig::CuRatio / sumElementWeights;
+	uRandomLimit = cuRandomLimit + OreConfig::URatio / sumElementWeights;
+	auRandomLimit = uRandomLimit + OreConfig::AuRatio / sumElementWeights;
+	ptRandomLimit = auRandomLimit + OreConfig::PtRatio / sumElementWeights;
+	impRandomLimit = ptRandomLimit + OreConfig::ImpRatio / sumElementWeights; // 1.00f.
 }
 
 // Gets the maximum total mass the ship can carry, + the ship mass.
 float Elementa::GetMaximumTotalMass() const
 {
-	return ConfigManager::BaseShipMass +
-		ConfigManager::MaxWaterOre + ConfigManager::MaxFeOre + ConfigManager::MaxSiOre + ConfigManager::MaxCuOre +
-		ConfigManager::MaxUOre + ConfigManager::MaxAuOre + ConfigManager::MaxPtOre + ConfigManager::MaxImpOre;
+	return PhysicsConfig::BaseShipMass +
+		OreConfig::MaxWaterOre + OreConfig::MaxFeOre + OreConfig::MaxSiOre + OreConfig::MaxCuOre +
+		OreConfig::MaxUOre + OreConfig::MaxAuOre + OreConfig::MaxPtOre + OreConfig::MaxImpOre;
 }
 
 #define RandomSelectorElseIf(element, Element)		  \
@@ -97,7 +98,7 @@ Elementa::Elements Elementa::GetRandomElement() const
 // Simplifies repetative cases for random ore amounts.
 #define RandomOreAmount(Element)								 \
 	case Elements::##Element:									 \
-		return Constants::Rand()*ConfigManager::##Element##Ratio \
+		return Constants::Rand()*OreConfig::##Element##Ratio \
 
 // Gets a random ore-specific ore amount.
 float Elementa::GetRandomOreAmount(Elementa::Elements element) const
@@ -120,7 +121,7 @@ float Elementa::GetRandomOreAmount(Elementa::Elements element) const
 // Simplifies max ore amount lookups.
 #define MaxOreAmount(Element)					\
 	case Elements::##Element:					\
-		return ConfigManager::##Element##Ratio  \
+		return OreConfig::##Element##Ratio  \
 
 
 // Gets the maximum random ore-specific ore amount.
@@ -144,7 +145,7 @@ float Elementa::GetMaxRandomOreAmount(Elementa::Elements element) const
 // Simplifies repetative cases for colors.
 #define ElementColorCase(Element)			     \
 	case Elements::##Element:				     \
-	   return ConfigManager::##Element##OreColor \
+	   return OreConfig::##Element##OreColor \
 
 //Gets the ore color for the respective element.
 vmath::vec3 Elementa::GetOreColor(Elementa::Elements element) const
@@ -167,7 +168,7 @@ vmath::vec3 Elementa::GetOreColor(Elementa::Elements element) const
 // Gets the current mass of the ship + elements.
 float Elementa::GetCurrentMass() const
 {
-	return ConfigManager::BaseShipMass +
+	return PhysicsConfig::BaseShipMass +
 		water.amount + fe.amount + si.amount + cu.amount + u.amount + au.amount + pt.amount + imp.amount;
 }
 
@@ -185,14 +186,14 @@ void Elementa::UpdateTextString(int sentenceId, const char* prefix, float amount
 // Updates the inventory text strings based on the current ore amounts and maximum ore amounts.
 void Elementa::UpdateTextStrings()
 {
-	UpdateTextString(water.textId, "Water: ", water.amount, ConfigManager::MaxWaterOre, ConfigManager::WaterOreColor);
-	UpdateTextString(fe.textId, "Iron: ", fe.amount, ConfigManager::MaxFeOre, ConfigManager::FeOreColor);
-	UpdateTextString(si.textId, "Silicon: ", si.amount, ConfigManager::MaxSiOre, ConfigManager::SiOreColor);
-	UpdateTextString(cu.textId, "Copper: ", cu.amount, ConfigManager::MaxCuOre, ConfigManager::CuOreColor);
-	UpdateTextString(u.textId, "Uranium: ", u.amount, ConfigManager::MaxUOre, ConfigManager::UOreColor);
-	UpdateTextString(au.textId, "Gold: ", au.amount, ConfigManager::MaxAuOre, ConfigManager::AuOreColor);
-	UpdateTextString(pt.textId, "Platinum: ", pt.amount, ConfigManager::MaxPtOre, ConfigManager::PtOreColor);
-	UpdateTextString(imp.textId, "Impurities: ", imp.amount, ConfigManager::MaxImpOre, ConfigManager::ImpOreColor);
+	UpdateTextString(water.textId, "Water: ", water.amount, OreConfig::MaxWaterOre, OreConfig::WaterOreColor);
+	UpdateTextString(fe.textId, "Iron: ", fe.amount, OreConfig::MaxFeOre, OreConfig::FeOreColor);
+	UpdateTextString(si.textId, "Silicon: ", si.amount, OreConfig::MaxSiOre, OreConfig::SiOreColor);
+	UpdateTextString(cu.textId, "Copper: ", cu.amount, OreConfig::MaxCuOre, OreConfig::CuOreColor);
+	UpdateTextString(u.textId, "Uranium: ", u.amount, OreConfig::MaxUOre, OreConfig::UOreColor);
+	UpdateTextString(au.textId, "Gold: ", au.amount, OreConfig::MaxAuOre, OreConfig::AuOreColor);
+	UpdateTextString(pt.textId, "Platinum: ", pt.amount, OreConfig::MaxPtOre, OreConfig::PtOreColor);
+	UpdateTextString(imp.textId, "Impurities: ", imp.amount, OreConfig::MaxImpOre, OreConfig::ImpOreColor);
 
 	UpdateTextString(totalMassTextId, "Total: ", GetCurrentMass(), GetMaximumTotalMass(), vmath::vec3(1.0f, 1.0f, 1.0f));
 }

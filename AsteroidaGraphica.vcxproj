@@ -133,13 +133,17 @@
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Elementa.h" />
+    <ClInclude Include="GeneralConfig.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageTexture.h" />
+    <ClInclude Include="KeyBindingConfig.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="MusicManager.h" />
+    <ClInclude Include="OreConfig.h" />
     <ClInclude Include="Paletta.h" />
     <ClInclude Include="Physica.h" />
+    <ClInclude Include="PhysicsConfig.h" />
     <ClInclude Include="Planetia.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShipHud.h" />
@@ -152,6 +156,7 @@
     <ClInclude Include="Version.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="vmath.hpp" />
+    <ClInclude Include="WorldGenerationConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Asteroida.cpp" />
@@ -159,12 +164,16 @@
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="Elementa.cpp" />
+    <ClCompile Include="GeneralConfig.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="ImageManager.cpp" />
+    <ClCompile Include="KeyBindingConfig.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MusicManager.cpp" />
+    <ClCompile Include="OreConfig.cpp" />
     <ClCompile Include="Paletta.cpp" />
     <ClCompile Include="Physica.cpp" />
+    <ClCompile Include="PhysicsConfig.cpp" />
     <ClCompile Include="Planetia.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShipHud.cpp" />
@@ -175,6 +184,7 @@
     <ClCompile Include="Stellaria.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="WorldGenerationConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -194,7 +204,11 @@
     <None Include="shaders\textureRender.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="config\config.txt" />
+    <Text Include="config\general.txt" />
+    <Text Include="config\keyBindings.txt" />
+    <Text Include="config\ore.txt" />
+    <Text Include="config\physics.txt" />
+    <Text Include="config\worldGeneration.txt" />
     <Text Include="DebugCode.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

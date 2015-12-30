@@ -27,6 +27,15 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{d2500184-1724-4eae-9dd9-0181e4f47b01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Configs">
+      <UniqueIdentifier>{b6c50ce0-a516-4c45-a358-746fe591f1fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Configs">
+      <UniqueIdentifier>{cba6f223-ea2d-41d5-916a-4419dba6c9ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content\Configs">
+      <UniqueIdentifier>{60b9a922-bb9f-4846-8aba-1c6d25f948ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsteroidaGraphica.h">
@@ -101,6 +110,21 @@
     <ClInclude Include="Shipia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OreConfig.h">
+      <Filter>Header Files\Configs</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyBindingConfig.h">
+      <Filter>Header Files\Configs</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConfig.h">
+      <Filter>Header Files\Configs</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGenerationConfig.h">
+      <Filter>Header Files\Configs</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralConfig.h">
+      <Filter>Header Files\Configs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidaGraphica.cpp">
@@ -166,6 +190,21 @@
     <ClCompile Include="Shipia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OreConfig.cpp">
+      <Filter>Source Files\Configs</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyBindingConfig.cpp">
+      <Filter>Source Files\Configs</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsConfig.cpp">
+      <Filter>Source Files\Configs</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldGenerationConfig.cpp">
+      <Filter>Source Files\Configs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralConfig.cpp">
+      <Filter>Source Files\Configs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -218,8 +257,20 @@
     <Text Include="DebugCode.txt">
       <Filter>Content</Filter>
     </Text>
-    <Text Include="config\config.txt">
-      <Filter>Content</Filter>
+    <Text Include="config\general.txt">
+      <Filter>Content\Configs</Filter>
+    </Text>
+    <Text Include="config\keyBindings.txt">
+      <Filter>Content\Configs</Filter>
+    </Text>
+    <Text Include="config\ore.txt">
+      <Filter>Content\Configs</Filter>
+    </Text>
+    <Text Include="config\physics.txt">
+      <Filter>Content\Configs</Filter>
+    </Text>
+    <Text Include="config\worldGeneration.txt">
+      <Filter>Content\Configs</Filter>
     </Text>
   </ItemGroup>
 </Project>
