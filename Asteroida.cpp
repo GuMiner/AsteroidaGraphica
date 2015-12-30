@@ -124,45 +124,9 @@ void Asteroida::GenerateRandomColorRotations()
 	}
 }
 
-// Generates the field of all the asteroids.
-void Asteroida::GenerateAsteroidField()
+// Generates the ore distribution of all the asteroids.
+void Asteroida::GenerateAsteroidOreDistribution()
 {
-	// Determine if this is a S/M/L asteroid and the archetype ID.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
-	{
-		Geometry::AsteroidSize asteroidSize = (Geometry::AsteroidSize)Constants::Rand(0, 3);
-		asteroids.asteroidSizes.push_back(asteroidSize);
-		asteroids.archetypeIds.push_back(Constants::Rand(0, archetypeData.size()));
-
-		switch (asteroidSize)
-		{
-		case Geometry::AsteroidSize::Small:
-			asteroids.masses.push_back(ConfigManager::SmallAsteroidMass);
-			break;
-		case Geometry::AsteroidSize::Medium:
-			asteroids.masses.push_back(ConfigManager::MediumAsteroidMass);
-			break;
-		case Geometry::AsteroidSize::Large:
-			asteroids.masses.push_back(ConfigManager::LargeAsteroidMass);
-			break;
-		}
-	}
-
-	// Give all the asteroids a random position.
-	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
-	{
-		float distance = ConfigManager::AsteroidTorusMinDistance + Constants::Rand() * ConfigManager::AsteroidTorusRadius;
-		float angle = 2 * 3.14159f * Constants::Rand();
-		float height = Constants::Rand(ConfigManager::AsteroidTorusHeight);
-
-		vmath::vec4 position = vmath::vec4(distance * cos(angle), distance * sin(angle), height, 0.0f);
-		asteroids.positions.push_back(position);
-		asteroids.velocities.push_back(GetOrbitalVelocity(vmath::vec2(position[0], position[1])));
-	}
-
-	Logger::Log("Generating random colors and rotations...");
-	GenerateRandomColorRotations();
-	
 	// Generate the ore distribution.
 	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
 	{
@@ -188,6 +152,52 @@ void Asteroida::GenerateAsteroidField()
 			asteroids.elementAmounts.push_back(elementAmount);
 		}
 	}
+}
+
+// Generates the field of all the asteroids.
+void Asteroida::GenerateAsteroidField()
+{
+	// Determine if this is a S/M/L asteroid and the archetype ID.
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		Geometry::AsteroidSize asteroidSize = (Geometry::AsteroidSize)Constants::Rand(0, 3);
+		asteroids.asteroidSizes.push_back(asteroidSize);
+		asteroids.archetypeIds.push_back(Constants::Rand(0, archetypeData.size()));
+
+		switch (asteroidSize)
+		{
+		case Geometry::AsteroidSize::Small:
+			asteroids.masses.push_back(ConfigManager::SmallAsteroidMass);
+			break;
+		case Geometry::AsteroidSize::Medium:
+			asteroids.masses.push_back(ConfigManager::MediumAsteroidMass);
+			break;
+		case Geometry::AsteroidSize::Large:
+			asteroids.masses.push_back(ConfigManager::LargeAsteroidMass);
+			break;
+		}
+	}
+
+	// Give all the asteroids a random position, ensuring all asteroids spawn within the shields.
+	for (int i = 0; i < ConfigManager::AsteroidCount; i++)
+	{
+		float distance = ConfigManager::AsteroidTorusMinDistance + ConfigManager::LargeAsteroidSize * 2
+			 + Constants::Rand() * (ConfigManager::AsteroidTorusRadius - 4 * ConfigManager::LargeAsteroidSize);
+		float angle = 2 * 3.14159f * Constants::Rand();
+		float height = Constants::Rand(ConfigManager::AsteroidTorusHeight);
+
+		distance -= ConfigManager::AsteroidTorusMinDistance * (1.0f - cos(atan(height / ConfigManager::AsteroidTorusMinDistance)));
+
+		vmath::vec4 position = vmath::vec4(distance * cos(angle), distance * sin(angle), height, 0.0f);
+		asteroids.positions.push_back(position);
+		asteroids.velocities.push_back(GetOrbitalVelocity(vmath::vec2(position[0], position[1])));
+	}
+
+	Logger::Log("Generating random colors and rotations...");
+	GenerateRandomColorRotations();
+	
+	Logger::Log("Generating asteroid ore distribution...");
+	GenerateAsteroidOreDistribution();
 }
 
 // Generates the GPU data that stores the visible asteroids in the asteroid field.

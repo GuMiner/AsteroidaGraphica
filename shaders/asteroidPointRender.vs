@@ -15,5 +15,5 @@ void main(void)
 {
     vs_out.color = vec4(color, 1);
     gl_Position = proj_matrix * vec4(position.xyz, 1);
-	gl_PointSize = 6.0f;
+	gl_PointSize = 8.0f;
 }

@@ -81,8 +81,8 @@ LargeAsteroidTypes 300
 
 # Where asteroids are generated
 AsteroidTorusMinDistance 50.0
-AsteroidTorusRadius 40.0
-AsteroidTorusHeight 40.0
+AsteroidTorusRadius 100.0
+AsteroidTorusHeight 50.0
 
 # Total number of asteroids.
 # 1048576 was the original intent, but that amount isn't viable on low-spec hardware.
@@ -107,10 +107,10 @@ SolarMass 10000.0
 GravitationalConstant 10.0
 
 # Delta T applied to physics calculations with asteroids.
-AsteroidTimestep 0.0033
+AsteroidTimestep 0.0011
 
 # Default max rotation speed for asteroids per tick, in radians. There will be asteroids rotating slower/faster than this over game time.
-AsteroidRotationSpeed 0.06
+AsteroidRotationSpeed 0.03
 
 # Ship performance data
 ShipThrustSpeed 190000.0

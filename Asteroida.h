@@ -86,6 +86,8 @@ class Asteroida
 	void GenerateAsteroidTypes(universalVertices& allAsteroids);
 	
 	void GenerateRandomColorRotations();
+	
+	void GenerateAsteroidOreDistribution();
 	void GenerateAsteroidField();
 	void GenerateAsteroidView();
 
