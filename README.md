@@ -1,6 +1,11 @@
 # AsteroidaGraphica
 ## About
 --------------------
+
+![asteroids.png][status2]
+[status2]:./asteroids.png
+* 12/29 Status Update*
+
 ![Status1214.png][status]
 [status]:./Status1214.png
 *12/14 Status Update*

@@ -48,7 +48,7 @@ class Asteroida
 
 	// GPU data
 	GLuint asteroidShaderProgram;
-    GLuint projLocation;
+    GLuint perspectiveLocation, viewMatrixLocation;
 	GLuint asteroidPositionLocation, asteroidColorsLocation, asteroidRotationsLocation, asteroidOresLocation;
 
 	GLuint pointRenderShaderProgram;
@@ -96,7 +96,7 @@ public:
 
     Asteroida();
     bool Initialize(ShaderManager& shaderManager, Elementa* elementa);
-    void Render(const vmath::mat4& projectionMatrix, const vmath::vec3& shipPosition);
+    void Render(const vmath::mat4& perspectiveMatrix, const vmath::mat4& viewMatrix, const vmath::vec3& shipPosition);
     ~Asteroida();
 };
 

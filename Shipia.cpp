@@ -5,7 +5,7 @@
 
 Shipia::Shipia()
 {
-	shipPosition = vmath::vec3(0, 0, 80);
+	shipPosition = vmath::vec3(50, 0, 0);
 	shipOrientation = vmath::quaternion(0, 0, 0, 1);
 
 	shipVelocity = vmath::vec3(0, 0, 0);

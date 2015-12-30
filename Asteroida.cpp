@@ -23,7 +23,8 @@ bool Asteroida::InitializeShader(ShaderManager& shaderManager)
 
 	Logger::Log("Asteroida shader creation successful!");
 
-	projLocation = glGetUniformLocation(asteroidShaderProgram, "proj_matrix");
+	perspectiveLocation = glGetUniformLocation(asteroidShaderProgram, "perspectiveMatrix");
+	viewMatrixLocation = glGetUniformLocation(asteroidShaderProgram, "viewMatrix");
 	asteroidPositionLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidPositions");
 	asteroidColorsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidColors");
 	asteroidRotationsLocation = glGetUniformLocation(asteroidShaderProgram, "asteroidRotations");
@@ -325,7 +326,7 @@ void Asteroida::UpdateVisibleAsteroids(const vmath::vec3& shipPosition)
 }
 
 // Renders the asteroids with the given perspective/look-at projection matrix.
-void Asteroida::Render(const vmath::mat4& projectionMatrix, const vmath::vec3& shipPosition)
+void Asteroida::Render(const vmath::mat4& perspectiveMatrix, const vmath::mat4& viewMatrix, const vmath::vec3& shipPosition)
 {
 	UpdateVisibleAsteroids(shipPosition);
 
@@ -337,13 +338,14 @@ void Asteroida::Render(const vmath::mat4& projectionMatrix, const vmath::vec3& s
 	
 	// Asteroids that made the cut.
     glBindVertexArray(vao);
-    glUniformMatrix4fv(projLocation, 1, GL_FALSE, projectionMatrix);
+    glUniformMatrix4fv(perspectiveLocation, 1, GL_FALSE, perspectiveMatrix);
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, viewMatrix);
 	glDrawElements(GL_TRIANGLES, gpuAsteroids.indices.size(), GL_UNSIGNED_INT, nullptr);
 
 	// Points for all asteroids that missed the cut.
 	glUseProgram(pointRenderShaderProgram);
 	glBindVertexArray(pointRenderVao);
-	glUniformMatrix4fv(pointRenderProjLocation, 1, GL_FALSE, projectionMatrix);
+	glUniformMatrix4fv(pointRenderProjLocation, 1, GL_FALSE, perspectiveMatrix * viewMatrix);
 	glDrawArrays(GL_POINTS, 0, gpuAsteroids.positions.size());
 
 }

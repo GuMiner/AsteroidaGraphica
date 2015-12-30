@@ -16,15 +16,14 @@ out VS_OUT
     vec4 barycentricPosition;
 } vs_out;
 
-uniform mat4 proj_matrix;
+uniform mat4 perspectiveMatrix;
+uniform mat4 viewMatrix;
 
 // Renders asteroids with the specified color and position, using the barycentric coordinates to determine the opacity level.
 void main(void)
 {
-	// Pass-through colors and barycentrics to our fragment shader.
-    vs_out.color = vec4(texelFetch(asteroidColors, int(drawId), 0).xyz, 1);
-	vs_out.highlightColor = texelFetch(asteroidOres, int(drawId), 0);
-    vs_out.barycentricPosition = barycentricPosition;
+    // Pass through the barycentric position to the fragment shader.
+	vs_out.barycentricPosition = barycentricPosition;
 
 	// Form a matrix out of our asteroid position because we perform rotation beforehand, so we can't add it to the existing vertex position.
     vec4 asteroidPosition = texelFetch(asteroidPositions, int(drawId), 0);
@@ -56,5 +55,30 @@ void main(void)
 		2.0f * (xz - yw), 2.0f * (yz + xw), 1.0f - 2.0f * (xx + yy), 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
 
-    gl_Position = proj_matrix * asteroidPositionMatrix * asteroidRotationMatrix * vec4(position, 1);
+	// Use our new matrices to perform lighting calculations and render out the points.
+	
+	vec4 color = vec4(texelFetch(asteroidColors, int(drawId), 0).xyz, 1);
+    vec4 highlightColor = texelFetch(asteroidOres, int(drawId), 0);
+	
+	// Computing a normal given that our asteroids are more or less spheres.
+	vec4 effectiveNormal = asteroidRotationMatrix * vec4(position, 1);
+	vec4 effectivePosition = asteroidPositionMatrix * effectiveNormal;
+
+	vec3 normalN = normalize(effectiveNormal.xyz);
+	vec3 normalL = normalize(-effectivePosition.xyz);
+	vec3 normalV = normalize(-(viewMatrix * effectivePosition).xyz);
+
+	vec3 reflection = reflect(-normalL, normalV);
+
+	vec3 ambient = vec3(0.1);
+	vec3 diffuse = max(dot(normalN, normalL), 0.0)
+		* vec3(0.6);
+	vec3 specular = pow(max(dot(reflection, normalV), 0.0), 128.0)
+		* vec3(0.9);
+
+	vec4 lighting = vec4((ambient + diffuse + specular).xyz, 1.0f);
+	vs_out.color = color * lighting;
+	vs_out.highlightColor = highlightColor * lighting;
+
+    gl_Position = perspectiveMatrix * viewMatrix * effectivePosition;
 }
