@@ -29,12 +29,27 @@ vmath::vec3 Physica::SunAcceleration(const vmath::vec3& pos) const
 	return constants * vmath::normalize(pos);
 }
 
-// Performs RK4 step evaluation within the context of solar masse.
+// Calculates the acceleration applied to the ship
+vmath::vec3 Physica::ShipAcceleration(const vmath::vec3& pos) const
+{
+	return (shipia->shipForce / shipia->GetShipMass()) + SunAcceleration(pos);
+}
+
+// Performs RK4 step evaluation within the context of solar mass.
 PosVel Physica::RK4SunStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const
 {
 	PosVel result;
 	result.pos = initialState.vel + derivative.vel * dt;
 	result.vel = SunAcceleration(initialState.pos + derivative.pos * dt);
+	return result;
+}
+
+// Performs RK4 step evaluation within the context of solar mass for the ship.
+PosVel Physica::RK4ShipStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const
+{
+	PosVel result;
+	result.pos = initialState.vel + derivative.vel * dt;
+	result.vel = ShipAcceleration(initialState.pos + derivative.pos * dt);
 	return result;
 }
 
@@ -53,6 +68,29 @@ void Physica::SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const
 	PosVel middleLeft = RK4SunStepEvaluate(initialState, dt * 0.5f, left);
 	PosVel middleRight = RK4SunStepEvaluate(initialState, dt * 0.5f, middleLeft);
 	PosVel right = RK4SunStepEvaluate(initialState, dt, middleRight);
+
+	vmath::vec3 dxdt = (1.0f / 6.0f) * (left.pos + 2.0f * (middleLeft.pos + middleRight.pos) + right.pos);
+	vmath::vec3 dvdt = (1.0f / 6.0f) * (left.vel + 2.0f * (middleLeft.vel + middleRight.vel) + right.vel);
+
+	pos += (dxdt * dt);
+	vel += (dvdt * dt);
+}
+
+// Moves an item based on it's position, velocity, and timestep.
+void Physica::ShipIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const
+{
+	PosVel initialState;
+	initialState.pos = pos;
+	initialState.vel = vel;
+
+	PosVel zero;
+	zero.pos = vmath::vec3(0.0f, 0.0f, 0.0f);
+	zero.vel = vmath::vec3(0.0f, 0.0f, 0.0f);
+
+	PosVel left = RK4ShipStepEvaluate(initialState, 0.0f, zero);
+	PosVel middleLeft = RK4ShipStepEvaluate(initialState, dt * 0.5f, left);
+	PosVel middleRight = RK4ShipStepEvaluate(initialState, dt * 0.5f, middleLeft);
+	PosVel right = RK4ShipStepEvaluate(initialState, dt, middleRight);
 
 	vmath::vec3 dxdt = (1.0f / 6.0f) * (left.pos + 2.0f * (middleLeft.pos + middleRight.pos) + right.pos);
 	vmath::vec3 dvdt = (1.0f / 6.0f) * (left.vel + 2.0f * (middleLeft.vel + middleRight.vel) + right.vel);
@@ -121,16 +159,11 @@ void Physica::HandleAsteroidMotion()
 	}
 }
 
+// Handles ship translation, rotation, and the dampeners.
 void Physica::HandleShipMotion()
 {
-    // Apply forces.
-    // TODO use an actual physical algorithm (RK4) instead of Euler integration.
-    // F = ma
-    vmath::vec3 shipAccel = shipia->shipForce / shipia->GetShipMass();
-    // v = a*deltaT, x = v*deltaT
-    // deltaT =  33 ms
-    shipia->shipVelocity += shipAccel * (33.0f / 1000.0f);
-	shipia->shipPosition += shipia->shipVelocity * (33.0f / 1000.0f);
+	// Note that I'm using the asteroid timestep, because else you cannot match orbital speeds with an asteroid!
+	ShipIntegration(shipia->shipPosition, shipia->shipVelocity, ConfigManager::AsteroidTimestep);
 
     // Apply rotation (yaw, pitch, and then roll, in that order).
     // This is actually horrendously incorrect (physically speaking). However, it looks ok and works ok for small rotation speeds.

@@ -376,7 +376,7 @@ void Asteroida::Render(const vmath::mat4& perspectiveMatrix, const vmath::mat4& 
 	glUseProgram(pointRenderShaderProgram);
 	glBindVertexArray(pointRenderVao);
 	glUniformMatrix4fv(pointRenderProjLocation, 1, GL_FALSE, perspectiveMatrix * viewMatrix);
-	glDrawArrays(GL_POINTS, 0, gpuAsteroids.positions.size());
+	glDrawArrays(GL_POINTS, 0, allAsteroids.positions.size());
 
 }
 

@@ -30,10 +30,15 @@ class Physica
     void HandleShipMotion();
 	void HandleAsteroidMotion();
 
-	// Physics calculations
+	// Physics calculations. 
+	// FW: Ideally, I'd like to combine these so we can pass in a function pointer and only duplicate Sun/ShipAcceleration.
 	vmath::vec3 SunAcceleration(const vmath::vec3& pos) const;
 	PosVel RK4SunStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const;
 	void SunIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const;
+
+	vmath::vec3 ShipAcceleration(const vmath::vec3& pos) const;
+	PosVel RK4ShipStepEvaluate(const PosVel& initialState, float dt, const PosVel& derivative) const;
+	void ShipIntegration(vmath::vec3& pos, vmath::vec3& vel, float dt) const;
 public:
 
     Physica();

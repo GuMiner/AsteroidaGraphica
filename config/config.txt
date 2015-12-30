@@ -111,9 +111,9 @@ AsteroidTimestep 0.0033
 AsteroidRotationSpeed 0.06
 
 # Ship performance data
-ShipThrustSpeed 190.0
-ShipSideThrustSpeed 190.0
-ShipVerticalThrustSpeed 190.0
+ShipThrustSpeed 190000.0
+ShipSideThrustSpeed 190000.0
+ShipVerticalThrustSpeed 190000.0
 TransDampenerThrustSpeed 5.0f
 
 ShipHorizRotSpeed 0.0015
