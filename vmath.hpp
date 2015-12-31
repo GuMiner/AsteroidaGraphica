@@ -627,12 +627,12 @@ namespace vmath
         static inline quaternion fromAxisAngle(float angle, vec3 axis)
         {
             float halfAngle = angle * 0.5f;
-            float sinAngle = sinf(angle);
+            float sinAngle = sinf(halfAngle);
 
             float x = (axis[0] * sinAngle);
             float y = (axis[1] * sinAngle);
             float z = (axis[2] * sinAngle);
-            float w = cosf(angle);
+            float w = cosf(halfAngle);
 
             return quaternion(x, y, z, w);
         }

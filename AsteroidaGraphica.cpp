@@ -175,7 +175,6 @@ Constants::Status AsteroidaGraphica::LoadFirstTimeGraphics()
     LogGraphicsSettings();
 
     // Basic OpenGL runtime settings
-    glEnable(GL_TEXTURE_2D); // Legacy support.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     

@@ -28,5 +28,5 @@ TextImageSize 1024
 AsteroidRenderLimit 1024
 
 # Simplifies shaders for low-spec devices
-SimpleForceFieldShader false
+SimpleForceFieldShader true
 SimpleAsteroidLodShader true
