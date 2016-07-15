@@ -15,9 +15,9 @@ AsteroidaGraphica is (being created) to be a essentially-infinite-world, futuris
 
 ## Status
 -------------------
-### ACTIVE 
+### HIBERNATING 
 
-I'm attempting to submit a change a day, unless I'm busy with work or website work on http://helium24.net.
+Work on [agow] (https://github.com/GuMiner/agow) has caused this project to be hibernated until a more compelling game design can be created.
 
 ## Build
 --------
