@@ -2,7 +2,7 @@
 ## About
 --------------------
 
-![First)(./asteroids.png)
+![First](./asteroids.png)
 *12/29 Status Update*
 
 ![Second](./Status1214.png)
