@@ -2,12 +2,10 @@
 ## About
 --------------------
 
-![asteroids.png][status2]
-[status2]:./asteroids.png
-* 12/29 Status Update*
+![First)(./asteroids.png)
+*12/29 Status Update*
 
-![Status1214.png][status]
-[status]:./Status1214.png
+![Second](./Status1214.png)
 *12/14 Status Update*
 
 AsteroidaGraphica is (being created) to be a essentially-infinite-world, futuristic, adventure and role-playing asteroid mining simulator.
